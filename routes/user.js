@@ -5,6 +5,38 @@ const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
+router.get("/dashboard-stats", requireAuth, async (req, res) => {
+  try {
+    const totalResult = await client.execute({
+      sql: "SELECT COUNT(*) AS total FROM orbit_api_requests",
+      args: []
+    });
+
+    const topResult = await client.execute({
+      sql: `SELECT u.id, u.name, u.photo, COUNT(r.id) AS requests
+            FROM orbit_api_requests r
+            INNER JOIN orbit_users u ON u.id = r.user_id
+            WHERE u.is_admin = 0
+            GROUP BY u.id, u.name, u.photo
+            ORDER BY requests DESC, u.name ASC
+            LIMIT 5`,
+      args: []
+    });
+
+    res.json({
+      ok: true,
+      total_requests: Number(totalResult.rows[0]?.total || 0),
+      top_users: topResult.rows.map(row => ({
+        id: row.id, name: row.name, photo: row.photo, requests: Number(row.requests || 0)
+      }))
+    });
+  } catch (error) {
+    console.error("Error obteniendo estadísticas del dashboard:", error);
+    res.status(500).json({ ok: false, error: "No se pudieron cargar las estadísticas" });
+  }
+});
+
+
 router.put("/profile/photo", requireAuth, async (req, res) => {
   const photo = typeof req.body.photo === "string" ? req.body.photo.trim() : "";
 
