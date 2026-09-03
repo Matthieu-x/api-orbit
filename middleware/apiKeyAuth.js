@@ -9,7 +9,7 @@ async function apiKeyAuth(req, res, next) {
   }
 
   const result = await client.execute({
-    sql: "SELECT * FROM users WHERE api_key = ?",
+    sql: "SELECT * FROM orbit_users WHERE api_key = ?",
     args: [apiKey]
   });
 
@@ -22,7 +22,7 @@ async function apiKeyAuth(req, res, next) {
 
   if (user.requests_reset_date !== today) {
     await client.execute({
-      sql: "UPDATE users SET requests_remaining = requests_limit, requests_reset_date = ? WHERE id = ?",
+      sql: "UPDATE orbit_users SET requests_remaining = requests_limit, requests_reset_date = ? WHERE id = ?",
       args: [today, user.id]
     });
     user.requests_remaining = user.requests_limit;
@@ -34,7 +34,7 @@ async function apiKeyAuth(req, res, next) {
   }
 
   await client.execute({
-    sql: "UPDATE users SET requests_remaining = requests_remaining - 1 WHERE id = ?",
+    sql: "UPDATE orbit_users SET requests_remaining = requests_remaining - 1 WHERE id = ?",
     args: [user.id]
   });
 
