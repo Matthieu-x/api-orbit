@@ -35,7 +35,7 @@ router.put("/profile", requireAuth, async (req, res) => {
   }
 
   await client.execute({
-    sql: "UPDATE users SET name = ? WHERE id = ?",
+    sql: "UPDATE orbit_users SET name = ? WHERE id = ?",
     args: [String(name).trim(), req.user.id]
   });
 
@@ -55,7 +55,7 @@ router.post("/profile/photo", requireAuth, (req, res) => {
     const photoUrl = `/uploads/${req.file.filename}`;
 
     await client.execute({
-      sql: "UPDATE users SET photo = ? WHERE id = ?",
+      sql: "UPDATE orbit_users SET photo = ? WHERE id = ?",
       args: [photoUrl, req.user.id]
     });
 
@@ -65,7 +65,7 @@ router.post("/profile/photo", requireAuth, (req, res) => {
 
 router.get("/notifications", requireAuth, async (req, res) => {
   const result = await client.execute({
-    sql: `SELECT * FROM notifications
+    sql: `SELECT * FROM orbit_notifications
           WHERE user_id = ? OR user_id IS NULL
           ORDER BY created_at DESC LIMIT 30`,
     args: [req.user.id]
@@ -76,7 +76,7 @@ router.get("/notifications", requireAuth, async (req, res) => {
 
 router.post("/notifications/:id/read", requireAuth, async (req, res) => {
   await client.execute({
-    sql: "UPDATE notifications SET read = 1 WHERE id = ?",
+    sql: "UPDATE orbit_notifications SET read = 1 WHERE id = ?",
     args: [req.params.id]
   });
 
