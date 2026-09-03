@@ -3,14 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 — Orbit</title>
+<title>Pagina no encontrada — Orbit API</title>
 <link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .notfound {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+  }
+  .notfound .code {
+    font-family: var(--font-head);
+    font-size: 84px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .notfound h1 {
+    font-size: 22px;
+  }
+</style>
 </head>
-<body class="page-404">
-  <div class="center-box">
-    <h1>404</h1>
-    <p>Pagina no encontrada</p>
-    <a href="/" class="btn">Volver al inicio</a>
-  </div>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="320" ry="180" transform="rotate(-8 400 400)"></ellipse>
+    <circle class="orbit-dot" cx="620" cy="270" r="4"></circle>
+  </svg>
+</div>
+
+<div class="notfound">
+  <div class="code">404</div>
+  <h1>Esta orbita no existe</h1>
+  <p class="muted">La pagina que buscas no esta disponible.</p>
+  <a class="btn btn-primary" href="/">Volver al inicio</a>
+</div>
+
 </body>
 </html>

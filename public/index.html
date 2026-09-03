@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit API</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 24px;
+  }
+  .hero-nav-links {
+    display: flex;
+    gap: 10px;
+  }
+  .hero-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .hero-content {
+    width: 100%;
+    max-width: 640px;
+    padding: 24px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .hero-content h1 {
+    font-size: clamp(32px, 6vw, 48px);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .hero-content .lead {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    max-width: 520px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .hero-code {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    max-width: 520px;
+  }
+  .hero-code .k { color: var(--accent); }
+  .hero-code .s { color: var(--success); }
+  @media (max-width: 640px) {
+    .hero-nav { flex-direction: column; gap: 14px; align-items: flex-start; }
+    .hero-nav-links { width: 100%; }
+    .hero-nav-links .btn { flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse>
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="280" ry="280"></ellipse>
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse>
+    <circle class="orbit-dot" cx="740" cy="330" r="4"></circle>
+    <circle class="orbit-dot" cx="120" cy="470" r="3"></circle>
+    <circle class="orbit-dot" cx="400" cy="120" r="3"></circle>
+  </svg>
+</div>
+
+<div class="hero">
+  <div class="hero-nav wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none">
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
+        <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
+      </svg>
+      Orbit API
+    </div>
+    <div class="hero-nav-links">
+      <a class="btn btn-ghost" href="/login">Iniciar sesion</a>
+      <a class="btn btn-primary" href="/register">Crear cuenta</a>
+    </div>
+  </div>
+
+  <div class="hero-body">
+    <div class="hero-content">
+      <h1>Una orbita de endpoints lista para tus proyectos.</h1>
+      <p class="lead">Registra tu cuenta, obten tu API key y empieza a consumir los endpoints de Orbit con 100 solicitudes gratuitas cada dia.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/register">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Registrarme
+        </a>
+        <a class="btn btn-ghost" href="/login">Ya tengo cuenta</a>
+      </div>
+
+      <div class="hero-code">
+<span class="k">GET</span> /api/v1/consulta?apikey=ORBIT-XXXXXXXXXX&texto=hola
+<span class="s">200 OK</span> — solicitud descontada de tu cupo diario
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
