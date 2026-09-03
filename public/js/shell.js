@@ -72,7 +72,7 @@ async function initShell(activePage) {
 
     <div class="topbar">
       <div class="topbar-left">
-        <button class="btn btn-icon" id="menuBtn">${ICONS.menu}</button>
+        <button class="btn btn-icon" id="menuBtn" type="button" aria-label="Abrir menú">${ICONS.menu}</button>
         <div class="brand">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
@@ -83,7 +83,7 @@ async function initShell(activePage) {
       </div>
       <div class="topbar-right">
         <div class="notif-wrap">
-          <button class="btn btn-icon" id="notifBtn">
+          <button class="btn btn-icon" id="notifBtn" type="button" aria-label="Abrir notificaciones">
             ${ICONS.bell}
             <span class="notif-dot" id="notifDot"></span>
           </button>
