@@ -1,8 +1,14 @@
 const crypto = require("crypto");
 
 function generateApiKey() {
-  const digits = crypto.randomInt(0, 10000000000).toString().padStart(5, "0");
-  return `ORBIT-${digits}`;
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let key = "";
+
+  for (let i = 0; i < 5; i++) {
+    key += letters[crypto.randomInt(0, letters.length)];
+  }
+
+  return `ORBIT-${key}`;
 }
 
 function todayStamp() {
