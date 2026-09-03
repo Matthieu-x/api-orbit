@@ -21,11 +21,11 @@ function timeAgo(iso) {
 }
 
 function renderAvatar(user) {
-  if (user.photo) {
-    return `<img class="avatar" src="${user.photo}" alt="">`;
-  }
   const initial = (user.name || "?").trim().charAt(0).toUpperCase();
-  return `<div class="avatar avatar-fallback">${initial}</div>`;
+  if (user.photo) {
+    return `<img class="avatar" src="${escapeHtml(user.photo)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="avatar avatar-fallback" style="display:none">${escapeHtml(initial)}</div>`;
+  }
+  return `<div class="avatar avatar-fallback">${escapeHtml(initial)}</div>`;
 }
 
 async function initShell(activePage) {
@@ -103,14 +103,19 @@ async function initShell(activePage) {
   function openDrawer() {
     drawer.classList.add("open");
     backdrop.classList.add("open");
+    document.body.classList.add("drawer-open");
   }
   function closeDrawer() {
     drawer.classList.remove("open");
     backdrop.classList.remove("open");
+    document.body.classList.remove("drawer-open");
   }
 
   document.getElementById("menuBtn").addEventListener("click", openDrawer);
   backdrop.addEventListener("click", closeDrawer);
+  document.querySelectorAll(".drawer-link").forEach((link) => {
+    if (link.id !== "logoutLink") link.addEventListener("click", closeDrawer);
+  });
 
   document.getElementById("logoutLink").addEventListener("click", async (e) => {
     e.preventDefault();
