@@ -35,7 +35,26 @@
       </div>
       <div class="stat-card">
         <div class="label">Tu API key</div>
-        <div class="value mono" id="statKey" style="font-size:15px">—</div>
+        <div class="value mono" id="statKey" style="font-size:15px;word-break:break-all">—</div>
+      </div>
+      <div class="stat-card stat-card-total">
+        <div class="label">Solicitudes totales de Orbit API</div>
+        <div class="value" id="statTotalRequests">—</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card leaderboard-card">
+        <div class="dashboard-card-head">
+          <div>
+            <h3>Top 5 usuarios</h3>
+            <p class="muted">Usuarios con más solicitudes realizadas.</p>
+          </div>
+          <span class="dashboard-badge">Ranking</span>
+        </div>
+        <div id="topUsers" class="top-users-list">
+          <div class="dashboard-loading">Cargando ranking...</div>
+        </div>
       </div>
     </div>
 
