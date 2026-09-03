@@ -47,7 +47,7 @@ function buildEndpointUrl(apiKey, value) {
   const params = new URLSearchParams();
   params.set("apikey", apiKey);
   params.set(activeCategory.param, value || "");
-  return `${activeCategory.path}?${params.toString()}`;
+  return `${window.location.origin}${activeCategory.path}?${params.toString()}`;
 }
 
 function renderPlayground() {
@@ -58,7 +58,7 @@ function renderPlayground() {
       <div>
         <span class="panel-label">Parametro — ${escapeHtml(activeCategory.param)}</span>
         <div class="field" style="margin-bottom:12px">
-          <input type="text" id="paramInput" placeholder="${escapeHtml(activeCategory.placeholder)}">
+          <input type="text" id="paramInput" placeholder="${escapeHtml(activeCategory.placeholder)}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="orbit-param-${escapeHtml(activeCategory.id)}">
         </div>
         <span class="panel-label">Endpoint</span>
         <div class="endpoint-row" id="endpointRow">${escapeHtml(buildEndpointUrl(orbitUser.api_key, ""))}</div>
