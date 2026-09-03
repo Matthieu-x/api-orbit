@@ -12,12 +12,12 @@ router.get("/users", requireAdmin, async (req, res) => {
   const result = search
     ? await client.execute({
         sql: `SELECT id, name, email, password, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
-              FROM users WHERE name LIKE ? OR email LIKE ? ORDER BY created_at DESC`,
+              FROM orbit_users WHERE name LIKE ? OR email LIKE ? ORDER BY created_at DESC`,
         args: [`%${search}%`, `%${search}%`]
       })
     : await client.execute(
         `SELECT id, name, email, password, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
-         FROM users ORDER BY created_at DESC`
+         FROM orbit_users ORDER BY created_at DESC`
       );
 
   res.json({ ok: true, users: result.rows });
@@ -28,8 +28,8 @@ router.delete("/users/:id", requireAdmin, async (req, res) => {
     return res.status(400).json({ ok: false, error: "No puedes eliminar tu propia cuenta" });
   }
 
-  await client.execute({ sql: "DELETE FROM sessions WHERE user_id = ?", args: [req.params.id] });
-  await client.execute({ sql: "DELETE FROM users WHERE id = ?", args: [req.params.id] });
+  await client.execute({ sql: "DELETE FROM orbit_sessions WHERE user_id = ?", args: [req.params.id] });
+  await client.execute({ sql: "DELETE FROM orbit_users WHERE id = ?", args: [req.params.id] });
 
   res.json({ ok: true });
 });
@@ -42,7 +42,7 @@ router.post("/users/:id/add-requests", requireAdmin, async (req, res) => {
   }
 
   await client.execute({
-    sql: "UPDATE users SET requests_remaining = requests_remaining + ? WHERE id = ?",
+    sql: "UPDATE orbit_users SET requests_remaining = requests_remaining + ? WHERE id = ?",
     args: [amount, req.params.id]
   });
 
@@ -57,7 +57,7 @@ router.post("/notifications", requireAdmin, async (req, res) => {
   }
 
   await client.execute({
-    sql: `INSERT INTO notifications (id, user_id, title, message, created_at, read)
+    sql: `INSERT INTO orbit_notifications (id, user_id, title, message, created_at, read)
           VALUES (?, ?, ?, ?, ?, 0)`,
     args: [crypto.randomUUID(), userId || null, title, message, new Date().toISOString()]
   });
