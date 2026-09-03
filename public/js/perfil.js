@@ -20,27 +20,55 @@ function fallbackAvatarUrl(name) {
 
   fillProfile(user);
 
+  const photoUrl = document.getElementById("photoUrl");
+  const photoForm = document.getElementById("photoForm");
+  const savePhotoBtn = document.getElementById("savePhotoBtn");
+  const removePhotoBtn = document.getElementById("removePhotoBtn");
+
+  photoUrl.value = user.photo || "";
+
   document.getElementById("photoEditBtn").addEventListener("click", () => {
-    document.getElementById("photoInput").click();
+    photoUrl.focus();
+    photoUrl.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 
-  document.getElementById("photoInput").addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  photoForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const url = photoUrl.value.trim();
+    savePhotoBtn.disabled = true;
 
-    const formData = new FormData();
-    formData.append("photo", file);
+    const { status, data } = await orbitFetch("/api/user/profile/photo", {
+      method: "PUT",
+      body: JSON.stringify({ photo: url })
+    });
 
-    const res = await fetch("/api/user/profile/photo", { method: "POST", body: formData });
-    const data = await res.json().catch(() => ({ ok: false }));
+    savePhotoBtn.disabled = false;
 
-    if (!data.ok) {
+    if (status !== 200 || !data.ok) {
       showToast(data.error || "No se pudo actualizar la foto");
       return;
     }
 
-    document.getElementById("profileAvatar").src = data.photo;
-    showToast("Foto actualizada");
+    document.getElementById("profileAvatar").src = data.photo || fallbackAvatarUrl(user.name);
+    photoUrl.value = data.photo || "";
+    showToast(data.photo ? "Foto actualizada" : "Foto eliminada");
+  });
+
+  removePhotoBtn.addEventListener("click", async () => {
+    removePhotoBtn.disabled = true;
+
+    const { status, data } = await orbitFetch("/api/user/profile/photo", { method: "DELETE" });
+
+    removePhotoBtn.disabled = false;
+
+    if (status !== 200 || !data.ok) {
+      showToast(data.error || "No se pudo eliminar la foto");
+      return;
+    }
+
+    document.getElementById("profileAvatar").src = fallbackAvatarUrl(user.name);
+    photoUrl.value = "";
+    showToast("Foto eliminada");
   });
 
   document.getElementById("nameForm").addEventListener("submit", async (e) => {
