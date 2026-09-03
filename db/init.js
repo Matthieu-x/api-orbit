@@ -39,6 +39,15 @@ async function ensureSchema() {
       read INTEGER NOT NULL DEFAULT 0
     )
   `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS orbit_notification_deletions (
+      user_id TEXT NOT NULL,
+      notification_id TEXT NOT NULL,
+      deleted_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, notification_id)
+    )
+  `);
 }
 
 async function ensureAdmin(email, name) {
