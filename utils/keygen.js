@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
 function generateApiKey() {
-  const digits = crypto.randomInt(0, 10000000000).toString().padStart(10, "0");
+  const digits = crypto.randomInt(0, 10000000000).toString().padStart(5, "0");
   return `ORBIT-${digits}`;
 }
 
