@@ -65,19 +65,44 @@ router.post("/profile/photo", requireAuth, (req, res) => {
 
 router.get("/notifications", requireAuth, async (req, res) => {
   const result = await client.execute({
-    sql: `SELECT * FROM orbit_notifications
-          WHERE user_id = ? OR user_id IS NULL
-          ORDER BY created_at DESC LIMIT 30`,
-    args: [req.user.id]
+    sql: `SELECT n.*
+          FROM orbit_notifications n
+          LEFT JOIN orbit_notification_deletions d
+            ON d.notification_id = n.id AND d.user_id = ?
+          WHERE (n.user_id = ? OR n.user_id IS NULL)
+            AND d.notification_id IS NULL
+          ORDER BY n.created_at DESC LIMIT 30`,
+    args: [req.user.id, req.user.id]
   });
 
   res.json({ ok: true, notifications: result.rows });
 });
 
+router.delete("/notifications/:id", requireAuth, async (req, res) => {
+  const notification = await client.execute({
+    sql: `SELECT id FROM orbit_notifications
+          WHERE id = ? AND (user_id = ? OR user_id IS NULL)`,
+    args: [req.params.id, req.user.id]
+  });
+
+  if (notification.rows.length === 0) {
+    return res.status(404).json({ ok: false, error: "Notificación no encontrada" });
+  }
+
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO orbit_notification_deletions (user_id, notification_id, deleted_at)
+          VALUES (?, ?, ?)`,
+    args: [req.user.id, req.params.id, new Date().toISOString()]
+  });
+
+  res.json({ ok: true });
+});
+
 router.post("/notifications/:id/read", requireAuth, async (req, res) => {
   await client.execute({
-    sql: "UPDATE orbit_notifications SET read = 1 WHERE id = ?",
-    args: [req.params.id]
+    sql: `UPDATE orbit_notifications SET read = 1
+          WHERE id = ? AND (user_id = ? OR user_id IS NULL)`,
+    args: [req.params.id, req.user.id]
   });
 
   res.json({ ok: true });
