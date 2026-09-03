@@ -48,6 +48,10 @@ app.get("/dashboard", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "dashboard.html"));
 });
 
+app.get("/endpoints", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "endpoints.html"));
+});
+
 app.get("/perfil", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "perfil.html"));
 });
