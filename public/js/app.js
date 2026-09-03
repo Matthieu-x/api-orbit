@@ -1,41 +1,39 @@
-// shared helpers
-window.Orbit = window.Orbit || {};
-
-Orbit.$ = (sel, root = document) => root.querySelector(sel);
-Orbit.$$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-
-Orbit.showError = (el, msg) => {
-  if (!el) return;
-  el.textContent = msg || "Error";
-  el.classList.add("show");
-};
-
-Orbit.hideError = (el) => {
-  if (!el) return;
-  el.classList.remove("show");
-  el.textContent = "";
-};
-
-Orbit.api = async (url, opts = {}) => {
-  const res = await fetch(url, {
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
-    ...opts
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const err = new Error(data.error || data.message || "Error de red");
-    err.status = res.status;
-    err.data = data;
-    throw err;
+function showToast(message) {
+  let toast = document.getElementById("orbitToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "orbitToast";
+    toast.className = "toast";
+    document.body.appendChild(toast);
   }
-  return data;
-};
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(window.__orbitToastTimer);
+  window.__orbitToastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2600);
+}
 
-Orbit.togglePassword = (input, btn) => {
-  if (!input || !btn) return;
-  btn.addEventListener("click", () => {
-    const isPass = input.type === "password";
-    input.type = isPass ? "text" : "password";
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function orbitFetch(url, options = {}) {
+  const res = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    ...options
   });
-};
+  const data = await res.json().catch(() => ({ ok: false, error: "Respuesta invalida del servidor" }));
+  return { status: res.status, data };
+}
+
+function copyToClipboard(text, label) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(`${label} copiado`);
+  });
+}
