@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — Orbit API</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse>
+  </svg>
+</div>
+
+<div id="shellMount"></div>
+
+<div class="app-shell">
+  <div class="wrap" style="padding-top:30px; max-width: 720px">
+
+    <h1 class="section-title">Perfil</h1>
+    <p class="muted" style="margin-bottom:22px">Administra tu cuenta de Orbit API.</p>
+
+    <div class="card">
+      <div class="profile-header">
+        <div class="profile-avatar-wrap">
+          <img class="profile-avatar" id="profileAvatar" src="" alt="">
+          <button class="profile-avatar-edit" id="photoEditBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5Z"/></svg>
+          </button>
+          <input type="file" id="photoInput" accept="image/*" style="display:none">
+        </div>
+        <div>
+          <h3 id="profileName">—</h3>
+          <p class="muted" id="profileEmail" style="font-size:13.5px">—</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" style="margin-bottom:24px">
+        <div class="stat-card">
+          <div class="label">Solicitudes restantes hoy</div>
+          <div class="value" id="statRemaining">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Limite diario</div>
+          <div class="value" id="statLimit">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Tu API key</div>
+          <div class="value mono" id="statKey" style="font-size:15px">—</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="error-box" id="errorBox"></div>
+
+      <form id="nameForm">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" name="name" id="nameInput" required minlength="2">
+        </div>
+        <button type="submit" class="btn btn-primary" id="saveNameBtn">Guardar cambios</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/shell.js"></script>
+<script src="/js/perfil.js"></script>
+</body>
+</html>
