@@ -36,32 +36,31 @@
     text-align: left;
   }
   .hero-content h1 {
-    font-size: clamp(32px, 6vw, 48px);
-    line-height: 1.15;
-    margin-bottom: 16px;
+    font-size: clamp(32px, 6vw, 50px);
+    line-height: 1.12;
+    margin-bottom: 18px;
   }
-  .hero-content .lead {
-    font-size: 17px;
+  .hero-content p.lead {
     color: var(--muted);
-    margin-bottom: 28px;
-    max-width: 520px;
+    font-size: 16.5px;
+    max-width: 480px;
+    margin-bottom: 30px;
   }
   .hero-actions {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 40px;
   }
   .hero-code {
-    background: var(--card);
+    margin-top: 40px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    font-family: monospace;
     font-size: 13px;
-    line-height: 1.6;
-    color: var(--text);
-    max-width: 520px;
+    color: #a9b7d4;
+    max-width: 480px;
   }
   .hero-code .k { color: var(--accent); }
   .hero-code .s { color: var(--success); }
@@ -88,7 +87,7 @@
 <div class="hero">
   <div class="hero-nav wrap">
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
         <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
       </svg>
