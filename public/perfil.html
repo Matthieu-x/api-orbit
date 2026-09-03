@@ -28,10 +28,9 @@
       <div class="profile-header">
         <div class="profile-avatar-wrap">
           <img class="profile-avatar" id="profileAvatar" src="" alt="">
-          <button class="profile-avatar-edit" id="photoEditBtn">
+          <button class="profile-avatar-edit" id="photoEditBtn" type="button" title="Cambiar foto">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5Z"/></svg>
           </button>
-          <input type="file" id="photoInput" accept="image/*" style="display:none">
         </div>
         <div>
           <h3 id="profileName">—</h3>
@@ -57,6 +56,18 @@
       <hr class="divider">
 
       <div class="error-box" id="errorBox"></div>
+
+      <form id="photoForm" style="margin-bottom:20px">
+        <div class="field">
+          <label for="photoUrl">Enlace de la foto</label>
+          <input type="url" id="photoUrl" name="photo" placeholder="https://ejemplo.com/mi-foto.jpg" autocomplete="off">
+          <p class="muted" style="font-size:12px;margin-top:7px">Usa un enlace directo a una imagen pública (HTTPS recomendado).</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary" id="savePhotoBtn">Guardar foto</button>
+          <button type="button" class="btn btn-secondary" id="removePhotoBtn">Eliminar foto</button>
+        </div>
+      </form>
 
       <form id="nameForm">
         <div class="field">
