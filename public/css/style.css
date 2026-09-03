@@ -283,10 +283,17 @@ button, input, textarea, select { font: inherit; color: inherit; }
 body.drawer-open { overflow: hidden; }
 
 @media (max-width: 800px) {
-  .topbar-left { width: calc(100% - 32px); }
+  .topbar-left { width: calc(100% - 110px); margin-left: 16px; margin-right: 0; }
   .topbar-right { right: 16px; }
-  .topbar-right .notif-wrap { display: none; }
+  .topbar-right .notif-wrap { display: block; }
   .section-title { font-size: 25px; }
+}
+
+@media (max-width: 420px) {
+  .topbar-left { width: calc(100% - 104px); }
+  .topbar-left .brand { font-size: 15px; }
+  .topbar-right { gap: 6px; }
+  .topbar-right .btn-icon, .topbar-right .avatar { width: 36px; min-width: 36px; height: 36px; }
 }
 
 /* profile */
