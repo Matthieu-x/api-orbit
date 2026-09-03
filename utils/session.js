@@ -13,7 +13,7 @@ async function createSession(userId) {
   const expires = new Date(now.getTime() + SESSION_DAYS * 24 * 60 * 60 * 1000);
 
   await client.execute({
-    sql: "INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
+    sql: "INSERT INTO orbit_sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
     args: [token, userId, now.toISOString(), expires.toISOString()]
   });
 
@@ -24,7 +24,7 @@ async function getSession(token) {
   if (!token) return null;
 
   const result = await client.execute({
-    sql: "SELECT * FROM sessions WHERE token = ?",
+    sql: "SELECT * FROM orbit_sessions WHERE token = ?",
     args: [token]
   });
 
@@ -32,7 +32,7 @@ async function getSession(token) {
   if (!session) return null;
 
   if (new Date(session.expires_at).getTime() < Date.now()) {
-    await client.execute({ sql: "DELETE FROM sessions WHERE token = ?", args: [token] });
+    await client.execute({ sql: "DELETE FROM orbit_sessions WHERE token = ?", args: [token] });
     return null;
   }
 
@@ -41,7 +41,7 @@ async function getSession(token) {
 
 async function destroySession(token) {
   if (!token) return;
-  await client.execute({ sql: "DELETE FROM sessions WHERE token = ?", args: [token] });
+  await client.execute({ sql: "DELETE FROM orbit_sessions WHERE token = ?", args: [token] });
 }
 
 module.exports = { createSession, getSession, destroySession, SESSION_DAYS };
