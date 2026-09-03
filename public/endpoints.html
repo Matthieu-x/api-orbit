@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endpoints — Orbit API</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse>
+  </svg>
+</div>
+
+<div id="shellMount"></div>
+
+<div class="app-shell">
+  <div class="wrap" style="padding-top:30px">
+
+    <h1 class="section-title">Endpoints</h1>
+    <p class="muted" style="margin-bottom:22px">Busca una categoria y prueba el endpoint con tu API key.</p>
+
+    <div class="card">
+      <div class="search-row" style="margin-top:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="categorySearch" placeholder="Buscar categoria o endpoint" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="orbit-category-search">
+      </div>
+
+      <div class="category-list" id="categoryList"></div>
+
+      <hr class="divider">
+
+      <div id="playgroundZone"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/shell.js"></script>
+<script src="/js/endpoints.js"></script>
+</body>
+</html>
