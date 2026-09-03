@@ -1,6 +1,5 @@
 let pendingUserId = null;
 
-const EYE_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const PLUS_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 const TRASH_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></svg>';
 
@@ -25,10 +24,7 @@ async function loadUsers(search) {
       <tr>
         <td>${escapeHtml(u.name)} ${Number(u.is_admin) === 1 ? '<span class="pill-admin">admin</span>' : ""}</td>
         <td>${escapeHtml(u.email)}</td>
-        <td>
-          <span class="mono password-cell" data-value="${escapeHtml(u.password)}">••••••••</span>
-          <button class="icon-btn toggle-pw" style="background:none;border:none;color:var(--muted);cursor:pointer;vertical-align:middle">${EYE_ICON}</button>
-        </td>
+        <td><span class="pill-secure">Protegida</span></td>
         <td class="mono">${escapeHtml(u.api_key)}</td>
         <td>${u.requests_remaining} / ${u.requests_limit}</td>
         <td>
@@ -41,17 +37,10 @@ async function loadUsers(search) {
     )
     .join("");
 
-  body.querySelectorAll(".toggle-pw").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const span = btn.previousElementSibling;
-      const isHidden = span.textContent === "••••••••";
-      span.textContent = isHidden ? span.dataset.value : "••••••••";
-    });
-  });
-
   body.querySelectorAll(".add-req-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       pendingUserId = btn.dataset.id;
+      document.getElementById("addReqInput").value = "100";
       document.getElementById("addReqModal").classList.add("open");
     });
   });
@@ -68,6 +57,10 @@ function closeModals() {
   document.querySelectorAll(".modal-backdrop").forEach((m) => m.classList.remove("open"));
   pendingUserId = null;
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModals();
+});
 
 (async () => {
   const user = await initShell("admin");
