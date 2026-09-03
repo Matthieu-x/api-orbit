@@ -8,7 +8,8 @@ const ICONS = {
   grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
   user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>',
   shield: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg>',
-  logout: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 21H5a1 1 0 01-1-1V4a1 1 0 011-1h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>'
+  logout: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 21H5a1 1 0 01-1-1V4a1 1 0 011-1h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>',
+  code: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>'
 };
 
 function timeAgo(iso) {
@@ -39,6 +40,7 @@ async function initShell(activePage) {
 
   const links = [
     { key: "dashboard", href: "/dashboard", label: "Dashboard", icon: ICONS.grid },
+    { key: "endpoints", href: "/endpoints", label: "Endpoints", icon: ICONS.code },
     { key: "perfil", href: "/perfil", label: "Perfil", icon: ICONS.user }
   ];
 
@@ -56,7 +58,7 @@ async function initShell(activePage) {
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
     <div class="drawer" id="drawer">
       <div class="drawer-brand brand">
-        <svg viewBox="0 0 24 24" fill="none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
           <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
         </svg>
@@ -72,7 +74,7 @@ async function initShell(activePage) {
       <div class="topbar-left">
         <button class="btn btn-icon" id="menuBtn">${ICONS.menu}</button>
         <div class="brand">
-          <svg viewBox="0 0 24 24" fill="none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
             <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
           </svg>
