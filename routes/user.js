@@ -1,66 +1,51 @@
 const express = require("express");
-const path = require("path");
-const crypto = require("crypto");
-const multer = require("multer");
 
 const client = require("../db/client");
 const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "..", "public", "uploads"),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || ".jpg";
-    cb(null, `${req.user.id}-${Date.now()}${ext}`);
+router.put("/profile/photo", requireAuth, async (req, res) => {
+  const photo = typeof req.body.photo === "string" ? req.body.photo.trim() : "";
+
+  if (!photo) {
+    await client.execute({
+      sql: "UPDATE orbit_users SET photo = NULL WHERE id = ?",
+      args: [req.user.id]
+    });
+    return res.json({ ok: true, photo: null });
   }
-});
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 4 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("El archivo debe ser una imagen"));
-    }
-    cb(null, true);
+  let parsed;
+  try {
+    parsed = new URL(photo);
+  } catch {
+    return res.status(400).json({ ok: false, error: "Ingresa un enlace de imagen válido" });
   }
-});
 
-router.put("/profile", requireAuth, async (req, res) => {
-  const { name } = req.body;
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    return res.status(400).json({ ok: false, error: "El enlace debe comenzar con http:// o https://" });
+  }
 
-  if (!name || String(name).trim().length < 2) {
-    return res.status(400).json({ ok: false, error: "Ingresa un nombre valido" });
+  if (photo.length > 1000) {
+    return res.status(400).json({ ok: false, error: "El enlace es demasiado largo" });
   }
 
   await client.execute({
-    sql: "UPDATE orbit_users SET name = ? WHERE id = ?",
-    args: [String(name).trim(), req.user.id]
+    sql: "UPDATE orbit_users SET photo = ? WHERE id = ?",
+    args: [photo, req.user.id]
   });
 
-  res.json({ ok: true, name: String(name).trim() });
+  res.json({ ok: true, photo });
 });
 
-router.post("/profile/photo", requireAuth, (req, res) => {
-  upload.single("photo")(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ ok: false, error: err.message });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ ok: false, error: "No se recibio ninguna imagen" });
-    }
-
-    const photoUrl = `/uploads/${req.file.filename}`;
-
-    await client.execute({
-      sql: "UPDATE orbit_users SET photo = ? WHERE id = ?",
-      args: [photoUrl, req.user.id]
-    });
-
-    res.json({ ok: true, photo: photoUrl });
+router.delete("/profile/photo", requireAuth, async (req, res) => {
+  await client.execute({
+    sql: "UPDATE orbit_users SET photo = NULL WHERE id = ?",
+    args: [req.user.id]
   });
+
+  res.json({ ok: true, photo: null });
 });
 
 router.get("/notifications", requireAuth, async (req, res) => {
