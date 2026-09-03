@@ -10,7 +10,7 @@ async function requireAuth(req, res, next) {
   }
 
   const result = await client.execute({
-    sql: "SELECT * FROM users WHERE id = ?",
+    sql: "SELECT * FROM orbit_users WHERE id = ?",
     args: [session.user_id]
   });
 
