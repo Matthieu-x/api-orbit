@@ -1,48 +1,53 @@
-function formatNumber(value) {
-  return new Intl.NumberFormat("es-HN").format(Number(value || 0));
+function dashboardAvatar(user) {
+  if (user.photo) {
+    return `<img class="avatar" src="${escapeHtml(user.photo)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` +
+      `<div class="avatar avatar-fallback" style="display:none">${escapeHtml((user.name || "?").trim().charAt(0).toUpperCase())}</div>`;
+  }
+
+  const initial = (user.name || "?").trim().charAt(0).toUpperCase();
+  return `<div class="avatar avatar-fallback">${escapeHtml(initial)}</div>`;
 }
 
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>'"]/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-  }[char]));
-}
-
-function renderTopUsers(users) {
+async function loadDashboardStats() {
   const container = document.getElementById("topUsers");
-  if (!container) return;
-  if (!users.length) {
-    container.innerHTML = '<div class="dashboard-empty">Todavía no hay solicitudes registradas.</div>';
+  const total = document.getElementById("statTotal");
+  const userTotal = document.getElementById("statUserTotal");
+
+  const { status, data } = await orbitFetch("/api/user/dashboard-stats");
+
+  if (status !== 200 || !data.ok) {
+    container.innerHTML = `<div class="notif-empty">${escapeHtml(data.error || "No se pudieron cargar las estadísticas")}</div>`;
     return;
   }
-  container.innerHTML = users.map((user, index) => {
-    const initial = (user.name || "?").trim().charAt(0).toUpperCase();
-    const photo = user.photo ? escapeHtml(user.photo) : "";
-    return `<div class="top-user-row">
-      <div class="top-user-position">${index + 1}</div>
-      <div class="ranking-avatar-wrap">
-        ${photo ? `<img class="ranking-avatar" src="${photo}" alt="" onerror="this.remove()">` : `<div class="ranking-avatar ranking-fallback">${escapeHtml(initial)}</div>`}
+
+  total.textContent = Number(data.total_requests || 0).toLocaleString("es-HN");
+  userTotal.textContent = Number(data.user_total_requests || 0).toLocaleString("es-HN");
+
+  if (!data.top_users || data.top_users.length === 0) {
+    container.innerHTML = '<div class="notif-empty">Todavía no hay solicitudes registradas.</div>';
+    return;
+  }
+
+  container.innerHTML = data.top_users.map((user, index) => `
+    <div class="top-user-row">
+      <div class="top-position">${index + 1}</div>
+      ${dashboardAvatar(user)}
+      <div class="top-user-info">
+        <strong>${escapeHtml(user.name)}</strong>
+        <span>${Number(user.requests).toLocaleString("es-HN")} solicitudes</span>
       </div>
-      <div class="top-user-info"><strong>${escapeHtml(user.name || "Usuario")}</strong><span>${formatNumber(user.requests)} solicitudes</span></div>
-      <div class="top-user-count">${formatNumber(user.requests)}</div>
-    </div>`;
-  }).join("");
+      <div class="top-user-count">${Number(user.requests).toLocaleString("es-HN")}</div>
+    </div>
+  `).join("");
 }
 
 (async () => {
   const user = await initShell("dashboard");
   if (!user) return;
 
-  document.getElementById("statRemaining").textContent = formatNumber(user.requests_remaining);
-  document.getElementById("statLimit").textContent = formatNumber(user.requests_limit);
-  document.getElementById("statKey").textContent = user.api_key || "No disponible";
+  document.getElementById("statRemaining").textContent = Number(user.requests_remaining).toLocaleString("es-HN");
+  document.getElementById("statLimit").textContent = Number(user.requests_limit).toLocaleString("es-HN");
+  document.getElementById("statKey").textContent = user.api_key;
 
-  const response = await orbitFetch("/api/user/dashboard-stats");
-  if (response.status !== 200 || !response.data?.ok) {
-    document.getElementById("statTotalRequests").textContent = "0";
-    document.getElementById("topUsers").innerHTML = '<div class="dashboard-empty">No se pudieron cargar las estadísticas.</div>';
-    return;
-  }
-  document.getElementById("statTotalRequests").textContent = formatNumber(response.data.total_requests);
-  renderTopUsers(response.data.top_users || []);
+  await loadDashboardStats();
 })();
