@@ -24,7 +24,7 @@ async function currentUser(req) {
   if (!session) return null;
 
   const result = await client.execute({
-    sql: "SELECT id, is_admin FROM users WHERE id = ?",
+    sql: "SELECT id, is_admin FROM orbit_users WHERE id = ?",
     args: [session.user_id]
   });
 
