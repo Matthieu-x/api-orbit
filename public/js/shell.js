@@ -4,6 +4,7 @@ const ICONS = {
   menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
   close: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   bell: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+  trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></svg>',
   home: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>',
   grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
   user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>',
@@ -159,11 +160,42 @@ async function loadNotifications() {
   list.innerHTML = data.notifications
     .map(
       (n) => `
-      <div class="notif-item">
-        <strong>${escapeHtml(n.title)}</strong>
-        <span>${escapeHtml(n.message)}</span><br>
-        <span>${timeAgo(n.created_at)}</span>
+      <div class="notif-item" data-notification-id="${escapeHtml(n.id)}">
+        <div class="notif-content">
+          <strong>${escapeHtml(n.title)}</strong>
+          <span>${escapeHtml(n.message)}</span>
+          <small>${timeAgo(n.created_at)}</small>
+        </div>
+        <button class="notif-delete-btn" type="button" data-id="${escapeHtml(n.id)}" aria-label="Eliminar notificación" title="Eliminar">
+          ${ICONS.trash}
+        </button>
       </div>`
     )
     .join("");
+
+  list.querySelectorAll(".notif-delete-btn").forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      button.disabled = true;
+
+      const { status, data } = await orbitFetch(`/api/user/notifications/${encodeURIComponent(button.dataset.id)}`, {
+        method: "DELETE"
+      });
+
+      if (status !== 200 || !data.ok) {
+        button.disabled = false;
+        showToast(data.error || "No se pudo eliminar la notificación");
+        return;
+      }
+
+      const item = button.closest(".notif-item");
+      item?.remove();
+
+      if (!list.querySelector(".notif-item")) {
+        list.innerHTML = '<div class="notif-empty">No tienes notificaciones</div>';
+      }
+
+      await loadNotifications();
+    });
+  });
 }
