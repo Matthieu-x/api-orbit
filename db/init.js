@@ -5,7 +5,7 @@ const { generateApiKey, todayStamp } = require("../utils/keygen");
 
 async function ensureSchema() {
   await client.execute(`
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS orbit_users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -21,7 +21,7 @@ async function ensureSchema() {
   `);
 
   await client.execute(`
-    CREATE TABLE IF NOT EXISTS sessions (
+    CREATE TABLE IF NOT EXISTS orbit_sessions (
       token TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
       created_at TEXT NOT NULL,
@@ -30,7 +30,7 @@ async function ensureSchema() {
   `);
 
   await client.execute(`
-    CREATE TABLE IF NOT EXISTS notifications (
+    CREATE TABLE IF NOT EXISTS orbit_notifications (
       id TEXT PRIMARY KEY,
       user_id TEXT,
       title TEXT NOT NULL,
@@ -43,14 +43,14 @@ async function ensureSchema() {
 
 async function ensureAdmin(email, name) {
   const existing = await client.execute({
-    sql: "SELECT id FROM users WHERE email = ?",
+    sql: "SELECT id FROM orbit_users WHERE email = ?",
     args: [email]
   });
 
   if (existing.rows.length > 0) return;
 
   await client.execute({
-    sql: `INSERT INTO users
+    sql: `INSERT INTO orbit_users
       (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
     args: [
