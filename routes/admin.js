@@ -11,12 +11,12 @@ router.get("/users", requireAdmin, async (req, res) => {
 
   const result = search
     ? await client.execute({
-        sql: `SELECT id, name, email, password, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
+        sql: `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
               FROM orbit_users WHERE name LIKE ? OR email LIKE ? ORDER BY created_at DESC`,
         args: [`%${search}%`, `%${search}%`]
       })
     : await client.execute(
-        `SELECT id, name, email, password, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
+        `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, created_at
          FROM orbit_users ORDER BY created_at DESC`
       );
 
