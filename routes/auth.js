@@ -25,7 +25,9 @@ function publicUser(user) {
     api_key: user.api_key,
     requests_remaining: user.requests_remaining,
     requests_limit: user.requests_limit,
-    is_admin: Number(user.is_admin) === 1
+    is_admin: Number(user.is_admin) === 1,
+    is_vip: Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()),
+    vip_expires_at: user.vip_expires_at || null
   };
 }
 
@@ -68,8 +70,8 @@ router.post("/register", async (req, res) => {
 
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at)
-      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at)
+      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL)`,
     args: [
       user.id,
       user.name,

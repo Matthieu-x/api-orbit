@@ -3,6 +3,18 @@ require("dotenv").config();
 const client = require("./client");
 const { generateApiKey, todayStamp } = require("../utils/keygen");
 
+const FREE_DAILY_LIMIT = 100;
+const VIP_DAILY_LIMIT = 1000;
+
+async function addColumnIfMissing(column, definition) {
+  try {
+    await client.execute(`ALTER TABLE orbit_users ADD COLUMN ${column} ${definition}`);
+  } catch (error) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes("duplicate column") && !message.includes("already exists")) throw error;
+  }
+}
+
 async function ensureSchema() {
   await client.execute(`
     CREATE TABLE IF NOT EXISTS orbit_users (
@@ -12,13 +24,17 @@ async function ensureSchema() {
       password TEXT NOT NULL,
       photo TEXT,
       api_key TEXT UNIQUE NOT NULL,
-      requests_remaining INTEGER NOT NULL DEFAULT 100,
-      requests_limit INTEGER NOT NULL DEFAULT 100,
+      requests_remaining INTEGER NOT NULL DEFAULT ${FREE_DAILY_LIMIT},
+      requests_limit INTEGER NOT NULL DEFAULT ${FREE_DAILY_LIMIT},
       requests_reset_date TEXT NOT NULL,
       is_admin INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     )
   `);
+
+  // Migración compatible con instalaciones que ya tienen orbit_users creada.
+  await addColumnIfMissing("vip", "INTEGER NOT NULL DEFAULT 0");
+  await addColumnIfMissing("vip_expires_at", "TEXT");
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS orbit_sessions (
@@ -48,9 +64,20 @@ async function ensureSchema() {
       PRIMARY KEY (user_id, notification_id)
     )
   `);
+
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS orbit_request_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      endpoint TEXT NOT NULL,
+      method TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `);
 }
 
 async function ensureAdmin(email, name) {
+  if (!email) return;
   const existing = await client.execute({
     sql: "SELECT id FROM orbit_users WHERE email = ?",
     args: [email]
@@ -60,8 +87,8 @@ async function ensureAdmin(email, name) {
 
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, NULL)`,
     args: [
       crypto.randomUUID(),
       name,
@@ -86,3 +113,5 @@ async function init() {
 }
 
 module.exports = init;
+module.exports.FREE_DAILY_LIMIT = FREE_DAILY_LIMIT;
+module.exports.VIP_DAILY_LIMIT = VIP_DAILY_LIMIT;

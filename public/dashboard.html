@@ -1,78 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Orbit API</title>
 <link rel="stylesheet" href="/css/style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-
-<div class="orbit-bg">
-  <svg viewBox="0 0 800 800">
-    <ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse>
-  </svg>
-</div>
-
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head><body>
+<div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse></svg></div>
 <div id="shellMount"></div>
-
-<div class="app-shell">
-  <div class="wrap" style="padding-top:30px">
-
-    <h1 class="section-title">Dashboard</h1>
-    <p class="muted" style="margin-bottom:22px">Resumen de tu cuenta en Orbit API.</p>
-
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="label">Solicitudes restantes hoy</div>
-        <div class="value" id="statRemaining">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Limite diario</div>
-        <div class="value" id="statLimit">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Solicitudes totales de Orbit API</div>
-        <div class="value" id="statTotal">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Tus solicitudes totales</div>
-        <div class="value" id="statUserTotal">—</div>
-      </div>
-      <div class="stat-card" style="grid-column:1/-1">
-        <div class="label">Tu API key</div>
-        <div class="value mono" id="statKey" style="font-size:15px;word-break:break-all">—</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:20px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
-        <div>
-          <h3 style="margin-bottom:5px">🏆 Top 5 usuarios</h3>
-          <p class="muted" style="font-size:14px">Usuarios con más solicitudes acumuladas.</p>
-        </div>
-      </div>
-      <div id="topUsers" class="top-users">
-        <div class="notif-empty">Cargando estadísticas...</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-bottom:6px">Explora los endpoints</h3>
-      <p class="muted" style="margin-bottom:18px;font-size:14px">Busca por categoria, prueba los parametros y envia la solicitud cuando quieras.</p>
-      <a class="btn btn-primary" href="/endpoints">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>
-        Ir a Endpoints
-      </a>
-    </div>
-
-  </div>
+<div class="app-shell"><div class="wrap" style="padding-top:30px">
+<h1 class="section-title">Dashboard</h1><p class="muted" style="margin-bottom:22px">Resumen de tu cuenta en Orbit API.</p>
+<div class="stat-grid">
+<div class="stat-card"><div class="label">Solicitudes restantes hoy</div><div class="value" id="statRemaining">—</div></div>
+<div class="stat-card"><div class="label">Límite diario</div><div class="value" id="statLimit">—</div></div>
+<div class="stat-card"><div class="label">Solicitudes totales de Orbit API</div><div class="value" id="statTotal">—</div></div>
+<div class="stat-card"><div class="label">Tus solicitudes totales</div><div class="value" id="statUserTotal">—</div></div>
+<div class="stat-card"><div class="label">Estado de cuenta</div><div class="value" id="statVip">—</div></div>
+<div class="stat-card" style="grid-column:1/-1"><div class="label">Tu API key</div><div class="value mono" id="statKey" style="font-size:15px;word-break:break-all">—</div></div>
 </div>
-
-<script src="/js/app.js"></script>
-<script src="/js/shell.js"></script>
-<script src="/js/dashboard.js"></script>
-</body>
-</html>
+<div class="card dashboard-ranking-card" style="margin-top:20px">
+<div class="dashboard-card-head"><div><h3>🏆 Top de usuarios</h3><p class="muted" style="font-size:14px">Los primeros 15 por solicitudes. Administradores, VIP y usuarios Free aparecen identificados.</p></div></div>
+<div id="topUsers" class="top-users-list"><div class="notif-empty">Cargando estadísticas...</div></div>
+<div class="ranking-pagination"><button class="btn btn-ghost" id="rankPrev" disabled>Anterior</button><span id="rankPage">1 / 1</span><button class="btn btn-ghost" id="rankNext" disabled>Siguiente</button></div>
+</div>
+<div class="card"><h3 style="margin-bottom:6px">¿Quieres VIP?</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Desbloquea la descarga de video y amplía tu límite diario.</p><a class="btn btn-primary" href="/vip">Ver planes VIP</a></div>
+<div class="card"><h3 style="margin-bottom:6px">Explora los endpoints</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Search y Download están separados para que el proyecto no parezca una caja de cables humanos.</p><a class="btn btn-primary" href="/search">Ir a Search</a> <a class="btn btn-ghost" href="/download">Ir a Download</a></div>
+</div></div>
+<script src="/js/app.js"></script><script src="/js/shell.js"></script><script src="/js/dashboard.js"></script>
+</body></html>

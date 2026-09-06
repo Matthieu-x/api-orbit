@@ -48,12 +48,24 @@ app.get("/dashboard", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "dashboard.html"));
 });
 
+app.get("/search", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "search", "index.html"));
+});
+
+app.get("/download", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "download", "index.html"));
+});
+
 app.get("/endpoints", guardDashboard, (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "endpoints.html"));
+  res.redirect("/download");
 });
 
 app.get("/perfil", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "perfil.html"));
+});
+
+app.get("/vip", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "vip.html"));
 });
 
 app.get("/admin", guardAdmin, (req, res) => {
