@@ -51,6 +51,9 @@ function fallbackAvatarUrl(name) {
 
     document.getElementById("profileAvatar").src = data.photo || fallbackAvatarUrl(user.name);
     photoUrl.value = data.photo || "";
+    orbitUser.photo = data.photo || null;
+    const topAvatarLink = document.querySelector('.topbar-right a[href="/perfil"]');
+    if (topAvatarLink) topAvatarLink.innerHTML = renderAvatar(orbitUser);
     showToast(data.photo ? "Foto actualizada" : "Foto eliminada");
   });
 
@@ -68,6 +71,9 @@ function fallbackAvatarUrl(name) {
 
     document.getElementById("profileAvatar").src = fallbackAvatarUrl(user.name);
     photoUrl.value = "";
+    orbitUser.photo = null;
+    const topAvatarLink = document.querySelector('.topbar-right a[href="/perfil"]');
+    if (topAvatarLink) topAvatarLink.innerHTML = renderAvatar(orbitUser);
     showToast("Foto eliminada");
   });
 

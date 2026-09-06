@@ -560,3 +560,16 @@ th { color: var(--muted); font-weight: 500; font-size: 12px; }
 .endpoint-page-head{display:flex;align-items:center}.endpoint-download-card{min-height:360px;display:flex;flex-direction:column}.endpoint-download-card .json-console{margin-top:auto;min-height:120px}.vip-endpoint{border-color:rgba(108,140,255,.28)}
 .row-actions{display:flex;gap:6px}.vip-btn{color:#9fb1ff}
 @media(max-width:760px){.vip-plans,.download-grid{grid-template-columns:1fr}.table-wrap{overflow-x:auto}.row-actions{flex-wrap:wrap}}
+.json-console-loading {
+  display: flex; align-items: center; gap: 10px;
+  height: 100%; min-height: 160px;
+  color: var(--muted); font-family: "Inter", sans-serif; font-size: 13px;
+}
+.orbit-spinner {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%;
+  border: 2.5px solid rgba(108,140,255,0.18);
+  border-top-color: var(--accent, #6c8cff);
+  animation: orbit-spin 0.7s linear infinite;
+}
+@keyframes orbit-spin { to { transform: rotate(360deg); } }
