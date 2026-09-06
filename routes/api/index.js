@@ -2,6 +2,7 @@ const express = require("express");
 const apiKeyAuth = require("../../middleware/apiKeyAuth");
 const searchRoutes = require("./search");
 const downloadRoutes = require("./download");
+const pinterestRoutes = require("./pinterest");
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use((req, res, next) => {
 router.use("/busqueda", apiKeyAuth, searchRoutes);
 router.use("/search", apiKeyAuth, searchRoutes);
 router.use("/download", downloadRoutes);
+router.use("/pinterest", apiKeyAuth, pinterestRoutes);
 
 module.exports = router;
