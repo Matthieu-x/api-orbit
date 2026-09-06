@@ -56,6 +56,10 @@ app.get("/download", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "download", "index.html"));
 });
 
+app.get("/ia", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "ia", "index.html"));
+});
+
 app.get("/endpoints", guardDashboard, (req, res) => {
   res.redirect("/download");
 });

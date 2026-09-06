@@ -39,23 +39,30 @@ async function initShell(activePage) {
 
   orbitUser = data.user;
 
-  const links = [
-    { key: "dashboard", href: "/dashboard", label: "Dashboard", icon: ICONS.grid },
+  const endpointLinks = [
     { key: "search", href: "/search", label: "Search", icon: ICONS.code },
     { key: "download", href: "/download", label: "Download", icon: ICONS.code },
+    { key: "ia", href: "/ia", label: "IA", icon: ICONS.code }
+  ];
+
+  const otherLinks = [
+    { key: "dashboard", href: "/dashboard", label: "Dashboard", icon: ICONS.grid },
     { key: "vip", href: "/vip", label: "VIP", icon: ICONS.shield },
     { key: "perfil", href: "/perfil", label: "Perfil", icon: ICONS.user }
   ];
 
   if (orbitUser.is_admin) {
-    links.push({ key: "admin", href: "/admin", label: "Panel de admin", icon: ICONS.shield });
+    otherLinks.push({ key: "admin", href: "/admin", label: "Panel de admin", icon: ICONS.shield });
   }
 
-  const drawerLinks = links
-    .map(
-      (l) => `<a class="drawer-link ${l.key === activePage ? "active" : ""}" href="${l.href}">${l.icon}<span>${l.label}</span></a>`
-    )
-    .join("");
+  const renderLinks = (list) =>
+    list
+      .map(
+        (l) => `<a class="drawer-link ${l.key === activePage ? "active" : ""}" href="${l.href}">${l.icon}<span>${l.label}</span></a>`
+      )
+      .join("");
+
+  const drawerLinks = `${renderLinks(endpointLinks)}<hr class="drawer-divider">${renderLinks(otherLinks)}`;
 
   document.getElementById("shellMount").innerHTML = `
     <div class="drawer-backdrop" id="drawerBackdrop"></div>

@@ -573,3 +573,5 @@ th { color: var(--muted); font-weight: 500; font-size: 12px; }
   animation: orbit-spin 0.7s linear infinite;
 }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
+.drawer-divider { border: none; border-top: 1px solid var(--border); margin: 10px 4px; }
+.drawer-divider { border: none; border-top: 1px solid var(--border); margin: 10px 4px; }

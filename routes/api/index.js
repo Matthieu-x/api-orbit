@@ -1,8 +1,10 @@
 const express = require("express");
 const apiKeyAuth = require("../../middleware/apiKeyAuth");
+const { apiKeyAuth: createApiKeyAuth } = apiKeyAuth;
 const searchRoutes = require("./search");
 const downloadRoutes = require("./download");
 const pinterestRoutes = require("./pinterest");
+const iaRoutes = require("./ia");
 
 const router = express.Router();
 
@@ -18,5 +20,6 @@ router.use("/busqueda", apiKeyAuth, searchRoutes);
 router.use("/search", apiKeyAuth, searchRoutes);
 router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
+router.use("/ia", createApiKeyAuth({ vip: true }), iaRoutes);
 
 module.exports = router;
