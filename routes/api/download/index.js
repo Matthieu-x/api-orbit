@@ -1,11 +1,12 @@
 const express = require("express");
 const apiKeyAuth = require("../../../middleware/apiKeyAuth");
+const { apiKeyAuth: createApiKeyAuth } = apiKeyAuth;
 const { downloadAudio, downloadVideo } = require("../../../services/savetube");
 
 const router = express.Router();
 
 router.use("/ytaudio", apiKeyAuth);
-router.use("/ytvideo", apiKeyAuth({ vip: true }));
+router.use("/ytvideo", createApiKeyAuth({ vip: true }));
 
 const QUALITY = ["144", "240", "360", "480", "720", "1080"];
 
