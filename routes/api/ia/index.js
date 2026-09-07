@@ -1,20 +1,16 @@
 const express = require("express");
-const { geminiQuery } = require("../../../services/gemini");
+const { askOrbitIa } = require("../../../services/orbitia");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const { text, conversationID, responseID, choiceID, promptSystem } = req.query;
+  const { text, promptSystem } = req.query;
   if (!text) return res.status(400).json({ status: false, creator: "Orbit", error: "El parámetro text es requerido" });
 
   try {
-    const result = await geminiQuery(text, {
-      conversationID,
-      responseID,
-      choiceID,
-      systemPrompt: promptSystem
-    });
-    res.json({ status: true, creator: "Orbit", access: "vip", data: result, timestamp: new Date().toISOString() });
+    const result = await askOrbitIa(text, { systemPrompt: promptSystem });
+    if (!result.status) return res.status(500).json({ status: false, creator: "Orbit", error: result.error });
+    res.json({ status: true, creator: "Orbit", access: "vip", data: { response: result.response }, timestamp: new Date().toISOString() });
   } catch (error) {
     res.status(500).json({ status: false, creator: "Orbit", error: error.message });
   }
