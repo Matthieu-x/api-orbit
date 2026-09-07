@@ -1,7 +1,14 @@
 const axios = require("axios");
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODELS = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "gemma2-9b-it"];
+const MODELS = [
+  "openai/gpt-oss-20b",
+  "qwen/qwen3-32b",
+  "qwen/qwen3.6-27b",
+  "qwen-3.8-27b",
+  "llama-3.1-8b-instant",
+  "llama-3.3-70b-versatile"
+];
 
 const KEYS = [
   process.env.GROQ_API_KEY_1 || "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",
@@ -37,7 +44,7 @@ async function askOrbitIa(text, options = {}) {
           continue;
         }
 
-        return { status: true, response: messageText.trim() };
+        return { status: true, response: messageText.trim(), model };
       } catch (error) {
         lastError = error?.response?.data?.error?.message || error.message;
       }
