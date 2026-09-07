@@ -1,12 +1,13 @@
 const express = require("express");
 const apiKeyAuth = require("../../../middleware/apiKeyAuth");
-const { apiKeyAuth: createApiKeyAuth } = apiKeyAuth;
 const { downloadAudio, downloadVideo } = require("../../../services/savetube");
+const { downloadTiktok } = require("../../../services/tiktok");
 
 const router = express.Router();
 
 router.use("/ytaudio", apiKeyAuth);
-router.use("/ytvideo", createApiKeyAuth({ vip: true }));
+router.use("/ytvideo", apiKeyAuth({ vip: true }));
+router.use("/tiktok", apiKeyAuth);
 
 const QUALITY = ["144", "240", "360", "480", "720", "1080"];
 
@@ -51,6 +52,36 @@ router.get("/ytvideo", async (req, res) => {
       creator: "Orbit",
       access: "vip",
       result: video,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, creator: "Orbit", error: error.message });
+  }
+});
+
+router.get("/tiktok", async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ status: false, creator: "Orbit", error: "El parámetro url es requerido" });
+
+  try {
+    const result = await downloadTiktok(url);
+    if (!result.status) return res.status(500).json({ status: false, creator: "Orbit", error: result.error });
+    res.json({
+      status: true,
+      creator: "Orbit",
+      access: "free",
+      result: {
+        title: result.title,
+        author: result.author,
+        duration: result.duration,
+        plays: result.plays,
+        likes: result.likes,
+        comments: result.comments,
+        cover: result.cover,
+        no_watermark: result.no_watermark,
+        no_watermark_hd: result.no_watermark_hd,
+        music: result.music
+      },
       timestamp: new Date().toISOString()
     });
   } catch (error) {
