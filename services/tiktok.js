@@ -1,29 +1,22 @@
-const axios = require("axios");
+const Tiktok = require("@tobyg74/tiktok-api-dl");
 
 async function downloadTiktok(url) {
-  const { data } = await axios.get("https://www.tikwm.com/api/", {
-    params: { url, hd: 1 }
-  });
+  const versions = ["v1", "v3", "v2"];
+  let lastError = "No se pudo descargar el video";
 
-  if (!data || data.code !== 0 || !data.data) {
-    return { status: false, error: "No se pudo procesar ese link" };
+  for (const version of versions) {
+    try {
+      const result = await Tiktok.Downloader(url.trim(), { version });
+      if (result.status === "success" && result.result) {
+        return { status: true, version, data: result.result };
+      }
+      lastError = result.message || lastError;
+    } catch (error) {
+      lastError = error.message || lastError;
+    }
   }
 
-  const v = data.data;
-
-  return {
-    status: true,
-    title: v.title,
-    author: v.author?.nickname,
-    duration: v.duration,
-    plays: v.play_count,
-    likes: v.digg_count,
-    comments: v.comment_count,
-    cover: v.cover,
-    no_watermark: v.play,
-    no_watermark_hd: v.hdplay,
-    music: v.music
-  };
+  return { status: false, error: lastError };
 }
 
 module.exports = { downloadTiktok };

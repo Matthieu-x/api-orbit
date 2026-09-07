@@ -71,18 +71,8 @@ router.get("/tiktok", async (req, res) => {
       status: true,
       creator: "Orbit",
       access: "free",
-      result: {
-        title: result.title,
-        author: result.author,
-        duration: result.duration,
-        plays: result.plays,
-        likes: result.likes,
-        comments: result.comments,
-        cover: result.cover,
-        no_watermark: result.no_watermark,
-        no_watermark_hd: result.no_watermark_hd,
-        music: result.music
-      },
+      version: result.version,
+      result: result.data,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
