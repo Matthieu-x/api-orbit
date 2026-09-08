@@ -1,1 +1,52 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tools — Orbit API</title><link rel="stylesheet" href="/css/style.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></head><body><div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="280" ry="280" transform="rotate(18 400 400)"></ellipse></svg></div><div id="shellMount"></div><div class="app-shell"><div class="wrap" style="padding-top:30px"><h1 class="section-title">Tools</h1><p class="muted" style="margin-bottom:22px">Herramientas y utilidades de Orbit.</p><div class="card"><div class="endpoint-page-head"><div><span class="method">GET</span><h3 style="margin-top:10px">Generador de QR</h3><p class="muted" style="margin-top:5px">Genera un código QR a partir de un texto o URL. Generación local, sin API externa.</p></div></div><div class="field" style="margin-top:18px"><label>text</label><input id="qrText" placeholder="Texto o URL a convertir en QR"></div><div class="field" style="margin-top:12px"><label>size (opcional, 64-1000)</label><input id="qrSize" placeholder="300"></div><div class="endpoint-row" id="qrEndpointUrl"></div><div class="copy-row"><button class="btn btn-ghost" id="qrCopyBtn">Copiar endpoint</button><button class="btn btn-primary" id="qrSendBtn">Generar QR</button></div><div class="panel-label" style="margin-top:18px">Respuesta</div><div class="json-console" id="qrResponse">Escribe un texto y genera el QR...</div></div></div></div><script src="/js/app.js"></script><script src="/js/shell.js"></script><script src="/js/tools.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools — Orbit API</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="orbit-bg">
+    <svg viewBox="0 0 800 800">
+      <ellipse class="orbit-ring" cx="400" cy="400" rx="280" ry="280" transform="rotate(18 400 400)"></ellipse>
+    </svg>
+  </div>
+  <div id="shellMount"></div>
+  <div class="app-shell">
+    <div class="wrap" style="padding-top:30px">
+      <h1 class="section-title">Tools</h1>
+      <p class="muted" style="margin-bottom:22px">Herramientas y utilidades de Orbit.</p>
+      <div class="card">
+        <div class="endpoint-page-head">
+          <div>
+            <span class="method">GET</span>
+            <h3 style="margin-top:10px">Generador de QR</h3>
+            <p class="muted" style="margin-top:5px">Genera un código QR a partir de un texto o URL. Generación local, sin API externa.</p>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px">
+          <label>text</label>
+          <input id="qrText" placeholder="Texto o URL a convertir en QR">
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>size (opcional, 64-1000)</label>
+          <input id="qrSize" placeholder="300">
+        </div>
+        <div class="endpoint-row" id="qrEndpointUrl"></div>
+        <div class="copy-row">
+          <button class="btn btn-ghost" id="qrCopyBtn">Copiar endpoint</button>
+          <button class="btn btn-primary" id="qrSendBtn">Generar QR</button>
+        </div>
+        <div class="panel-label" style="margin-top:18px">Respuesta</div>
+        <div class="json-console" id="qrResponse">Escribe un texto y genera el QR...</div>
+      </div>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+  <script src="/js/shell.js"></script>
+  <script src="/js/tools.js"></script>
+</body>
+</html>
