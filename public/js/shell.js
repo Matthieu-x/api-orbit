@@ -42,7 +42,8 @@ async function initShell(activePage) {
   const endpointLinks = [
     { key: "search", href: "/search", label: "Search", icon: ICONS.code },
     { key: "download", href: "/download", label: "Download", icon: ICONS.code },
-    { key: "ia", href: "/ia", label: "IA", icon: ICONS.code }
+    { key: "ia", href: "/ia", label: "IA", icon: ICONS.code },
+    { key: "tools", href: "/tools", label: "Tools", icon: ICONS.code }
   ];
 
   const otherLinks = [
