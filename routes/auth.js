@@ -7,7 +7,7 @@ const { generateApiKey, todayStamp } = require("../utils/keygen");
 const { verifyCaptcha } = require("../utils/captcha");
 const { createSession, destroySession, SESSION_DAYS } = require("../utils/session");
 const { requireAuth } = require("../middleware/auth");
-const { getClientIp, parseIps, stringifyIps, maxIpsFor } = require("../utils/ip");
+const { generateOrbitIp } = require("../utils/ip");
 
 const router = express.Router();
 
@@ -28,27 +28,13 @@ function publicUser(user) {
     requests_limit: user.requests_limit,
     is_admin: Number(user.is_admin) === 1,
     is_vip: Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()),
-    vip_expires_at: user.vip_expires_at || null
+    vip_expires_at: user.vip_expires_at || null,
+    orbit_ip: user.orbit_ip_token || null
   };
 }
 
-// Solo registra la IP de login si el usuario todavia no tiene ninguna IP
-// guardada (primer uso). Si ya hay una IP registrada (por ejemplo la del
-// bot/VPS que usa la apikey), el login normal ya NO la pisa ni la borra.
-// Cambiar la IP registrada ahora es una accion explicita del usuario via
-// /ip-config (reset/add), no un efecto secundario de iniciar sesion.
-async function updateLoginIp(user, req) {
-  const existing = parseIps(user.allowed_ips);
-  if (existing.length > 0) return;
-
-  const ip = getClientIp(req);
-  if (!ip) return;
-
-  const max = maxIpsFor(user);
-  const json = stringifyIps([ip], max);
-
-  await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, user.id] });
-}
+// Orbit IP es una credencial secundaria con formato de IPv4 privada.
+// No depende de la IP real del dispositivo ni cambia al iniciar sesion.
 
 router.post("/register", async (req, res) => {
   const { name, email, password, captchaToken } = req.body;
@@ -84,15 +70,14 @@ router.post("/register", async (req, res) => {
     requests_remaining: 100,
     requests_limit: 100,
     requests_reset_date: todayStamp(),
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    orbit_ip_token: generateOrbitIp()
   };
-
-  const initialIp = getClientIp(req);
 
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips)
-      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL, ?)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token)
+      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?)`,
     args: [
       user.id,
       user.name,
@@ -103,7 +88,7 @@ router.post("/register", async (req, res) => {
       user.requests_limit,
       user.requests_reset_date,
       user.created_at,
-      initialIp ? JSON.stringify([initialIp]) : null
+      user.orbit_ip_token
     ]
   });
 
@@ -130,7 +115,6 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ ok: false, error: "Correo o contrasena incorrectos" });
   }
 
-  await updateLoginIp(user, req);
 
   const session = await createSession(user.id);
   res.cookie("orbit_session", session.token, COOKIE_OPTS);
