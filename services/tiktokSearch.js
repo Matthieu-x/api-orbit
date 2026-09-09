@@ -42,24 +42,37 @@ function mapVideo(v) {
 
 /**
  * Busca videos en TikTok usando @tobyg74/tiktok-api-dl (misma librería
- * que ya usa services/tiktok.js para descargas), que sí resuelve la
- * firma anti-bot de TikTok en vez de simularla al azar.
+ * que ya usa services/tiktok.js para descargas).
+ *
+ * Devuelve { videos, debug }. `debug` solo se llena cuando la búsqueda
+ * termina vacía, con el motivo real (status/mensaje de la librería o la
+ * excepción), para no volver a adivinar a ciegas si vuelve a fallar.
  */
 async function searchTikTok(query, limit = 10) {
   const videos = [];
   let page = 1;
   const maxPages = 3;
+  let debug = null;
 
   while (videos.length < limit && page <= maxPages) {
     let result;
     try {
       result = await Tiktok.Search(query, { type: "video", page });
     } catch (error) {
-      console.error(`Error buscando en TikTok (página ${page}):`, error.message);
+      debug = `Excepción en página ${page}: ${error.message}`;
+      console.error(`[tiktokSearch] ${debug}`);
       break;
     }
 
-    if (result?.status !== "success" || !Array.isArray(result.result) || result.result.length === 0) {
+    console.log(`[tiktokSearch] página ${page} -> status=${result?.status} items=${Array.isArray(result?.result) ? result.result.length : "n/a"} message=${result?.message || "-"}`);
+
+    if (result?.status !== "success") {
+      debug = `La librería respondió status="${result?.status}"${result?.message ? ` con mensaje: ${result.message}` : " sin mensaje de error"}.`;
+      break;
+    }
+
+    if (!Array.isArray(result.result) || result.result.length === 0) {
+      debug = `La librería respondió status="success" pero sin videos en la página ${page} (posible bloqueo silencioso o falta de cookie).`;
       break;
     }
 
@@ -68,11 +81,10 @@ async function searchTikTok(query, limit = 10) {
       if (videos.length >= limit) break;
     }
 
-    if (result.result.length < 1) break;
     page += 1;
   }
 
-  return videos.slice(0, limit);
+  return { videos: videos.slice(0, limit), debug: videos.length === 0 ? debug : null };
 }
 
 module.exports = {
