@@ -21,7 +21,7 @@ function animeUpdate(){document.getElementById("animeEndpoint").textContent=anim
     btn.disabled=true;
     out.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando imagen...</div>';
     try{
-      const r=await fetch(animeUrl());
+      const r=await fetch(animeUrl(),{headers:{"x-orbit-ip":animeUser.orbit_ip||""}});
       const data=await r.json();
       if(!data.status){
         out.textContent=JSON.stringify(data,null,2);
