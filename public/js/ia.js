@@ -21,7 +21,7 @@ function geminiUpdate(){document.getElementById("geminiEndpointUrl").textContent
     btn.disabled=true;
     out.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Consultando a Gemini...</div>';
     try{
-      const r=await fetch(geminiUrl());
+      const r=await fetch(geminiUrl(),{headers:{"x-orbit-ip":iaUser.orbit_ip||""}});
       out.textContent=JSON.stringify(await r.json(),null,2);
     }catch(e){
       out.textContent="No se pudo contactar el endpoint";
