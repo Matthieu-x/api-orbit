@@ -2,7 +2,7 @@ const express = require("express");
 
 const client = require("../db/client");
 const { requireAuth, requireVip } = require("../middleware/auth");
-const { getClientIp, parseIps, stringifyIps, maxIpsFor, isValidIp } = require("../utils/ip");
+const { generateOrbitIp } = require("../utils/ip");
 
 const router = express.Router();
 const FREE_DAILY_LIMIT = 100;
@@ -101,47 +101,19 @@ router.get("/vip", requireAuth, (req, res) => {
 router.get("/ip-config", requireAuth, (req, res) => {
   res.json({
     ok: true,
-    ips: parseIps(req.user.allowed_ips),
-    current_ip: getClientIp(req),
-    max: maxIpsFor(req.user)
+    orbit_ip: req.user.orbit_ip_token || null
   });
 });
 
 router.post("/ip-config/reset", requireAuth, async (req, res) => {
-  const ip = getClientIp(req);
-  if (!ip) return res.status(400).json({ ok: false, error: "No se pudo detectar tu IP actual" });
+  const orbitIp = generateOrbitIp();
 
-  const json = stringifyIps([ip], maxIpsFor(req.user));
-  await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, req.user.id] });
-  res.json({ ok: true, ips: parseIps(json) });
-});
+  await client.execute({
+    sql: "UPDATE orbit_users SET orbit_ip_token = ? WHERE id = ?",
+    args: [orbitIp, req.user.id]
+  });
 
-router.post("/ip-config/add", requireVip, async (req, res) => {
-  const ip = String(req.body?.ip || "").trim();
-  if (!isValidIp(ip)) return res.status(400).json({ ok: false, error: "Ingresa una IP valida (IPv4 o IPv6)" });
-
-  const max = maxIpsFor(req.user);
-  const current = parseIps(req.user.allowed_ips);
-
-  if (current.includes(ip)) return res.status(409).json({ ok: false, error: "Esa IP ya esta registrada" });
-  if (current.length >= max) return res.status(400).json({ ok: false, error: `Solo puedes tener hasta ${max} IPs registradas` });
-
-  const json = stringifyIps([...current, ip], max);
-  await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, req.user.id] });
-  res.json({ ok: true, ips: parseIps(json) });
-});
-
-router.delete("/ip-config/:ip", requireVip, async (req, res) => {
-  const target = String(req.params.ip || "").trim();
-  const current = parseIps(req.user.allowed_ips);
-
-  if (current.length <= 1) {
-    return res.status(400).json({ ok: false, error: "Debes tener al menos una IP registrada. Usa restablecer en su lugar." });
-  }
-
-  const json = stringifyIps(current.filter((ip) => ip !== target));
-  await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, req.user.id] });
-  res.json({ ok: true, ips: parseIps(json) });
+  res.json({ ok: true, orbit_ip: orbitIp });
 });
 
 module.exports = router;
