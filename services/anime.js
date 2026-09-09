@@ -20,7 +20,7 @@ async function getRandomAnimeImage(type) {
     const { data } = await axios.get(`https://nekos.best/api/v2/${category}`, {
       timeout: 15000,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; OrbitAPI/1.0; +https://orbit.api)",
+        "User-Agent": "OrbitAPI/1.0 (https://orbit-api.onrender.com)",
         "Accept": "application/json"
       }
     });
