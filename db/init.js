@@ -35,6 +35,7 @@ async function ensureSchema() {
   // Migración compatible con instalaciones que ya tienen orbit_users creada.
   await addColumnIfMissing("vip", "INTEGER NOT NULL DEFAULT 0");
   await addColumnIfMissing("vip_expires_at", "TEXT");
+  await addColumnIfMissing("allowed_ips", "TEXT");
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS orbit_sessions (
