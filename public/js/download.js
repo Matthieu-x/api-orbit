@@ -80,7 +80,7 @@ async function run(type) {
   out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>${labels[type]}</div>`;
 
   try {
-    const r = await fetch(makeUrl(type));
+    const r = await fetch(makeUrl(type), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
     const text = await r.text();
     try {
       out.textContent = JSON.stringify(JSON.parse(text), null, 2);
@@ -103,7 +103,7 @@ async function runAptoideSearch() {
   out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando en Aptoide...</div>`;
 
   try {
-    const r = await fetch(makeUrl("aptoide"));
+    const r = await fetch(makeUrl("aptoide"), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
     const data = await r.json();
     out.textContent = JSON.stringify(data, null, 2);
   } catch {
@@ -120,7 +120,7 @@ async function runFdroidSearch() {
   out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando en F-Droid...</div>`;
 
   try {
-    const r = await fetch(makeUrl("fdroid"));
+    const r = await fetch(makeUrl("fdroid"), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
     const data = await r.json();
     out.textContent = JSON.stringify(data, null, 2);
   } catch {
