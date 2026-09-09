@@ -6,6 +6,7 @@ const downloadRoutes = require("./download");
 const pinterestRoutes = require("./pinterest");
 const iaRoutes = require("./ia");
 const toolsRoutes = require("./tools");
+const animeRoutes = require("./anime");
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
 router.use("/ia", createApiKeyAuth({ vip: true }), iaRoutes);
 router.use("/tools", toolsRoutes);
+router.use("/anime", createApiKeyAuth({ vip: true }), animeRoutes);
 
 module.exports = router;
