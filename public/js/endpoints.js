@@ -5,6 +5,16 @@ const CATEGORIES = [
     description: "Herramientas para realizar búsquedas.",
     endpoints: [
       {
+        id: "tiktok-search",
+        name: "TikTok Search",
+        method: "GET",
+        path: "/api/v1/tiktok-search",
+        param: "query",
+        placeholder: "Ej: recetas fáciles",
+        description: "Busca videos de TikTok y devuelve sus datos principales.",
+        pinned: true
+      },
+      {
         id: "youtube-search",
         name: "YouTube Search",
         method: "GET",
