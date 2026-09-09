@@ -31,4 +31,19 @@ async function requireAdmin(req, res, next) {
   });
 }
 
-module.exports = { requireAuth, requireAdmin };
+function isActiveVip(user) {
+  if (Number(user.is_admin) === 1) return true;
+  if (Number(user.vip) !== 1) return false;
+  return !user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now();
+}
+
+async function requireVip(req, res, next) {
+  requireAuth(req, res, () => {
+    if (!isActiveVip(req.user)) {
+      return res.status(403).json({ ok: false, error: "Esta seccion es exclusiva para VIP y administradores" });
+    }
+    next();
+  });
+}
+
+module.exports = { requireAuth, requireAdmin, requireVip, isActiveVip };
