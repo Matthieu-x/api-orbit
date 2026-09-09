@@ -32,16 +32,20 @@ function publicUser(user) {
   };
 }
 
-// Guarda la IP actual como la principal (posicion 0), sin perder las IPs
-// extra que un VIP/admin haya agregado manualmente desde /ip-config.
+// Solo registra la IP de login si el usuario todavia no tiene ninguna IP
+// guardada (primer uso). Si ya hay una IP registrada (por ejemplo la del
+// bot/VPS que usa la apikey), el login normal ya NO la pisa ni la borra.
+// Cambiar la IP registrada ahora es una accion explicita del usuario via
+// /ip-config (reset/add), no un efecto secundario de iniciar sesion.
 async function updateLoginIp(user, req) {
+  const existing = parseIps(user.allowed_ips);
+  if (existing.length > 0) return;
+
   const ip = getClientIp(req);
   if (!ip) return;
 
   const max = maxIpsFor(user);
-  const existing = parseIps(user.allowed_ips).filter((x) => x !== ip);
-  const list = [ip, ...existing].slice(0, max);
-  const json = stringifyIps(list, max);
+  const json = stringifyIps([ip], max);
 
   await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, user.id] });
 }
