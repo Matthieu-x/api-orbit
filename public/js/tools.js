@@ -8,12 +8,6 @@ function qrUrl(){
 }
 function qrUpdate(){document.getElementById("qrEndpointUrl").textContent=qrUrl();}
 
-function animeUrl(){
-  const type=document.getElementById("animeType").value;
-  return `${location.origin}/api/v1/tools/anime?apikey=${encodeURIComponent(toolsUser.api_key)}&type=${encodeURIComponent(type)}`;
-}
-function animeUpdate(){document.getElementById("animeEndpointUrl").textContent=animeUrl();}
-
 (async()=>{
   toolsUser=await initShell("tools");
   if(!toolsUser)return;
@@ -45,33 +39,6 @@ function animeUpdate(){document.getElementById("animeEndpointUrl").textContent=a
       out.textContent="No se pudo contactar el endpoint";
     }finally{
       btn.disabled=false;
-    }
-  };
-
-  const animeSelect=document.getElementById("animeType");
-  animeUpdate();
-  animeSelect.addEventListener("change",animeUpdate);
-  document.getElementById("animeCopyBtn").onclick=()=>copyToClipboard(animeUrl(),"Endpoint");
-
-  const animeOut=document.getElementById("animeResponse");
-  const animeBtn=document.getElementById("animeSendBtn");
-
-  animeBtn.onclick=async()=>{
-    animeBtn.disabled=true;
-    animeOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando imagen...</div>';
-    try{
-      const r=await fetch(animeUrl());
-      const data=await r.json();
-      if(!data.status){
-        animeOut.textContent=JSON.stringify(data,null,2);
-      } else {
-        animeOut.innerHTML=`<img src="${data.result}" alt="Imagen anime" style="max-width:260px;width:100%;border-radius:12px;display:block;margin:0 auto 14px">`+
-          `<pre style="white-space:pre-wrap;word-break:break-all;margin:0">${JSON.stringify({status:data.status,creator:data.creator,type:data.type,result:data.result},null,2)}</pre>`;
-      }
-    }catch(e){
-      animeOut.textContent="No se pudo contactar el endpoint";
-    }finally{
-      animeBtn.disabled=false;
     }
   };
 })();
