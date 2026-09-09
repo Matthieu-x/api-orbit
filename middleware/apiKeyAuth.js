@@ -1,5 +1,6 @@
 const client = require("../db/client");
 const { todayStamp } = require("../utils/keygen");
+const { getClientIp, parseIps, stringifyIps, maxIpsFor } = require("../utils/ip");
 
 async function ensureRequestLogTable() {
   await client.execute(`
@@ -51,6 +52,27 @@ function apiKeyAuth(options = {}) {
         user.vip_expires_at = null;
         user.requests_limit = 100;
         user.requests_remaining = Math.min(Number(user.requests_remaining), 100);
+      }
+
+      const requestIp = getClientIp(req);
+      const allowedIps = parseIps(user.allowed_ips);
+
+      if (allowedIps.length === 0) {
+        // Primer uso de esta key: esta IP queda registrada como la dueña.
+        if (requestIp) {
+          const json = stringifyIps([requestIp], maxIpsFor(user));
+          await client.execute({
+            sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?",
+            args: [json, user.id]
+          });
+          user.allowed_ips = json;
+        }
+      } else if (requestIp && !allowedIps.includes(requestIp)) {
+        return res.status(403).json({
+          ok: false,
+          ip_blocked: true,
+          error: "Esta API key esta restringida a otra IP. Si eres el dueno, vuelve a iniciar sesion o restablece tu IP desde el dashboard."
+        });
       }
 
       if (options.vip && !isVipActive(user)) {
