@@ -1,8 +1,6 @@
 const express = require("express");
 const apiKeyAuth = require("../../../middleware/apiKeyAuth");
-const { apiKeyAuth: createApiKeyAuth } = apiKeyAuth;
 const { generateQrBuffer, generateQrDataUrl } = require("../../../services/qr");
-const { getRandomAnimeImage, isValidType, VALID_TYPES } = require("../../../services/anime");
 
 const router = express.Router();
 
@@ -12,9 +10,6 @@ const router = express.Router();
 
 // Para endpoints FREE (solo requiere API key válida)
 router.use("/qr", apiKeyAuth);
-
-// Para endpoints VIP (requiere API key VIP activa)
-router.use("/anime", createApiKeyAuth({ vip: true }));
 
 // ─────────────────────────────────────────────
 // QR CODE (generación 100% local, sin API externa)
@@ -65,40 +60,6 @@ router.get("/qr", async (req, res) => {
       status: false,
       creator: "Orbit",
       error: error.message
-    });
-  }
-});
-
-// ─────────────────────────────────────────────
-// ANIME (imagen random waifu/neko vía waifu.pics — API externa pública, solo SFW)
-// ─────────────────────────────────────────────
-
-router.get("/anime", async (req, res) => {
-  const type = String(req.query.type || "waifu").trim().toLowerCase();
-
-  if (!isValidType(type)) {
-    return res.status(400).json({
-      status: false,
-      creator: "Orbit",
-      error: `Categoría inválida. Usa una de: ${VALID_TYPES.join(", ")}`
-    });
-  }
-
-  try {
-    const url = await getRandomAnimeImage(type);
-    return res.json({
-      status: true,
-      creator: "Orbit",
-      access: "vip",
-      type,
-      result: url
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: false,
-      creator: "Orbit",
-      error: "No se pudo obtener la imagen, intenta de nuevo",
-      detail: error.message
     });
   }
 });
