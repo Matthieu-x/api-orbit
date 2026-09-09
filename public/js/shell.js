@@ -54,9 +54,7 @@ async function initShell(activePage) {
     { key: "perfil", href: "/perfil", label: "Perfil", icon: ICONS.user }
   ];
 
-  if (orbitUser.is_admin || orbitUser.is_vip) {
-    otherLinks.push({ key: "ip-config", href: "/ip-config", label: "Configurar IP", icon: ICONS.lock });
-  }
+  otherLinks.push({ key: "ip-config", href: "/ip-config", label: "Configurar IP", icon: ICONS.lock });
 
   if (orbitUser.is_admin) {
     otherLinks.push({ key: "admin", href: "/admin", label: "Panel de admin", icon: ICONS.shield });
