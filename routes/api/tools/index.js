@@ -1,5 +1,6 @@
 const express = require("express");
 const { generateQrBuffer, generateQrDataUrl } = require("../../../services/qr");
+const { getRandomAnimeImage, isValidType, VALID_TYPES } = require("../../../services/anime");
 
 const router = express.Router();
 
@@ -52,6 +53,38 @@ router.get("/qr", async (req, res) => {
       status: false,
       creator: "Orbit",
       error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// ANIME (imagen random waifu/neko vía waifu.pics — API externa pública, solo SFW)
+// ─────────────────────────────────────────────
+
+router.get("/anime", async (req, res) => {
+  const type = String(req.query.type || "waifu").trim().toLowerCase();
+
+  if (!isValidType(type)) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: `Categoría inválida. Usa una de: ${VALID_TYPES.join(", ")}`
+    });
+  }
+
+  try {
+    const url = await getRandomAnimeImage(type);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      type,
+      result: url
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      creator: "Orbit",
+      error: "No se pudo obtener la imagen, intenta de nuevo"
     });
   }
 });
