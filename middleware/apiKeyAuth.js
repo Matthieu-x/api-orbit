@@ -1,6 +1,5 @@
 const client = require("../db/client");
 const { todayStamp } = require("../utils/keygen");
-const { getClientIp, parseIps, stringifyIps, maxIpsFor } = require("../utils/ip");
 
 async function ensureRequestLogTable() {
   await client.execute(`
@@ -24,9 +23,18 @@ function isVipActive(user) {
 function apiKeyAuth(options = {}) {
   return async function apiKeyMiddleware(req, res, next) {
     const apiKey = req.query.apikey || req.headers["x-api-key"];
+    const orbitIp = req.headers["x-orbit-ip"];
 
     if (!apiKey) {
       return res.status(401).json({ ok: false, error: "Falta el parametro apikey" });
+    }
+
+    if (!orbitIp) {
+      return res.status(401).json({
+        ok: false,
+        orbit_ip_required: true,
+        error: "Falta el token x-orbit-ip"
+      });
     }
 
     try {
@@ -54,24 +62,24 @@ function apiKeyAuth(options = {}) {
         user.requests_remaining = Math.min(Number(user.requests_remaining), 100);
       }
 
-      const requestIp = getClientIp(req);
-      const allowedIps = parseIps(user.allowed_ips);
+      // x-orbit-ip es una segunda credencial. NO se compara con la IP real
+      // del dispositivo, proxy, Render, VPS, Wi-Fi, datos móviles, etc.
+      const expectedOrbitIp = String(user.orbit_ip_token || "").trim();
+      const receivedOrbitIp = String(orbitIp).trim();
 
-      if (allowedIps.length === 0) {
-        // Primer uso de esta key: esta IP queda registrada como la dueña.
-        if (requestIp) {
-          const json = stringifyIps([requestIp], maxIpsFor(user));
-          await client.execute({
-            sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?",
-            args: [json, user.id]
-          });
-          user.allowed_ips = json;
-        }
-      } else if (requestIp && !allowedIps.includes(requestIp)) {
+      if (!expectedOrbitIp) {
+        return res.status(403).json({
+          ok: false,
+          orbit_ip_invalid: true,
+          error: "Esta API key no tiene un token Orbit IP configurado. Regenera tu Orbit IP desde el dashboard."
+        });
+      }
+
+      if (receivedOrbitIp !== expectedOrbitIp) {
         return res.status(403).json({
           ok: false,
           ip_blocked: true,
-          error: "Esta API key esta restringida a otra IP. Si eres el dueno, vuelve a iniciar sesion o restablece tu IP desde el dashboard."
+          error: "El token x-orbit-ip no coincide con esta API key."
         });
       }
 
@@ -115,7 +123,6 @@ function apiKeyAuth(options = {}) {
           args: [user.id, req.path, req.method, new Date().toISOString()]
         });
       } catch (logError) {
-        // El historial nunca debe tumbar un endpoint que ya fue autorizado.
         console.error("Error registrando solicitud de API:", logError);
       }
 
