@@ -10,7 +10,8 @@ const ICONS = {
   user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>',
   shield: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg>',
   logout: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 21H5a1 1 0 01-1-1V4a1 1 0 011-1h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>',
-  code: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>'
+  code: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>',
+  lock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>'
 };
 
 function timeAgo(iso) {
@@ -52,6 +53,10 @@ async function initShell(activePage) {
     { key: "vip", href: "/vip", label: "VIP", icon: ICONS.shield },
     { key: "perfil", href: "/perfil", label: "Perfil", icon: ICONS.user }
   ];
+
+  if (orbitUser.is_admin || orbitUser.is_vip) {
+    otherLinks.push({ key: "ip-config", href: "/ip-config", label: "Configurar IP", icon: ICONS.lock });
+  }
 
   if (orbitUser.is_admin) {
     otherLinks.push({ key: "admin", href: "/admin", label: "Panel de admin", icon: ICONS.shield });
