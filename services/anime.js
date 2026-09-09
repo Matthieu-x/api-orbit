@@ -15,15 +15,27 @@ function isValidType(type) {
 async function getRandomAnimeImage(type) {
   const category = String(type || "waifu").toLowerCase();
 
-  const { data } = await axios.get(`https://api.waifu.pics/sfw/${category}`, {
-    timeout: 10000
-  });
+  try {
+    const { data } = await axios.get(`https://api.waifu.pics/sfw/${category}`, {
+      timeout: 15000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; OrbitAPI/1.0; +https://orbit.api)",
+        "Accept": "application/json"
+      }
+    });
 
-  if (!data || !data.url) {
-    throw new Error("No se pudo obtener una imagen en este momento");
+    if (!data || !data.url) {
+      throw new Error("Respuesta sin campo 'url'");
+    }
+
+    return data.url;
+  } catch (error) {
+    const detail = error.response
+      ? `HTTP ${error.response.status} - ${JSON.stringify(error.response.data)}`
+      : error.message;
+    console.error(`[anime.js] Error obteniendo imagen (${category}): ${detail}`);
+    throw new Error(detail);
   }
-
-  return data.url;
 }
 
 module.exports = { getRandomAnimeImage, isValidType, VALID_TYPES };
