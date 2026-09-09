@@ -1,28 +1,29 @@
-const MAX_IPS_FREE = 1;
-const MAX_IPS_VIP = 5;
+const crypto = require("crypto");
 
+// Orbit IP ya NO representa la IP publica del cliente.
+// Es una credencial secundaria con formato de IPv4 para darle estilo visual.
+function generateOrbitIp() {
+  // Rango privado 10.0.0.0/8: parece una IP, pero no identifica al usuario en Internet.
+  return `10.${crypto.randomInt(1, 255)}.${crypto.randomInt(0, 256)}.${crypto.randomInt(1, 255)}`;
+}
+
+function isValidOrbitIp(value) {
+  const ip = String(value || "").trim();
+  const match = ip.match(/^10\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (!match) return false;
+  return match.slice(1).every(part => Number(part) >= 0 && Number(part) <= 255);
+}
+
+// Compatibilidad con instalaciones/codigo antiguo.
 function normalizeIp(ip) {
   if (!ip) return "";
   return String(ip).trim().replace(/^::ffff:/, "");
 }
 
-// Render (y la mayoria de hosts) ponen la app detras de un proxy, por eso
-// se usa x-forwarded-for primero y se cae a la conexion directa si no existe.
-// x-orbit-ip es un header propio: Render NO lo toca (solo reescribe
-// x-forwarded-for), asi que si el cliente lo manda, se respeta tal cual.
+// Se conserva por compatibilidad, pero YA NO se usa para autenticar la API.
 function getClientIp(req) {
-  const custom = req.headers["x-orbit-ip"];
-  if (custom) {
-    const ip = normalizeIp(String(custom).split(",")[0]);
-    if (ip) return ip;
-  }
-
   const forwarded = req.headers["x-forwarded-for"];
-  if (forwarded) {
-    const first = String(forwarded).split(",")[0];
-    const ip = normalizeIp(first);
-    if (ip) return ip;
-  }
+  if (forwarded) return normalizeIp(String(forwarded).split(",")[0]);
   return normalizeIp(req.socket?.remoteAddress || req.ip || "");
 }
 
@@ -46,10 +47,10 @@ function isPrivileged(user) {
 }
 
 function maxIpsFor(user) {
-  return isPrivileged(user) ? MAX_IPS_VIP : MAX_IPS_FREE;
+  return isPrivileged(user) ? 5 : 1;
 }
 
-// Formato basico IPv4 / IPv6, suficiente para validar lo que el usuario escribe.
+// Compatibilidad con el antiguo dashboard.
 function isValidIp(ip) {
   const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/;
   const ipv6 = /^[0-9a-fA-F:]+$/;
@@ -58,8 +59,9 @@ function isValidIp(ip) {
 }
 
 module.exports = {
-  MAX_IPS_FREE,
-  MAX_IPS_VIP,
+  generateOrbitIp,
+  isValidOrbitIp,
+  normalizeIp,
   getClientIp,
   parseIps,
   stringifyIps,
