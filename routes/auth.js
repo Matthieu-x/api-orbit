@@ -7,6 +7,7 @@ const { generateApiKey, todayStamp } = require("../utils/keygen");
 const { verifyCaptcha } = require("../utils/captcha");
 const { createSession, destroySession, SESSION_DAYS } = require("../utils/session");
 const { requireAuth } = require("../middleware/auth");
+const { getClientIp, parseIps, stringifyIps, maxIpsFor } = require("../utils/ip");
 
 const router = express.Router();
 
@@ -29,6 +30,20 @@ function publicUser(user) {
     is_vip: Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()),
     vip_expires_at: user.vip_expires_at || null
   };
+}
+
+// Guarda la IP actual como la principal (posicion 0), sin perder las IPs
+// extra que un VIP/admin haya agregado manualmente desde /ip-config.
+async function updateLoginIp(user, req) {
+  const ip = getClientIp(req);
+  if (!ip) return;
+
+  const max = maxIpsFor(user);
+  const existing = parseIps(user.allowed_ips).filter((x) => x !== ip);
+  const list = [ip, ...existing].slice(0, max);
+  const json = stringifyIps(list, max);
+
+  await client.execute({ sql: "UPDATE orbit_users SET allowed_ips = ? WHERE id = ?", args: [json, user.id] });
 }
 
 router.post("/register", async (req, res) => {
@@ -68,10 +83,12 @@ router.post("/register", async (req, res) => {
     created_at: new Date().toISOString()
   };
 
+  const initialIp = getClientIp(req);
+
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at)
-      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips)
+      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL, ?)`,
     args: [
       user.id,
       user.name,
@@ -81,7 +98,8 @@ router.post("/register", async (req, res) => {
       user.requests_remaining,
       user.requests_limit,
       user.requests_reset_date,
-      user.created_at
+      user.created_at,
+      initialIp ? JSON.stringify([initialIp]) : null
     ]
   });
 
@@ -107,6 +125,8 @@ router.post("/login", async (req, res) => {
   if (!user || user.password !== password) {
     return res.status(401).json({ ok: false, error: "Correo o contrasena incorrectos" });
   }
+
+  await updateLoginIp(user, req);
 
   const session = await createSession(user.id);
   res.cookie("orbit_session", session.token, COOKIE_OPTS);
