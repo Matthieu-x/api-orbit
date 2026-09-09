@@ -84,7 +84,8 @@ router.get("/anime", async (req, res) => {
     return res.status(500).json({
       status: false,
       creator: "Orbit",
-      error: "No se pudo obtener la imagen, intenta de nuevo"
+      error: "No se pudo obtener la imagen, intenta de nuevo",
+      detail: error.message
     });
   }
 });
