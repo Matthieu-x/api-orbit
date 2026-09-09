@@ -98,7 +98,7 @@ router.get("/vip", requireAuth, (req, res) => {
   ]});
 });
 
-router.get("/ip-config", requireVip, (req, res) => {
+router.get("/ip-config", requireAuth, (req, res) => {
   res.json({
     ok: true,
     ips: parseIps(req.user.allowed_ips),
@@ -107,7 +107,7 @@ router.get("/ip-config", requireVip, (req, res) => {
   });
 });
 
-router.post("/ip-config/reset", requireVip, async (req, res) => {
+router.post("/ip-config/reset", requireAuth, async (req, res) => {
   const ip = getClientIp(req);
   if (!ip) return res.status(400).json({ ok: false, error: "No se pudo detectar tu IP actual" });
 
