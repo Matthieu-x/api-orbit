@@ -182,7 +182,7 @@ function renderPlayground() {
     jsonConsole.textContent = "Enviando solicitud...";
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: { "x-orbit-ip": orbitUser.orbit_ip || "" } });
       const json = await res.json().catch(() => ({ ok: false, error: "Respuesta inválida" }));
       jsonConsole.textContent = JSON.stringify(json, null, 2);
       await refreshStats();
