@@ -11,8 +11,10 @@ router.get("/", async (req, res) => {
   if (query.length > 100) return res.status(400).json({ status: false, creator: "Orbit", error: "El parámetro query es demasiado largo" });
 
   try {
-    const results = await searchTikTok(query, limit);
-    res.json({ status: true, creator: "Orbit", query, total: results.length, results, timestamp: new Date().toISOString() });
+    const { videos, debug } = await searchTikTok(query, limit);
+    const payload = { status: true, creator: "Orbit", query, total: videos.length, results: videos, timestamp: new Date().toISOString() };
+    if (debug) payload.debug = debug;
+    res.json(payload);
   } catch (error) {
     res.status(500).json({ status: false, creator: "Orbit", error: error.message });
   }
