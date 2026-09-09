@@ -59,6 +59,7 @@
       <a href="#pinterest">Pinterest</a>
       <a href="#ia">IA</a>
       <a href="#tools">Tools</a>
+      <a href="#ip">Seguridad por IP</a>
       <a href="#errores">Errores</a>
     </div></aside>
 
@@ -116,14 +117,42 @@ GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper&amp;type=image</div>
         <p><strong>text</strong> o <strong>url</strong> son necesarios. El texto admite hasta 2000 caracteres. <strong>format</strong> puede ser image, json o base64.</p>
       </article>
 
+      <article class="card doc-section" id="ip">
+        <h2>Seguridad por IP</h2>
+        <p>Cada API key queda ligada a la IP desde la que se usa. Esto evita que alguien que consiga tu key la use desde otro lugar: si la IP no coincide, la solicitud se bloquea automáticamente.</p>
+
+        <h3>Cómo se registra tu IP</h3>
+        <ul>
+          <li>La primera vez que usas tu API key (o la próxima vez que inicias sesión), tu IP actual queda registrada como la dueña de la cuenta.</li>
+          <li>Cuentas <strong>Free</strong> pueden tener 1 IP registrada, que se actualiza sola en cada login.</li>
+          <li>Cuentas <strong>VIP</strong> y <strong>admin</strong> pueden registrar hasta 5 IPs a la vez (por ejemplo, tu computadora y el servidor donde corre tu bot).</li>
+        </ul>
+
+        <h3>Si usas tu key en un bot</h3>
+        <p>La IP que se registra es la del servidor donde corre el bot, no la de cada persona que le escribe. Todos los usuarios de tu bot siguen funcionando igual, sin importar desde dónde te escriban.</p>
+
+        <h3>Página "Configurar IP"</h3>
+        <p>Desde el dashboard, en <strong>Configurar IP</strong>, puedes ver tu IP actual y restablecerla si cambiaste de red. Las cuentas VIP y admin además pueden agregar o quitar IPs manualmente.</p>
+        <img src="https://files.catbox.moe/n24qak.jpg" alt="Página Configurar IP en el dashboard de Orbit API" style="width:100%;border-radius:12px;border:1px solid var(--border);margin-top:10px">
+
+        <h3>Respuesta cuando una IP no coincide</h3>
+        <div class="codebox">HTTP 403
+{
+  "ok": false,
+  "ip_blocked": true,
+  "error": "Esta API key esta restringida a otra IP. Si eres el dueno, vuelve a iniciar sesion o restablece tu IP desde el dashboard."
+}</div>
+      </article>
+
       <article class="card doc-section" id="errores">
         <h2>Respuestas y errores</h2>
         <table class="endpoint-table"><thead><tr><th>Código</th><th>Significado</th></tr></thead><tbody>
           <tr><td>200</td><td>Solicitud procesada correctamente.</td></tr>
           <tr><td>400</td><td>Faltan parámetros o son inválidos.</td></tr>
           <tr><td>401</td><td>API key ausente o inválida.</td></tr>
-          <tr><td>403</td><td>El endpoint requiere acceso VIP.</td></tr>
+          <tr><td>403</td><td>El endpoint requiere acceso VIP, o la solicitud viene de una IP distinta a la registrada (<span class="badge">ip_blocked</span>).</td></tr>
           <tr><td>404</td><td>Recurso o ruta no encontrada.</td></tr>
+          <tr><td>429</td><td>Sin solicitudes disponibles por hoy.</td></tr>
           <tr><td>500</td><td>Error interno al procesar la solicitud.</td></tr>
         </tbody></table>
       </article>
