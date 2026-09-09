@@ -15,6 +15,10 @@ const apiRoutes = require("./routes/api");
 const app = express();
 const PUBLIC_DIR = path.join(__dirname, "public");
 
+// Necesario para que req.headers['x-forwarded-for'] traiga la IP real
+// del visitante y no la del proxy de Render.
+app.set("trust proxy", true);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -24,7 +28,7 @@ async function currentUser(req) {
   if (!session) return null;
 
   const result = await client.execute({
-    sql: "SELECT id, is_admin FROM orbit_users WHERE id = ?",
+    sql: "SELECT id, is_admin, vip, vip_expires_at FROM orbit_users WHERE id = ?",
     args: [session.user_id]
   });
 
@@ -41,6 +45,14 @@ async function guardAdmin(req, res, next) {
   const user = await currentUser(req);
   if (!user) return res.redirect("/register");
   if (Number(user.is_admin) !== 1) return res.redirect("/dashboard");
+  next();
+}
+
+async function guardVip(req, res, next) {
+  const user = await currentUser(req);
+  if (!user) return res.redirect("/register");
+  const isVip = Number(user.is_admin) === 1 || (Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()));
+  if (!isVip) return res.redirect("/dashboard");
   next();
 }
 
@@ -82,6 +94,10 @@ app.get("/vip", guardDashboard, (req, res) => {
 
 app.get("/admin", guardAdmin, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "admin.html"));
+});
+
+app.get("/ip-config", guardVip, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "ip-config.html"));
 });
 
 app.use("/api/auth", authRoutes);
