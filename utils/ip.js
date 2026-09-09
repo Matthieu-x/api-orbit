@@ -8,7 +8,15 @@ function normalizeIp(ip) {
 
 // Render (y la mayoria de hosts) ponen la app detras de un proxy, por eso
 // se usa x-forwarded-for primero y se cae a la conexion directa si no existe.
+// x-orbit-ip es un header propio: Render NO lo toca (solo reescribe
+// x-forwarded-for), asi que si el cliente lo manda, se respeta tal cual.
 function getClientIp(req) {
+  const custom = req.headers["x-orbit-ip"];
+  if (custom) {
+    const ip = normalizeIp(String(custom).split(",")[0]);
+    if (ip) return ip;
+  }
+
   const forwarded = req.headers["x-forwarded-for"];
   if (forwarded) {
     const first = String(forwarded).split(",")[0];
