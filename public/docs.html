@@ -1,12 +1,135 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#0b1117"><title>Orbit API | Documentación</title><style>
-:root{--bg:#080c11;--panel:#0e151d;--panel2:#121c25;--line:#1d2a35;--text:#edf4f7;--muted:#8c9aa5;--accent:#32c7b1;--green:#55d98b;--gold:#f3c96a}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}a{color:inherit;text-decoration:none}.wrap{width:min(1050px,calc(100% - 32px));margin:auto}.top{position:sticky;top:0;z-index:10;background:rgba(8,12,17,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{height:66px;display:flex;align-items:center;justify-content:space-between}.brand{font:600 17px Arial,sans-serif;display:flex;align-items:center;gap:10px}.mark{width:32px;height:32px;border-radius:9px;border:1px solid #2b3b46;display:grid;place-items:center;color:var(--accent);background:#0c141b}.navlinks{display:flex;gap:8px}.btn{display:inline-flex;align-items:center;height:40px;padding:0 13px;border-radius:9px;border:1px solid var(--line);font-size:13px;font-weight:600;background:#0d151c}.btn.primary{background:var(--accent);border-color:var(--accent);color:#06100e}.main{padding:55px 0 80px}.hero h1{font:700 42px/1.1 Arial,sans-serif}.hero p{color:var(--muted);max-width:720px;margin-top:12px}.layout{display:grid;grid-template-columns:210px 1fr;gap:25px;margin-top:38px}.side{position:sticky;top:88px;height:max-content;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px}.side a{display:block;padding:9px 10px;border-radius:8px;color:var(--muted);font-size:13px}.side a:hover{background:#111b23;color:var(--text)}section{scroll-margin-top:90px;margin-bottom:34px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:14px}h2{font:600 23px Arial,sans-serif;margin-bottom:8px}h3{font-size:16px;margin:18px 0 7px}.muted{color:var(--muted)}.endpoint{display:flex;align-items:center;gap:9px;font:600 14px ui-monospace,monospace;background:#0a1117;border:1px solid var(--line);padding:11px 12px;border-radius:9px;margin:10px 0}.method{color:var(--green);font-size:11px}.vip{color:var(--gold)}code{font-family:ui-monospace,SFMono-Regular,monospace;color:#a9e9df;background:#0a1718;padding:2px 5px;border-radius:5px}pre{overflow:auto;background:#080e13;border:1px solid var(--line);padding:15px;border-radius:10px;color:#b9c8ce;font:12px/1.7 ui-monospace,monospace}.param{display:grid;grid-template-columns:140px 90px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid #18242d;font-size:13px}.param:last-child{border-bottom:0}.name{font-family:monospace;color:#b9eee6}.type{color:var(--muted)}footer{border-top:1px solid var(--line);padding:30px 0;color:#697984;font-size:12px}@media(max-width:700px){.layout{grid-template-columns:1fr}.side{position:static}.navlinks .hide{display:none}.param{grid-template-columns:1fr}.hero h1{font-size:34px}}
-</style></head><body><header class="top"><div class="wrap nav"><a class="brand" href="/"><span class="mark">◉</span>Orbit API</a><div class="navlinks"><a class="btn hide" href="/terms">Términos</a><a class="btn" href="/login">Iniciar sesión</a><a class="btn primary" href="/register">Crear cuenta</a></div></div></header><main class="wrap main"><div class="hero"><h1>Documentación</h1><p>Referencia de los endpoints disponibles en Orbit API. Todas las rutas usan <code>/api/v1</code> y, salvo indicación contraria, requieren una API key válida.</p></div><div class="layout"><nav class="side"><a href="#auth">Autenticación</a><a href="#search">Search</a><a href="#download">Download</a><a href="#pinterest">Pinterest</a><a href="#ia">Orbit IA</a><a href="#tools">Tools</a><a href="#errors">Errores</a></nav><div>
-<section id="auth"><div class="card"><h2>Autenticación</h2><p class="muted">Puedes enviar la clave como parámetro <code>apikey</code> o mediante el header <code>X-API-Key</code>.</p><pre>GET /api/v1/search?apikey=ORBIT-XXXXXXXX&query=lofi
-X-API-Key: ORBIT-XXXXXXXX</pre><p class="muted" style="margin-top:10px">Las cuentas Free tienen un límite diario. Los endpoints marcados como VIP requieren acceso VIP.</p></div></section>
-<section id="search"><div class="card"><h2>Search</h2><div class="endpoint"><span class="method">GET</span>/api/v1/search</div><p class="muted">Busca videos en YouTube. El parámetro <code>query</code> admite hasta 100 caracteres.</p><div class="param"><span class="name">query</span><span class="type">string · req.</span><span>Texto de búsqueda.</span></div><pre>GET /api/v1/search?apikey=ORBIT-XXXXXXXX&query=lofi</pre></div></section>
-<section id="download"><div class="card"><h2>Download</h2><div class="endpoint"><span class="method">GET</span>/api/v1/download/ytaudio</div><p class="muted">Obtiene audio desde una URL.</p><div class="param"><span class="name">url</span><span class="type">string · req.</span><span>URL del contenido.</span></div><pre>GET /api/v1/download/ytaudio?apikey=ORBIT-XXXXXXXX&url=https%3A%2F%2F...</pre><div class="endpoint"><span class="method vip">GET</span>/api/v1/download/ytvideo</div><p class="muted">Descarga video. Requiere VIP.</p><div class="param"><span class="name">url</span><span class="type">string · req.</span><span>URL del video.</span></div><div class="param"><span class="name">quality</span><span class="type">string</span><span>Calidad solicitada. Por defecto: <code>720</code>.</span></div><div class="endpoint"><span class="method">GET</span>/api/v1/download/tiktok</div><p class="muted">Procesa una URL de TikTok.</p><div class="param"><span class="name">url</span><span class="type">string · req.</span><span>URL de TikTok.</span></div><div class="endpoint"><span class="method vip">GET</span>/api/v1/download/aptoide</div><p class="muted">Busca aplicaciones en Aptoide y permite descarga. Requiere VIP.</p><div class="param"><span class="name">query</span><span class="type">string</span><span>Nombre o término de búsqueda.</span></div><div class="param"><span class="name">package</span><span class="type">string</span><span>Nombre de paquete.</span></div><div class="param"><span class="name">download</span><span class="type">string</span><span>Usa <code>true</code> para solicitar descarga.</span></div><div class="endpoint"><span class="method vip">GET</span>/api/v1/download/fdroid</div><p class="muted">Busca o descarga paquetes de F-Droid. Requiere VIP.</p><div class="param"><span class="name">query</span><span class="type">string</span><span>Texto de búsqueda.</span></div><div class="param"><span class="name">package</span><span class="type">string</span><span>Paquete concreto.</span></div><div class="param"><span class="name">download</span><span class="type">string</span><span>Usa <code>true</code> para descargar.</span></div></div></section>
-<section id="pinterest"><div class="card"><h2>Pinterest</h2><div class="endpoint"><span class="method">GET</span>/api/v1/pinterest</div><p class="muted">Busca contenido en Pinterest.</p><div class="param"><span class="name">query</span><span class="type">string · req.</span><span>Texto de búsqueda, máximo 100 caracteres.</span></div><div class="param"><span class="name">type</span><span class="type">string</span><span>Tipo opcional de búsqueda.</span></div><pre>GET /api/v1/pinterest?apikey=ORBIT-XXXXXXXX&query=anime</pre></div></section>
-<section id="ia"><div class="card"><h2>Orbit IA</h2><div class="endpoint"><span class="method vip">GET</span>/api/v1/ia</div><p class="muted">Envía una consulta a Orbit IA. Requiere VIP.</p><div class="param"><span class="name">text</span><span class="type">string · req.</span><span>Texto que quieres consultar.</span></div><div class="param"><span class="name">promptSystem</span><span class="type">string</span><span>Prompt de sistema opcional.</span></div><pre>GET /api/v1/ia?apikey=ORBIT-XXXXXXXX&text=Hola</pre></div></section>
-<section id="tools"><div class="card"><h2>Tools</h2><div class="endpoint"><span class="method">GET</span>/api/v1/tools/qr</div><p class="muted">Genera un código QR.</p><div class="param"><span class="name">text / url</span><span class="type">string · req.</span><span>Contenido del QR, máximo 2000 caracteres.</span></div><div class="param"><span class="name">format</span><span class="type">string</span><span><code>image</code>, <code>json</code> o <code>base64</code>.</span></div><div class="param"><span class="name">size</span><span class="type">number</span><span>Tamaño opcional.</span></div><div class="param"><span class="name">dark/light</span><span class="type">string</span><span>Colores opcionales del QR.</span></div><pre>GET /api/v1/tools/qr?apikey=ORBIT-XXXXXXXX&text=Hola&format=json</pre></div></section>
-<section id="errors"><div class="card"><h2>Errores</h2><p class="muted">Orbit responde JSON cuando una solicitud no puede procesarse. Los códigos habituales son <code>400</code> para parámetros inválidos, <code>401</code> para API key ausente o inválida, <code>403</code> para endpoints VIP sin acceso y <code>5xx</code> para errores de procesamiento.</p></div></section>
-</div></div></main><footer><div class="wrap">© 2026 Orbit API · <a href="/terms">Términos de uso</a></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentación — Orbit API</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+.page-nav{padding:18px 0;border-bottom:1px solid var(--border);background:rgba(10,14,23,.88);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.page-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.nav-actions{display:flex;gap:8px;flex-wrap:wrap}
+.docs-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;padding-top:30px}
+.docs-sidebar{position:sticky;top:92px;height:max-content}
+.docs-sidebar .card{padding:12px}
+.docs-sidebar a{display:block;padding:10px 12px;border-radius:9px;color:var(--muted);font-size:13.5px}
+.docs-sidebar a:hover,.docs-sidebar a.active{background:var(--accent-soft);color:var(--text)}
+.docs-content{min-width:0}
+.docs-hero{margin-bottom:18px}
+.docs-hero h1{font-family:var(--font-head);font-size:clamp(28px,5vw,42px);margin-bottom:8px}
+.docs-hero p{color:var(--muted);max-width:720px}
+.doc-section{margin-bottom:18px;scroll-margin-top:92px}
+.doc-section h2{font-family:var(--font-head);font-size:20px;margin-bottom:8px}
+.doc-section h3{font-size:15px;margin:18px 0 8px}
+.doc-section p,.doc-section li{color:var(--muted);font-size:14px}
+.doc-section ul{padding-left:20px}
+.codebox{background:#090d15;border:1px solid var(--border);border-radius:10px;padding:15px;overflow:auto;margin-top:10px;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:#b9c4d9;white-space:pre}
+.endpoint-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.endpoint-table th,.endpoint-table td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.endpoint-table th{color:var(--text);font-weight:600}
+.endpoint-table td{color:var(--muted)}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--border);background:var(--surface-2);border-radius:7px;padding:3px 7px;font-size:11px;color:var(--text)}
+.footer{padding:28px 0 38px;color:var(--muted);font-size:13px}
+.footer a{color:var(--text)}
+@media(max-width:760px){.docs-layout{grid-template-columns:1fr}.docs-sidebar{position:static}.docs-sidebar .card{display:flex;gap:5px;overflow:auto}.docs-sidebar a{white-space:nowrap}.endpoint-table{font-size:12px}.endpoint-table th:nth-child(3),.endpoint-table td:nth-child(3){display:none}.nav-actions .btn{height:38px;padding:0 12px}}
+</style>
+</head>
+<body>
+<div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse><ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse><circle class="orbit-dot" cx="710" cy="300" r="4"></circle></svg></div>
+
+<header class="page-nav">
+  <div class="wrap page-nav-inner">
+    <a class="brand" href="/">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse><circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle></svg>
+      Orbit API
+    </a>
+    <div class="nav-actions"><a class="btn btn-ghost" href="/terms">Términos</a><a class="btn btn-primary" href="/register">Crear cuenta</a></div>
+  </div>
+</header>
+
+<main class="app-shell">
+  <div class="wrap docs-layout">
+    <aside class="docs-sidebar"><div class="card">
+      <a class="active" href="#inicio">Introducción</a>
+      <a href="#auth">Autenticación</a>
+      <a href="#search">Search</a>
+      <a href="#download">Download</a>
+      <a href="#pinterest">Pinterest</a>
+      <a href="#ia">IA</a>
+      <a href="#tools">Tools</a>
+      <a href="#errores">Errores</a>
+    </div></aside>
+
+    <section class="docs-content">
+      <div class="docs-hero" id="inicio"><h1>Documentación</h1><p>Referencia de los endpoints disponibles en Orbit API, sus parámetros y la forma correcta de realizar solicitudes.</p></div>
+
+      <article class="card doc-section" id="auth">
+        <h2>Autenticación</h2>
+        <p>Los endpoints protegidos utilizan tu API key. Puedes enviarla como parámetro <strong>apikey</strong> o mediante el header <strong>X-API-Key</strong>.</p>
+        <div class="codebox">GET /api/v1/search?apikey=TU_API_KEY&amp;query=lofi
+
+# También puedes usar:
+X-API-Key: TU_API_KEY</div>
+        <h3>Límites</h3><p>Las solicitudes autenticadas consumen el límite diario asociado a tu cuenta. Las funciones VIP requieren una cuenta con acceso VIP.</p>
+      </article>
+
+      <article class="card doc-section" id="search">
+        <h2>Search</h2><p>Busca contenido en YouTube. El parámetro <strong>query</strong> es obligatorio y admite hasta 100 caracteres.</p>
+        <div class="codebox">GET /api/v1/search?apikey=TU_API_KEY&amp;query=lofi</div>
+        <table class="endpoint-table"><thead><tr><th>Método</th><th>Parámetro</th><th>Descripción</th></tr></thead><tbody><tr><td><span class="badge">GET</span></td><td>query</td><td>Término de búsqueda. Obligatorio.</td></tr></tbody></table>
+      </article>
+
+      <article class="card doc-section" id="download">
+        <h2>Download</h2><p>Servicios de descarga disponibles en Orbit API.</p>
+        <table class="endpoint-table"><thead><tr><th>Endpoint</th><th>Acceso</th><th>Uso</th></tr></thead><tbody>
+          <tr><td>/api/v1/download/ytaudio</td><td>Free</td><td>Descarga audio de YouTube.</td></tr>
+          <tr><td>/api/v1/download/ytvideo</td><td>VIP</td><td>Descarga video de YouTube.</td></tr>
+          <tr><td>/api/v1/download/tiktok</td><td>Free</td><td>Procesa descargas de TikTok.</td></tr>
+          <tr><td>/api/v1/download/aptoide</td><td>VIP</td><td>Obtiene aplicaciones desde Aptoide.</td></tr>
+          <tr><td>/api/v1/download/fdroid</td><td>VIP</td><td>Obtiene aplicaciones desde F-Droid.</td></tr>
+        </tbody></table>
+      </article>
+
+      <article class="card doc-section" id="pinterest">
+        <h2>Pinterest</h2><p>Busca contenido de Pinterest. Requiere <strong>query</strong>; también puedes indicar <strong>type</strong> cuando el endpoint lo admita.</p>
+        <div class="codebox">GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper
+GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper&amp;type=image</div>
+      </article>
+
+      <article class="card doc-section" id="ia">
+        <h2>IA</h2><p>Endpoint de inteligencia artificial disponible para cuentas con acceso VIP.</p>
+        <div class="codebox">GET /api/v1/ia?apikey=TU_API_KEY&amp;text=Hola</div>
+        <p>Admite <strong>text</strong> como parámetro obligatorio y <strong>promptSystem</strong> como parámetro opcional.</p>
+      </article>
+
+      <article class="card doc-section" id="tools">
+        <h2>Tools</h2><p>Herramientas auxiliares de Orbit API.</p>
+        <h3>QR</h3><div class="codebox">GET /api/v1/tools/qr?apikey=TU_API_KEY&amp;text=https://example.com
+
+# Formato opcional:
+&amp;format=image
+&amp;size=500
+&amp;dark=%23000000
+&amp;light=%23ffffff</div>
+        <p><strong>text</strong> o <strong>url</strong> son necesarios. El texto admite hasta 2000 caracteres. <strong>format</strong> puede ser image, json o base64.</p>
+      </article>
+
+      <article class="card doc-section" id="errores">
+        <h2>Respuestas y errores</h2>
+        <table class="endpoint-table"><thead><tr><th>Código</th><th>Significado</th></tr></thead><tbody>
+          <tr><td>200</td><td>Solicitud procesada correctamente.</td></tr>
+          <tr><td>400</td><td>Faltan parámetros o son inválidos.</td></tr>
+          <tr><td>401</td><td>API key ausente o inválida.</td></tr>
+          <tr><td>403</td><td>El endpoint requiere acceso VIP.</td></tr>
+          <tr><td>404</td><td>Recurso o ruta no encontrada.</td></tr>
+          <tr><td>500</td><td>Error interno al procesar la solicitud.</td></tr>
+        </tbody></table>
+      </article>
+    </section>
+  </div>
+  <footer class="wrap footer">Orbit API · <a href="/terms">Términos de uso</a> · <a href="/">Inicio</a></footer>
+</main>
+</body>
+</html>
