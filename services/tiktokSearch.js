@@ -56,7 +56,7 @@ async function searchTikTok(query, limit = 10) {
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error("Timeout buscando en TikTok")),
-          12000
+          30000
         )
       )
     ]);
