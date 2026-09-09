@@ -44,14 +44,6 @@ async function guardAdmin(req, res, next) {
   next();
 }
 
-app.get("/docs", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "docs.html"));
-});
-
-app.get("/terms", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "terms.html"));
-});
-
 app.get("/dashboard", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "dashboard.html"));
 });
@@ -70,6 +62,10 @@ app.get("/ia", guardDashboard, (req, res) => {
 
 app.get("/tools", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "tools", "index.html"));
+});
+
+app.get("/anime", guardDashboard, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "anime", "index.html"));
 });
 
 app.get("/endpoints", guardDashboard, (req, res) => {
