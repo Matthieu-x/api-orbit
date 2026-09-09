@@ -22,6 +22,6 @@ router.use("/search", apiKeyAuth, searchRoutes);
 router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
 router.use("/ia", createApiKeyAuth({ vip: true }), iaRoutes);
-router.use("/tools", apiKeyAuth, toolsRoutes);
+router.use("/tools", toolsRoutes);
 
 module.exports = router;
