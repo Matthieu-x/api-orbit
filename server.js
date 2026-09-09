@@ -96,7 +96,7 @@ app.get("/admin", guardAdmin, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "admin.html"));
 });
 
-app.get("/ip-config", guardVip, (req, res) => {
+app.get("/ip-config", guardDashboard, (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "ip-config.html"));
 });
 
