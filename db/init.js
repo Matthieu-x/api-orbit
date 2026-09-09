@@ -2,6 +2,7 @@ const crypto = require("crypto");
 require("dotenv").config();
 const client = require("./client");
 const { generateApiKey, todayStamp } = require("../utils/keygen");
+const { generateOrbitIp } = require("../utils/ip");
 
 const FREE_DAILY_LIMIT = 100;
 const VIP_DAILY_LIMIT = 1000;
@@ -36,6 +37,35 @@ async function ensureSchema() {
   await addColumnIfMissing("vip", "INTEGER NOT NULL DEFAULT 0");
   await addColumnIfMissing("vip_expires_at", "TEXT");
   await addColumnIfMissing("allowed_ips", "TEXT");
+  await addColumnIfMissing("orbit_ip_token", "TEXT");
+
+  // Migra usuarios existentes al nuevo sistema. Cada cuenta recibe su propio
+  // Orbit IP falso y estable, sin usar la IP real del cliente.
+  const usersWithoutOrbitIp = await client.execute({
+    sql: "SELECT id FROM orbit_users WHERE orbit_ip_token IS NULL OR orbit_ip_token = ",
+    args: []
+  });
+
+  for (const row of usersWithoutOrbitIp.rows) {
+    let orbitIp = generateOrbitIp();
+    let exists = await client.execute({
+      sql: "SELECT id FROM orbit_users WHERE orbit_ip_token = ? LIMIT 1",
+      args: [orbitIp]
+    });
+
+    while (exists.rows.length > 0) {
+      orbitIp = generateOrbitIp();
+      exists = await client.execute({
+        sql: "SELECT id FROM orbit_users WHERE orbit_ip_token = ? LIMIT 1",
+        args: [orbitIp]
+      });
+    }
+
+    await client.execute({
+      sql: "UPDATE orbit_users SET orbit_ip_token = ? WHERE id = ?",
+      args: [orbitIp, row.id]
+    });
+  }
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS orbit_sessions (
