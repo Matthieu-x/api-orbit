@@ -27,7 +27,7 @@ function qrUpdate(){document.getElementById("qrEndpointUrl").textContent=qrUrl()
     out.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Generando QR...</div>';
     try{
       const jsonUrl=qrUrl()+"&format=json";
-      const r=await fetch(jsonUrl);
+      const r=await fetch(jsonUrl,{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
       const data=await r.json();
       if(!data.status){
         out.textContent=JSON.stringify(data,null,2);
