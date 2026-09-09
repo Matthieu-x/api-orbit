@@ -1,8 +1,20 @@
 const express = require("express");
+const apiKeyAuth = require("../../../middleware/apiKeyAuth");
+const { apiKeyAuth: createApiKeyAuth } = apiKeyAuth;
 const { generateQrBuffer, generateQrDataUrl } = require("../../../services/qr");
 const { getRandomAnimeImage, isValidType, VALID_TYPES } = require("../../../services/anime");
 
 const router = express.Router();
+
+// ─────────────────────────────────────────────
+// MIDDLEWARE DE AUTENTICACIÓN
+// ─────────────────────────────────────────────
+
+// Para endpoints FREE (solo requiere API key válida)
+router.use("/qr", apiKeyAuth);
+
+// Para endpoints VIP (requiere API key VIP activa)
+router.use("/anime", createApiKeyAuth({ vip: true }));
 
 // ─────────────────────────────────────────────
 // QR CODE (generación 100% local, sin API externa)
@@ -77,6 +89,7 @@ router.get("/anime", async (req, res) => {
     return res.json({
       status: true,
       creator: "Orbit",
+      access: "vip",
       type,
       result: url
     });
