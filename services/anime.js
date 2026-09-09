@@ -1,11 +1,12 @@
 const axios = require("axios");
 
-// Solo categorías SFW de waifu.pics (https://waifu.pics/docs) — nunca NSFW.
+// Categorías SFW de nekos.best v2 (https://docs.nekos.best) — API activa y mantenida.
 const VALID_TYPES = [
-  "waifu", "neko", "shinobu", "megumin", "bully", "cuddle", "cry", "hug",
-  "awoo", "kiss", "lick", "pat", "smug", "bonk", "yeet", "blush", "smile",
-  "wave", "highfive", "handhold", "nom", "bite", "glomp", "slap", "kill",
-  "kick", "happy", "wink", "poke", "dance", "cringe"
+  "waifu", "neko", "kitsune", "husbando",
+  "hug", "kiss", "pat", "cuddle", "slap", "tickle", "poke", "dance",
+  "wave", "highfive", "handhold", "nom", "bite", "blush", "smile",
+  "wink", "happy", "cry", "baka", "punch", "kick", "laugh", "shrug",
+  "stare", "think", "pout", "nod", "bored", "feed", "smug"
 ];
 
 function isValidType(type) {
@@ -13,10 +14,10 @@ function isValidType(type) {
 }
 
 async function getRandomAnimeImage(type) {
-  const category = String(type || "waifu").toLowerCase();
+  const category = String(type || "neko").toLowerCase();
 
   try {
-    const { data } = await axios.get(`https://api.waifu.pics/sfw/${category}`, {
+    const { data } = await axios.get(`https://nekos.best/api/v2/${category}`, {
       timeout: 15000,
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; OrbitAPI/1.0; +https://orbit.api)",
@@ -24,11 +25,13 @@ async function getRandomAnimeImage(type) {
       }
     });
 
-    if (!data || !data.url) {
+    const result = data && data.results && data.results[0];
+
+    if (!result || !result.url) {
       throw new Error("Respuesta sin campo 'url'");
     }
 
-    return data.url;
+    return result.url;
   } catch (error) {
     const detail = error.response
       ? `HTTP ${error.response.status} - ${JSON.stringify(error.response.data)}`
