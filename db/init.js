@@ -42,7 +42,7 @@ async function ensureSchema() {
   // Migra usuarios existentes al nuevo sistema. Cada cuenta recibe su propio
   // Orbit IP falso y estable, sin usar la IP real del cliente.
   const usersWithoutOrbitIp = await client.execute({
-    sql: "SELECT id FROM orbit_users WHERE orbit_ip_token IS NULL OR orbit_ip_token = ",
+    sql: "SELECT id FROM orbit_users WHERE orbit_ip_token IS NULL OR orbit_ip_token = ''",
     args: []
   });
 
