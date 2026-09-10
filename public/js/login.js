@@ -1,8 +1,20 @@
-
 document.getElementById("togglePassword").addEventListener("click", () => {
   const input = document.getElementById("passwordInput");
   input.type = input.type === "password" ? "text" : "password";
 });
+
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const error = params.get("error");
+  if (!error) return;
+  const messages = {
+    github: "No se pudo iniciar sesion con GitHub, intenta de nuevo",
+    github_no_email: "Tu cuenta de GitHub no tiene un correo verificado publico"
+  };
+  const errorBox = document.getElementById("errorBox");
+  errorBox.textContent = messages[error] || "Ocurrio un error";
+  errorBox.classList.add("show");
+})();
 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
