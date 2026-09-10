@@ -52,5 +52,5 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     return;
   }
 
-  window.location.href = "/dashboard";
+  window.location.href = `/verify?email=${encodeURIComponent(form.email.value)}`;
 });
