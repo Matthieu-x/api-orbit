@@ -2,7 +2,10 @@ let searchUser;
 
 function searchUrl() {
   const q = document.getElementById("queryInput").value;
-  return `${location.origin}/api/v1/search?apikey=${encodeURIComponent(searchUser.api_key)}&query=${encodeURIComponent(q)}`;
+
+  return `${location.origin}/api/v1/search?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
 }
 
 function update() {
@@ -11,29 +14,41 @@ function update() {
 
 function pinterestUrl() {
   const q = document.getElementById("pinterestQueryInput").value;
-  return `${location.origin}/api/v1/pinterest?apikey=${encodeURIComponent(searchUser.api_key)}&query=${encodeURIComponent(q)}`;
+
+  return `${location.origin}/api/v1/pinterest?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
 }
 
 function pinterestUpdate() {
-  document.getElementById("pinterestEndpointUrl").textContent = pinterestUrl();
+  document.getElementById("pinterestEndpointUrl").textContent =
+    pinterestUrl();
 }
 
 function tiktokUrl() {
   const q = document.getElementById("tiktokQueryInput").value;
-  return `${location.origin}/api/v1/tiktok-search?apikey=${encodeURIComponent(searchUser.api_key)}&query=${encodeURIComponent(q)}`;
+
+  return `${location.origin}/api/v1/tiktok-search?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
 }
 
 function tiktokUpdate() {
-  document.getElementById("tiktokEndpointUrl").textContent = tiktokUrl();
+  document.getElementById("tiktokEndpointUrl").textContent =
+    tiktokUrl();
 }
 
 function stickerSearchUrl() {
   const q = document.getElementById("stickerSearchQueryInput").value;
-  return `${location.origin}/api/v1/sticker-search?apikey=${encodeURIComponent(searchUser.api_key)}&query=${encodeURIComponent(q)}`;
+
+  return `${location.origin}/api/v1/sticker-search?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
 }
 
 function stickerSearchUpdate() {
-  document.getElementById("stickerSearchEndpointUrl").textContent = stickerSearchUrl();
+  document.getElementById("stickerSearchEndpointUrl").textContent =
+    stickerSearchUrl();
 }
 
 (async () => {
@@ -42,19 +57,10 @@ function stickerSearchUpdate() {
   if (!searchUser) return;
 
   const input = document.getElementById("queryInput");
-  const pinterestInput = document.getElementById("pinterestQueryInput");
-  const tiktokInput = document.getElementById("tiktokQueryInput");
-  const stickerSearchInput = document.getElementById("stickerSearchQueryInput");
 
   update();
-  pinterestUpdate();
-  tiktokUpdate();
-  stickerSearchUpdate();
 
   input.addEventListener("input", update);
-  pinterestInput.addEventListener("input", pinterestUpdate);
-  tiktokInput.addEventListener("input", tiktokUpdate);
-  stickerSearchInput.addEventListener("input", stickerSearchUpdate);
 
   document.getElementById("copyBtn").onclick = () => {
     copyToClipboard(searchUrl(), "Endpoint");
@@ -84,18 +90,19 @@ function stickerSearchUpdate() {
 
       out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {
-      out.textContent = JSON.stringify(
-        {
-          status: false,
-          error: "No se pudo contactar el endpoint"
-        },
-        null,
-        2
-      );
+      out.textContent = "No se pudo contactar el endpoint";
     } finally {
       btn.disabled = false;
     }
   };
+
+  const pinterestInput = document.getElementById(
+    "pinterestQueryInput"
+  );
+
+  pinterestUpdate();
+
+  pinterestInput.addEventListener("input", pinterestUpdate);
 
   document.getElementById("pinterestCopyBtn").onclick = () => {
     copyToClipboard(pinterestUrl(), "Endpoint");
@@ -125,18 +132,19 @@ function stickerSearchUpdate() {
 
       out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {
-      out.textContent = JSON.stringify(
-        {
-          status: false,
-          error: "No se pudo contactar el endpoint"
-        },
-        null,
-        2
-      );
+      out.textContent = "No se pudo contactar el endpoint";
     } finally {
       btn.disabled = false;
     }
   };
+
+  const tiktokInput = document.getElementById(
+    "tiktokQueryInput"
+  );
+
+  tiktokUpdate();
+
+  tiktokInput.addEventListener("input", tiktokUpdate);
 
   document.getElementById("tiktokCopyBtn").onclick = () => {
     copyToClipboard(tiktokUrl(), "Endpoint");
@@ -166,18 +174,22 @@ function stickerSearchUpdate() {
 
       out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {
-      out.textContent = JSON.stringify(
-        {
-          status: false,
-          error: "No se pudo contactar el endpoint"
-        },
-        null,
-        2
-      );
+      out.textContent = "No se pudo contactar el endpoint";
     } finally {
       btn.disabled = false;
     }
   };
+
+  const stickerSearchInput = document.getElementById(
+    "stickerSearchQueryInput"
+  );
+
+  stickerSearchUpdate();
+
+  stickerSearchInput.addEventListener(
+    "input",
+    stickerSearchUpdate
+  );
 
   document.getElementById("stickerSearchCopyBtn").onclick = () => {
     copyToClipboard(stickerSearchUrl(), "Endpoint");
@@ -205,21 +217,9 @@ function stickerSearchUpdate() {
 
       const data = await r.json();
 
-      /*
-       * IMPORTANTE:
-       * Aquí NO se crean imágenes.
-       * La respuesta completa se muestra como JSON.
-       */
       out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {
-      out.textContent = JSON.stringify(
-        {
-          status: false,
-          error: "No se pudo contactar el endpoint"
-        },
-        null,
-        2
-      );
+      out.textContent = "No se pudo contactar el endpoint";
     } finally {
       btn.disabled = false;
     }
