@@ -359,13 +359,15 @@ router.get("/github/callback", async (req, res) => {
         requests_reset_date: todayStamp(),
         created_at: new Date().toISOString(),
         orbit_ip_token: generateOrbitIp(),
-        github_id: String(ghUser.id)
+        github_id: String(ghUser.id),
+        verification_code: generateVerificationCode(),
+        verification_expires_at: new Date(Date.now() + VERIFICATION_TTL_MS).toISOString()
       };
 
       await client.execute({
         sql: `INSERT INTO orbit_users
           (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at, github_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 1, NULL, NULL, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 0, ?, ?, ?)`,
         args: [
           user.id,
           user.name,
@@ -378,18 +380,20 @@ router.get("/github/callback", async (req, res) => {
           user.requests_reset_date,
           user.created_at,
           user.orbit_ip_token,
+          user.verification_code,
+          user.verification_expires_at,
           user.github_id
         ]
       });
 
-      const session = await createSession(user.id);
-      res.cookie("orbit_session", session.token, COOKIE_OPTS);
-      res.redirect("/dashboard");
+      res.redirect(`/verify?email=${encodeURIComponent(user.email)}`);
 
+      // Igual que el registro normal: solo el código, la bienvenida
+      // (con IP y api key) llega recién cuando verifique en /verify.
       sendMail({
         to: user.email,
-        subject: "¡Bienvenido a Orbit API!",
-        html: welcomeEmailHtml({ name: user.name, email: user.email, orbitIp: user.orbit_ip_token, apiKey: user.api_key })
+        subject: "Tu código de verificación — Orbit API",
+        html: verificationEmailHtml({ name: user.name, code: user.verification_code })
       });
       return;
     }
@@ -399,6 +403,13 @@ router.get("/github/callback", async (req, res) => {
         sql: "UPDATE orbit_users SET github_id = ? WHERE id = ?",
         args: [String(ghUser.id), user.id]
       });
+    }
+
+    if (Number(user.email_verified) !== 1) {
+      // Cuenta existente (registrada por correo/contraseña) que nunca
+      // verificó: la vinculamos a GitHub arriba, pero igual debe
+      // completar la verificación antes de tener sesión.
+      return res.redirect(`/verify?email=${encodeURIComponent(user.email)}`);
     }
 
     const session = await createSession(user.id);
