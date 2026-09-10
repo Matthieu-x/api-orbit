@@ -585,3 +585,34 @@ th { color: var(--muted); font-weight: 500; font-size: 12px; }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
 .drawer-divider { border: none; border-top: 1px solid var(--border); margin: 10px 4px; }
 .drawer-divider { border: none; border-top: 1px solid var(--border); margin: 10px 4px; }
+
+/* Notificación flotante (showToast en app.js). Antes no tenía CSS y
+   aparecía como texto plano al final de la página; ahora es una
+   notificación fija arriba, centrada, con animación. */
+.toast {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translate(-50%, -14px);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--success);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  z-index: 9999;
+  max-width: min(90vw, 380px);
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
