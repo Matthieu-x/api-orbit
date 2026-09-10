@@ -64,7 +64,7 @@ function pwUpdate(){document.getElementById("pwEndpointUrl").textContent=pwUrl()
     pwBtn.disabled=true;
     pwOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Generando...</div>';
     try{
-      const r=await fetch(pwUrl());
+      const r=await fetch(pwUrl(),{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
       const data=await r.json();
       pwOut.textContent=JSON.stringify(data,null,2);
     }catch(e){
