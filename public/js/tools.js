@@ -8,6 +8,16 @@ function qrUrl(){
 }
 function qrUpdate(){document.getElementById("qrEndpointUrl").textContent=qrUrl();}
 
+function pwUrl(){
+  const length=document.getElementById("pwLength").value.trim()||"16";
+  const lower=document.getElementById("pwLower").checked;
+  const upper=document.getElementById("pwUpper").checked;
+  const numbers=document.getElementById("pwNumbers").checked;
+  const symbols=document.getElementById("pwSymbols").checked;
+  return `${location.origin}/api/v1/tools/password?apikey=${encodeURIComponent(toolsUser.api_key)}&length=${encodeURIComponent(length)}&lowercase=${lower}&uppercase=${upper}&numbers=${numbers}&symbols=${symbols}`;
+}
+function pwUpdate(){document.getElementById("pwEndpointUrl").textContent=pwUrl();}
+
 (async()=>{
   toolsUser=await initShell("tools");
   if(!toolsUser)return;
@@ -39,6 +49,28 @@ function qrUpdate(){document.getElementById("qrEndpointUrl").textContent=qrUrl()
       out.textContent="No se pudo contactar el endpoint";
     }finally{
       btn.disabled=false;
+    }
+  };
+
+  const pwInputs=[document.getElementById("pwLength"),document.getElementById("pwLower"),document.getElementById("pwUpper"),document.getElementById("pwNumbers"),document.getElementById("pwSymbols")];
+  pwUpdate();
+  pwInputs.forEach(el=>el.addEventListener(el.type==="checkbox"?"change":"input",pwUpdate));
+  document.getElementById("pwCopyBtn").onclick=()=>copyToClipboard(pwUrl(),"Endpoint");
+
+  const pwOut=document.getElementById("pwResponse");
+  const pwBtn=document.getElementById("pwSendBtn");
+
+  pwBtn.onclick=async()=>{
+    pwBtn.disabled=true;
+    pwOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Generando...</div>';
+    try{
+      const r=await fetch(pwUrl());
+      const data=await r.json();
+      pwOut.textContent=JSON.stringify(data,null,2);
+    }catch(e){
+      pwOut.textContent="No se pudo contactar el endpoint";
+    }finally{
+      pwBtn.disabled=false;
     }
   };
 })();
