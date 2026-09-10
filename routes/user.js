@@ -75,6 +75,22 @@ router.delete("/profile/photo", requireAuth, async (req, res) => {
   res.json({ ok: true, photo: null });
 });
 
+router.delete("/account", requireAuth, async (req, res) => {
+  const { password } = req.body || {};
+
+  if (!password || req.user.password !== password) {
+    return res.status(401).json({ ok: false, error: "Contraseña incorrecta" });
+  }
+
+  await client.execute({ sql: "DELETE FROM orbit_sessions WHERE user_id = ?", args: [req.user.id] });
+  await client.execute({ sql: "DELETE FROM orbit_request_logs WHERE user_id = ?", args: [req.user.id] });
+  await client.execute({ sql: "DELETE FROM orbit_notification_deletions WHERE user_id = ?", args: [req.user.id] });
+  await client.execute({ sql: "DELETE FROM orbit_users WHERE id = ?", args: [req.user.id] });
+
+  res.clearCookie("orbit_session");
+  res.json({ ok: true });
+});
+
 router.get("/notifications", requireAuth, async (req, res) => {
   const result = await client.execute({ sql: `SELECT n.* FROM orbit_notifications n LEFT JOIN orbit_notification_deletions d ON d.notification_id=n.id AND d.user_id=? WHERE (n.user_id=? OR n.user_id IS NULL) AND d.notification_id IS NULL ORDER BY n.created_at DESC LIMIT 30`, args: [req.user.id, req.user.id] });
   res.json({ ok: true, notifications: result.rows });
