@@ -625,3 +625,23 @@ th { color: var(--muted); font-weight: 500; font-size: 12px; }
   visibility: visible;
   transform: translate(-50%, 0);
 }
+/* Resultado JSON de Sticker Search */
+#stickerSearchResult {
+  display: block;
+  width: 100%;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: 420px;
+  overflow: auto;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #0b101a;
+  color: #b9c5df;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
