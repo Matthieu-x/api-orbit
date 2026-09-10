@@ -1,3 +1,4 @@
+
 document.getElementById("togglePassword").addEventListener("click", () => {
   const input = document.getElementById("passwordInput");
   input.type = input.type === "password" ? "text" : "password";
@@ -23,6 +24,10 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   });
 
   if (status !== 200 || !data.ok) {
+    if (data.needs_verification) {
+      window.location.href = `/verify?email=${encodeURIComponent(data.email || form.email.value)}`;
+      return;
+    }
     errorBox.textContent = data.error || "No se pudo iniciar sesion";
     errorBox.classList.add("show");
     submitBtn.disabled = false;
