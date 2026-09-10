@@ -40,6 +40,11 @@ async function loadDashboardStats(page = rankingPage) {
   document.getElementById("statRemaining").textContent = Number(user.requests_remaining).toLocaleString("es-HN");
   document.getElementById("statLimit").textContent = Number(user.requests_limit).toLocaleString("es-HN");
   document.getElementById("statKey").textContent = user.api_key;
+  document.getElementById("statOrbitIp").textContent = user.orbit_ip || "—";
+  const usageExample = `curl -X GET "${location.origin}/api/v1/busqueda?apikey=${user.api_key}&query=tu+busqueda" \\
+  -H "x-orbit-ip: ${user.orbit_ip || "TU_ORBIT_IP"}"`;
+  document.getElementById("usageExample").textContent = usageExample;
+  document.getElementById("copyUsageBtn").addEventListener("click", () => copyToClipboard(usageExample, "Ejemplo"));
   const vip = user.is_admin ? "Admin" : user.is_vip ? `VIP · ${user.vip_expires_at ? new Date(user.vip_expires_at).toLocaleDateString("es-HN") : "Activo"}` : "Free";
   document.getElementById("statVip").textContent = vip;
   document.getElementById("rankPrev").addEventListener("click", () => loadDashboardStats(rankingPage - 1));
