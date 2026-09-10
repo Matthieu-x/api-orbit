@@ -65,7 +65,7 @@
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button type="submit" class="btn btn-primary" id="savePhotoBtn">Guardar foto</button>
-          <button type="button" class="btn btn-secondary" id="removePhotoBtn">Eliminar foto</button>
+          <button type="button" class="btn btn-ghost" id="removePhotoBtn">Eliminar foto</button>
         </div>
       </form>
 
@@ -76,6 +76,31 @@
         </div>
         <button type="submit" class="btn btn-primary" id="saveNameBtn">Guardar cambios</button>
       </form>
+
+      <hr class="divider">
+
+      <h3 style="margin-bottom:6px">Seguridad</h3>
+      <p class="muted" style="margin-bottom:16px;font-size:14px">Restablece tu contraseña o elimina tu cuenta permanentemente.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost" id="resetPasswordBtn">Restablecer contraseña</button>
+        <button type="button" class="btn btn-danger" id="deleteAccountBtn">Eliminar cuenta</button>
+      </div>
+
+      <div class="card" id="deleteAccountCard" style="display:none;border-color:rgba(255,92,122,.35);margin-top:16px">
+        <h3 style="margin-bottom:6px;color:#ff8da3">¿Eliminar tu cuenta?</h3>
+        <p class="muted" style="margin-bottom:14px;font-size:13.5px">Esta acción es permanente: se borra tu cuenta, tu API key, tu Orbit IP y tu historial. Escribe tu contraseña para confirmar.</p>
+        <div class="error-box" id="deleteErrorBox"></div>
+        <form id="deleteAccountForm">
+          <div class="field">
+            <label>Contraseña</label>
+            <input type="password" id="deletePasswordInput" required>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Sí, eliminar mi cuenta</button>
+            <button type="button" class="btn btn-ghost" id="cancelDeleteBtn">Cancelar</button>
+          </div>
+        </form>
+      </div>
     </div>
 
   </div>
