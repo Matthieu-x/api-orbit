@@ -8,9 +8,10 @@ const { verifyCaptcha } = require("../utils/captcha");
 const { createSession, destroySession, SESSION_DAYS } = require("../utils/session");
 const { requireAuth } = require("../middleware/auth");
 const { generateOrbitIp } = require("../utils/ip");
-const { sendMail, welcomeEmailHtml, verificationEmailHtml } = require("../utils/mailer");
+const { sendMail, welcomeEmailHtml, verificationEmailHtml, resetPasswordEmailHtml } = require("../utils/mailer");
 
 const VERIFICATION_TTL_MS = 15 * 60 * 1000;
+const RESET_TTL_MS = 30 * 60 * 1000;
 
 const router = express.Router();
 
@@ -153,7 +154,7 @@ router.post("/verify", async (req, res) => {
   sendMail({
     to: user.email,
     subject: "¡Cuenta verificada! Bienvenido a Orbit API",
-    html: welcomeEmailHtml({ name: user.name, apiKey: user.api_key })
+    html: welcomeEmailHtml({ name: user.name, email: user.email, orbitIp: user.orbit_ip_token, apiKey: user.api_key })
   });
 });
 
@@ -221,6 +222,76 @@ router.post("/login", async (req, res) => {
   const session = await createSession(user.id);
   res.cookie("orbit_session", session.token, COOKIE_OPTS);
   res.json({ ok: true, user: publicUser(user) });
+});
+
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ ok: false, error: "Completa todos los campos" });
+  }
+
+  const result = await client.execute({
+    sql: "SELECT * FROM orbit_users WHERE email = ?",
+    args: [email]
+  });
+
+  const user = result.rows[0];
+
+  // Respuesta genérica siempre: no revela si el correo existe o no.
+  res.json({ ok: true, message: "Si el correo existe, te enviamos un enlace para restablecer tu contraseña" });
+
+  if (!user) return;
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + RESET_TTL_MS).toISOString();
+
+  await client.execute({
+    sql: "UPDATE orbit_users SET reset_token = ?, reset_expires_at = ? WHERE id = ?",
+    args: [token, expiresAt, user.id]
+  });
+
+  const resetUrl = `${req.protocol}://${req.get("host")}/reset-password?token=${token}`;
+
+  sendMail({
+    to: user.email,
+    subject: "Restablece tu contraseña — Orbit API",
+    html: resetPasswordEmailHtml({ name: user.name, resetUrl })
+  });
+});
+
+router.post("/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return res.status(400).json({ ok: false, error: "Completa todos los campos" });
+  }
+
+  if (String(password).length < 6) {
+    return res.status(400).json({ ok: false, error: "La contrasena debe tener al menos 6 caracteres" });
+  }
+
+  const result = await client.execute({
+    sql: "SELECT * FROM orbit_users WHERE reset_token = ?",
+    args: [token]
+  });
+
+  const user = result.rows[0];
+
+  if (!user) {
+    return res.status(400).json({ ok: false, error: "Enlace inválido o ya usado" });
+  }
+
+  if (!user.reset_expires_at || new Date(user.reset_expires_at).getTime() < Date.now()) {
+    return res.status(400).json({ ok: false, error: "El enlace expiró, solicita uno nuevo" });
+  }
+
+  await client.execute({
+    sql: "UPDATE orbit_users SET password = ?, reset_token = NULL, reset_expires_at = NULL WHERE id = ?",
+    args: [password, user.id]
+  });
+
+  res.json({ ok: true, message: "Contraseña actualizada" });
 });
 
 router.post("/logout", async (req, res) => {
