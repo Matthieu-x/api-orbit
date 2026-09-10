@@ -45,6 +45,7 @@ async function ensureSchema() {
   await addColumnIfMissing("verification_expires_at", "TEXT");
   await addColumnIfMissing("reset_token", "TEXT");
   await addColumnIfMissing("reset_expires_at", "TEXT");
+  await addColumnIfMissing("github_id", "TEXT");
 
   // Migra usuarios existentes al nuevo sistema. Cada cuenta recibe su propio
   // Orbit IP falso y estable, sin usar la IP real del cliente.
