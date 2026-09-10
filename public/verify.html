@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifica tu cuenta — Orbit API</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+  }
+  .auth-top {
+    display: flex;
+    justify-content: center;
+    padding-top: 34px;
+  }
+  .switch-line {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .switch-line a, .switch-line button {
+    color: var(--accent);
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13.5px;
+    padding: 0;
+  }
+  #codeInput {
+    text-align: center;
+    letter-spacing: 3px;
+    font-weight: 700;
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse>
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="280" ry="280"></ellipse>
+  </svg>
+</div>
+
+<div class="auth-top wrap">
+  <a class="brand" href="/">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
+      <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
+    </svg>
+    Orbit API
+  </a>
+</div>
+
+<div class="auth-screen">
+  <div class="wrap-narrow">
+    <div class="card">
+      <h2 style="margin-bottom:6px">Verifica tu cuenta</h2>
+      <p class="muted" style="margin-bottom:22px;font-size:14px">Te enviamos un código a tu correo. Ingrésalo para activar tu cuenta.</p>
+
+      <div class="error-box" id="errorBox"></div>
+      <div class="error-box" id="okBox" style="display:none;background:rgba(34,197,94,.12);color:#22c55e;"></div>
+
+      <form id="verifyForm">
+        <div class="field">
+          <label>Correo</label>
+          <input type="email" name="email" id="emailInput" placeholder="tucorreo@ejemplo.com" required>
+        </div>
+        <div class="field">
+          <label>Código de verificación</label>
+          <input type="text" name="code" id="codeInput" placeholder="ORBIT-000000" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Verificar cuenta</button>
+      </form>
+
+      <p class="switch-line">¿No te llegó? <button type="button" id="resendBtn">Reenviar código</button></p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script src="/js/verify.js"></script>
+</body>
+</html>
