@@ -8,6 +8,7 @@ const iaRoutes = require("./ia");
 const toolsRoutes = require("./tools");
 const animeRoutes = require("./anime");
 const tiktokSearchRoutes = require("./tiktok-search");
+const stickerSearchRoutes = require("./sticker-search");
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.use((req, res, next) => {
 router.use("/busqueda", apiKeyAuth, searchRoutes);
 router.use("/search", apiKeyAuth, searchRoutes);
 router.use("/tiktok-search", apiKeyAuth, tiktokSearchRoutes);
+router.use("/sticker-search", apiKeyAuth, stickerSearchRoutes);
 router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
 router.use("/ia", createApiKeyAuth({ vip: true }), iaRoutes);
