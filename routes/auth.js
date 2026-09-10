@@ -1,5 +1,6 @@
 const express = require("express");
 const crypto = require("crypto");
+const axios = require("axios");
 require("dotenv").config();
 
 const client = require("../db/client");
@@ -12,6 +13,11 @@ const { sendMail, welcomeEmailHtml, verificationEmailHtml, resetPasswordEmailHtm
 
 const VERIFICATION_TTL_MS = 15 * 60 * 1000;
 const RESET_TTL_MS = 30 * 60 * 1000;
+
+// Credenciales de la OAuth App de GitHub (repo privado -> hardcodeadas).
+// Se pueden sobreescribir con variables de entorno si se prefiere.
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "Ov23liiKanDD3H4gC8y6";
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "cfa77b928f5937c48026d539e0e0bdf30369182a";
 
 const router = express.Router();
 
@@ -292,6 +298,116 @@ router.post("/reset-password", async (req, res) => {
   });
 
   res.json({ ok: true, message: "Contraseña actualizada" });
+});
+
+router.get("/github", (req, res) => {
+  const redirectUri = `${req.protocol}://${req.get("host")}/api/auth/github/callback`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent("read:user user:email")}`;
+  res.redirect(url);
+});
+
+router.get("/github/callback", async (req, res) => {
+  const { code } = req.query;
+  if (!code) return res.redirect("/login?error=github");
+
+  try {
+    const redirectUri = `${req.protocol}://${req.get("host")}/api/auth/github/callback`;
+
+    const tokenResponse = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      { client_id: GITHUB_CLIENT_ID, client_secret: GITHUB_CLIENT_SECRET, code, redirect_uri: redirectUri },
+      { headers: { Accept: "application/json" } }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+    if (!accessToken) {
+      console.error("[github oauth] sin access_token:", tokenResponse.data);
+      return res.redirect("/login?error=github");
+    }
+
+    const ghHeaders = { Authorization: `Bearer ${accessToken}`, "User-Agent": "Orbit-API" };
+    const [profileRes, emailsRes] = await Promise.all([
+      axios.get("https://api.github.com/user", { headers: ghHeaders }),
+      axios.get("https://api.github.com/user/emails", { headers: ghHeaders })
+    ]);
+
+    const ghUser = profileRes.data;
+    const emails = Array.isArray(emailsRes.data) ? emailsRes.data : [];
+    const primaryEmail = emails.find((e) => e.primary && e.verified) || emails.find((e) => e.verified) || emails[0];
+    const email = primaryEmail?.email || ghUser.email;
+
+    if (!email) {
+      return res.redirect("/login?error=github_no_email");
+    }
+
+    const existing = await client.execute({
+      sql: "SELECT * FROM orbit_users WHERE github_id = ? OR email = ?",
+      args: [String(ghUser.id), email]
+    });
+
+    let user = existing.rows[0];
+
+    if (!user) {
+      user = {
+        id: crypto.randomUUID(),
+        name: ghUser.name || ghUser.login,
+        email,
+        password: crypto.randomBytes(24).toString("hex"),
+        api_key: generateApiKey(),
+        requests_remaining: 100,
+        requests_limit: 100,
+        requests_reset_date: todayStamp(),
+        created_at: new Date().toISOString(),
+        orbit_ip_token: generateOrbitIp(),
+        github_id: String(ghUser.id)
+      };
+
+      await client.execute({
+        sql: `INSERT INTO orbit_users
+          (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at, github_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 1, NULL, NULL, ?)`,
+        args: [
+          user.id,
+          user.name,
+          user.email,
+          user.password,
+          ghUser.avatar_url || null,
+          user.api_key,
+          user.requests_remaining,
+          user.requests_limit,
+          user.requests_reset_date,
+          user.created_at,
+          user.orbit_ip_token,
+          user.github_id
+        ]
+      });
+
+      const session = await createSession(user.id);
+      res.cookie("orbit_session", session.token, COOKIE_OPTS);
+      res.redirect("/dashboard");
+
+      sendMail({
+        to: user.email,
+        subject: "¡Bienvenido a Orbit API!",
+        html: welcomeEmailHtml({ name: user.name, email: user.email, orbitIp: user.orbit_ip_token, apiKey: user.api_key })
+      });
+      return;
+    }
+
+    if (!user.github_id) {
+      await client.execute({
+        sql: "UPDATE orbit_users SET github_id = ? WHERE id = ?",
+        args: [String(ghUser.id), user.id]
+      });
+    }
+
+    const session = await createSession(user.id);
+    res.cookie("orbit_session", session.token, COOKIE_OPTS);
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.error("[github oauth]", error.response?.data || error.message);
+    res.redirect("/login?error=github");
+  }
 });
 
 router.post("/logout", async (req, res) => {
