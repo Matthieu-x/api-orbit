@@ -114,6 +114,13 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .search-row input { flex: 1; height: 42px; background: transparent; border: none; outline: none; }
 
 .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.divider-line {
+  display: flex; align-items: center; text-align: center; color: var(--muted);
+  font-size: 12.5px; margin: 18px 0; gap: 12px;
+}
+.divider-line::before, .divider-line::after {
+  content: ""; flex: 1; height: 1px; background: var(--border);
+}
 
 .app-shell { position: relative; z-index: 1; min-height: 100vh; padding-bottom: 40px; }
 
