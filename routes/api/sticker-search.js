@@ -1,5 +1,5 @@
 const express = require("express");
-const { searchStickers } = require("../../../services/stickerSearch");
+const { searchStickers } = require("../../services/stickerSearch");
 
 const router = express.Router();
 
