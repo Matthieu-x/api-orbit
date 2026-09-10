@@ -47,13 +47,24 @@ async function sendMail({ to, subject, html }) {
   }
 }
 
-function welcomeEmailHtml({ name, apiKey }) {
+function welcomeEmailHtml({ name, email, orbitIp, apiKey }) {
+  const row = (label, value) => `
+    <tr>
+      <td style="padding:10px 14px; font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid #ececec; white-space:nowrap;">${escapeHtml(label)}</td>
+      <td style="padding:10px 14px; font-size:14px; color:#111; border-bottom:1px solid #ececec; font-family: Consolas, Menlo, monospace; word-break:break-all;">${escapeHtml(value)}</td>
+    </tr>`;
+
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; color: #1a1a1a;">
-    <h2 style="color:#111; margin-bottom: 8px;">¡Bienvenido a Orbit API, ${escapeHtml(name)}!</h2>
-    <p style="font-size: 15px; line-height: 1.5;">Tu cuenta se creó correctamente. Esta es tu API key personal:</p>
-    <p style="font-size: 20px; font-weight: bold; background:#f4f4f5; padding:14px 18px; border-radius:10px; letter-spacing:1px; text-align:center;">${escapeHtml(apiKey)}</p>
-    <p style="font-size: 14px; line-height: 1.5; color:#333;">Guárdala en un lugar seguro: la necesitas en el parámetro <code>apikey</code> de cada solicitud a la API.</p>
+    <h2 style="color:#111; margin-bottom: 6px;">¡Cuenta verificada, ${escapeHtml(name)}!</h2>
+    <p style="font-size: 15px; line-height: 1.5; margin-bottom: 20px;">Tu cuenta de Orbit API ya está activa. Esta es tu información:</p>
+    <table style="width:100%; border-collapse: collapse; background:#fafafa; border-radius:10px; overflow:hidden; border:1px solid #ececec;">
+      ${row("Nombre", name)}
+      ${row("Correo", email)}
+      ${row("Orbit IP", orbitIp)}
+      ${row("API Key", apiKey)}
+    </table>
+    <p style="font-size: 14px; line-height: 1.5; color:#333; margin-top: 18px;">Guarda tu <strong>API Key</strong> y tu <strong>Orbit IP</strong> en un lugar seguro: ambas se usan para autenticar cada solicitud a la API (<code>apikey</code> y header <code>x-orbit-ip</code>).</p>
     <p style="color:#888; font-size:12px; margin-top: 24px;">Si no creaste esta cuenta, puedes ignorar este correo.</p>
   </div>
   `;
@@ -70,4 +81,19 @@ function verificationEmailHtml({ name, code }) {
   `;
 }
 
-module.exports = { sendMail, welcomeEmailHtml, verificationEmailHtml };
+function resetPasswordEmailHtml({ name, resetUrl }) {
+  return `
+  <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; color: #1a1a1a;">
+    <h2 style="color:#111; margin-bottom: 8px;">Restablece tu contraseña</h2>
+    <p style="font-size: 15px; line-height: 1.5;">Hola ${escapeHtml(name)}, pediste restablecer la contraseña de tu cuenta de Orbit API. Toca el botón para elegir una nueva:</p>
+    <p style="text-align:center; margin: 26px 0;">
+      <a href="${resetUrl}" style="background:#6c8cff; color:#fff; text-decoration:none; font-weight:bold; padding:14px 26px; border-radius:10px; display:inline-block;">Restablecer contraseña</a>
+    </p>
+    <p style="font-size: 13px; line-height: 1.5; color:#666;">Si el botón no funciona, copia y pega este enlace en tu navegador:<br><a href="${resetUrl}" style="color:#6c8cff; word-break:break-all;">${resetUrl}</a></p>
+    <p style="font-size: 14px; line-height: 1.5; color:#333;">El enlace vence en 30 minutos.</p>
+    <p style="color:#888; font-size:12px; margin-top: 24px;">Si no pediste esto, puedes ignorar este correo — tu contraseña seguirá igual.</p>
+  </div>
+  `;
+}
+
+module.exports = { sendMail, welcomeEmailHtml, verificationEmailHtml, resetPasswordEmailHtml };
