@@ -101,4 +101,60 @@ function fallbackAvatarUrl(name) {
     document.getElementById("profileName").textContent = data.name;
     showToast("Nombre actualizado");
   });
+
+  // Restablecer contraseña: mismo sistema de /forgot-password, pero
+  // disparado directo con el correo ya conocido de la cuenta.
+  document.getElementById("resetPasswordBtn").addEventListener("click", async () => {
+    const btn = document.getElementById("resetPasswordBtn");
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+
+    const { data } = await orbitFetch("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email: user.email })
+    });
+
+    btn.disabled = false;
+    btn.textContent = "Restablecer contraseña";
+    showToast(data.message || "Revisa tu correo para restablecer tu contraseña");
+  });
+
+  // Eliminar cuenta
+  const deleteAccountCard = document.getElementById("deleteAccountCard");
+  const deleteErrorBox = document.getElementById("deleteErrorBox");
+
+  document.getElementById("deleteAccountBtn").addEventListener("click", () => {
+    deleteAccountCard.style.display = "block";
+    deleteAccountCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
+    deleteAccountCard.style.display = "none";
+    deleteErrorBox.classList.remove("show");
+    document.getElementById("deletePasswordInput").value = "";
+  });
+
+  document.getElementById("deleteAccountForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    deleteErrorBox.classList.remove("show");
+
+    const confirmBtn = document.getElementById("confirmDeleteBtn");
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Eliminando...";
+
+    const { status, data } = await orbitFetch("/api/user/account", {
+      method: "DELETE",
+      body: JSON.stringify({ password: document.getElementById("deletePasswordInput").value })
+    });
+
+    if (status !== 200 || !data.ok) {
+      deleteErrorBox.textContent = data.error || "No se pudo eliminar la cuenta";
+      deleteErrorBox.classList.add("show");
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Sí, eliminar mi cuenta";
+      return;
+    }
+
+    window.location.href = "/login";
+  });
 })();
