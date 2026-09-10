@@ -7,7 +7,6 @@ const axios = require("axios");
 const SENDLIB_API_KEY = "sl_e3620cad_b365437102b4633cbed1038d45c5157d1608ca71e57e4638881bb214";
 const SENDLIB_FROM = "soporte.orbitapi@gmail.com";
 const SENDLIB_URL = "https://sendlib.samueltuoyo.com/api/send";
-const LOGO_URL = "https://files.catbox.moe/hm29hr.png";
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
@@ -17,13 +16,6 @@ function escapeHtml(str) {
     '"': "&quot;",
     "'": "&#39;"
   }[c]));
-}
-
-function logoHeader() {
-  return `
-  <div style="text-align:center; padding-bottom: 18px;">
-    <img src="${LOGO_URL}" alt="Orbit API" width="56" height="56" style="width:56px; height:56px; border-radius:14px; object-fit:cover;">
-  </div>`;
 }
 
 /**
@@ -64,7 +56,6 @@ function welcomeEmailHtml({ name, email, orbitIp, apiKey }) {
 
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; color: #1a1a1a;">
-    ${logoHeader()}
     <h2 style="color:#111; margin-bottom: 6px;">¡Cuenta verificada, ${escapeHtml(name)}!</h2>
     <p style="font-size: 15px; line-height: 1.5; margin-bottom: 20px;">Tu cuenta de Orbit API ya está activa. Esta es tu información:</p>
     <table style="width:100%; border-collapse: collapse; background:#fafafa; border-radius:10px; overflow:hidden; border:1px solid #ececec;">
@@ -82,7 +73,6 @@ function welcomeEmailHtml({ name, email, orbitIp, apiKey }) {
 function verificationEmailHtml({ name, code }) {
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; color: #1a1a1a;">
-    ${logoHeader()}
     <h2 style="color:#111; margin-bottom: 8px;">Verifica tu cuenta de Orbit API</h2>
     <p style="font-size: 15px; line-height: 1.5;">Hola ${escapeHtml(name)}, usa este código para verificar tu cuenta y activarla:</p>
     <p style="font-size: 26px; font-weight: bold; background:#f4f4f5; padding:16px 18px; border-radius:10px; letter-spacing:2px; text-align:center;">${escapeHtml(code)}</p>
@@ -94,7 +84,6 @@ function verificationEmailHtml({ name, code }) {
 function resetPasswordEmailHtml({ name, resetUrl }) {
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; color: #1a1a1a;">
-    ${logoHeader()}
     <h2 style="color:#111; margin-bottom: 8px;">Restablece tu contraseña</h2>
     <p style="font-size: 15px; line-height: 1.5;">Hola ${escapeHtml(name)}, pediste restablecer la contraseña de tu cuenta de Orbit API. Toca el botón para elegir una nueva:</p>
     <p style="text-align:center; margin: 26px 0;">
