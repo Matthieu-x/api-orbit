@@ -38,6 +38,11 @@ async function ensureSchema() {
   await addColumnIfMissing("vip_expires_at", "TEXT");
   await addColumnIfMissing("allowed_ips", "TEXT");
   await addColumnIfMissing("orbit_ip_token", "TEXT");
+  // DEFAULT 1: las cuentas ya existentes (creadas antes de este feature)
+  // quedan verificadas automaticamente; solo las nuevas se insertan con 0.
+  await addColumnIfMissing("email_verified", "INTEGER NOT NULL DEFAULT 1");
+  await addColumnIfMissing("verification_code", "TEXT");
+  await addColumnIfMissing("verification_expires_at", "TEXT");
 
   // Migra usuarios existentes al nuevo sistema. Cada cuenta recibe su propio
   // Orbit IP falso y estable, sin usar la IP real del cliente.
