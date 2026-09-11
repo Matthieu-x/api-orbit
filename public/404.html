@@ -29,6 +29,7 @@
     font-size: 22px;
   }
   .notfound .links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+  @media(max-width:420px){.topbar-right a.btn-ghost{display:none}.topbar-right .btn{padding:0 10px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -40,11 +41,37 @@
   </svg>
 </div>
 
-<div class="notfound">
-  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="color:var(--accent)">
-    <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
-    <circle cx="12" cy="12" r="2.6" fill="currentColor"></circle>
-  </svg>
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="brand" href="/">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
+        <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
+      </svg>
+      <span>Orbit API</span>
+    </a>
+    <nav class="topbar-nav-icons">
+      <a class="topbar-nav-icon" href="/" title="Inicio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>
+      </a>
+      <a class="topbar-nav-icon" href="/docs" title="Documentación">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>
+      </a>
+      <a class="topbar-nav-icon" href="/terms" title="Términos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+      </a>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <a class="btn btn-ghost" href="/login">Iniciar sesión</a>
+    <a class="btn btn-primary" href="/register">Crear cuenta</a>
+  </div>
+</div>
+
+<div class="notfound" style="min-height:calc(100vh - 64px)">
+  <span class="icon-stat-icon" style="width:56px;height:56px;border-radius:16px">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8.5 11h5"/></svg>
+  </span>
   <span class="dashboard-badge">ERROR 404</span>
   <div class="code">404</div>
   <h1>Esta órbita no existe</h1>
