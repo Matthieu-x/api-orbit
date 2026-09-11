@@ -35,8 +35,27 @@ async function loadDashboardStats(page = rankingPage) {
   }).join("");
 }
 
+function welcomeAvatarHtml(user) {
+  const initial = (user.name || "?").trim().charAt(0).toUpperCase();
+  if (user.photo) return `<img class="profile-avatar" src="${escapeHtml(user.photo)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="profile-avatar avatar-fallback" style="display:none;place-items:center">${escapeHtml(initial)}</div>`;
+  return `<div class="profile-avatar avatar-fallback" style="display:grid;place-items:center;background:var(--surface-2);font-weight:700">${escapeHtml(initial)}</div>`;
+}
+
 (async () => {
   const user = await initShell("dashboard"); if (!user) return;
+  document.getElementById("welcomeAvatar").innerHTML = welcomeAvatarHtml(user);
+  document.getElementById("welcomeName").textContent = user.name;
+  document.getElementById("chipVerified").classList.add("on");
+  if (user.is_admin) {
+    document.getElementById("chipPlan").classList.add("on");
+    document.getElementById("chipPlan").title = "Cuenta admin";
+  } else if (user.is_vip) {
+    document.getElementById("chipPlan").classList.add("on");
+    document.getElementById("chipPlan").title = "Plan VIP activo";
+  } else {
+    document.getElementById("chipPlan").title = "Plan Free";
+  }
+  document.getElementById("chipSecurity").classList.add("on");
   document.getElementById("statRemaining").textContent = Number(user.requests_remaining).toLocaleString("es-HN");
   document.getElementById("statLimit").textContent = Number(user.requests_limit).toLocaleString("es-HN");
   document.getElementById("statKey").textContent = user.api_key;
