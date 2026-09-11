@@ -1,48 +1,82 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>VIP — Orbit API</title><link rel="stylesheet" href="/css/style.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></head><body><div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="300" ry="220" transform="rotate(-18 400 400)"></ellipse></svg></div><div id="shellMount"></div><div class="app-shell"><div class="wrap" style="padding-top:30px; max-width: 560px">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Planes — Orbit API</title><link rel="stylesheet" href="/css/style.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></head><body><div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="300" ry="220" transform="rotate(-18 400 400)"></ellipse></svg></div><div id="shellMount"></div><div class="app-shell"><div class="wrap" style="padding-top:30px; max-width: 560px">
 
-<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px">
-  <div>
-    <h3 style="margin-bottom:4px">Planes premium</h3>
-    <p class="muted" style="font-size:13px">Desbloquea todos los endpoints, más peticiones diarias y soporte prioritario.</p>
-  </div>
+<div class="card" style="margin-bottom:16px">
+  <h3 style="margin-bottom:4px">Planes de Orbit API</h3>
+  <p class="muted" style="font-size:13px">Todos los planes son de <strong style="color:var(--text)">pago único y permanente</strong>: no vencen ni se renuevan solos. Quedan activos hasta que se cambie el plan.</p>
 </div>
 
 <div id="vipStatus" class="card" style="margin-bottom:18px">Cargando estado...</div>
 
 <div class="plan-cards" id="plans"></div>
 
-<div class="card" style="margin-top:18px"><h3>Cómo comprar</h3><ol class="vip-steps"><li>Elige un plan.</li><li>Escribe por WhatsApp al <strong>+504 9730-5037</strong>.</li><li>Envía tu comprobante y el correo de tu cuenta Orbit.</li><li>Un administrador activa tu VIP desde el panel.</li></ol></div>
+<div class="card" style="margin-top:18px"><h3>Cómo comprar</h3><ol class="vip-steps"><li>Elige un plan.</li><li>Toca "Pay" y escríbenos por WhatsApp.</li><li>Envía tu comprobante y el correo de tu cuenta Orbit.</li><li>Un administrador activa tu plan desde el panel y te llega un correo confirmándolo.</li></ol></div>
 
 </div></div><script src="/js/app.js"></script><script src="/js/shell.js"></script><script>
 (async () => {
   const user = await initShell("vip");
   if (!user) return;
 
-  const plans = [
-    { name: "VIP 7 días", days: 7, price: 25 },
-    { name: "VIP 30 días", days: 30, price: 60, hot: true },
-    { name: "VIP 90 días", days: 90, price: 150 }
-  ];
-
   const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  const dash = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>';
   const planetLogo = '<svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="var(--accent)" stroke-width="1.6" transform="rotate(-18 12 12)"></ellipse><circle cx="12" cy="12" r="3.2" fill="var(--accent)"></circle></svg>';
+
+  // Mismo orden de tiers que utils/plans.js en el backend.
+  const plans = [
+    {
+      key: "basic",
+      name: "Basic",
+      price: 1,
+      requests: 300,
+      features: [
+        [true, "300 solicitudes diarias"],
+        [false, "Sin acceso a endpoints premium (IA, Anime, descargas VIP)"]
+      ]
+    },
+    {
+      key: "plus",
+      name: "Plus",
+      price: 3,
+      requests: 1000,
+      hot: true,
+      features: [
+        [true, "1000 solicitudes diarias"],
+        [true, "Acceso a Anime y descarga de YouTube Video"],
+        [false, "Sin acceso a IA, Aptoide ni F-Droid"]
+      ]
+    },
+    {
+      key: "vip",
+      name: "VIP",
+      price: 5,
+      requests: 2000,
+      features: [
+        [true, "2000 solicitudes diarias"],
+        [true, "Acceso a todos los endpoints premium: IA, Anime, YouTube Video, Aptoide y F-Droid"]
+      ]
+    },
+    {
+      key: "superorbit",
+      name: "SuperOrbit",
+      price: 10,
+      requests: 5000,
+      features: [
+        [true, "5000 solicitudes diarias"],
+        [true, "Acceso a todos los endpoints"],
+        [true, "Mayor prioridad en las solicitudes"],
+        [true, "Soporte prioritario"]
+      ]
+    }
+  ];
 
   const status = document.getElementById("vipStatus");
   status.innerHTML = user.is_admin
-    ? '<h3>Administrador</h3><p class="muted">Tu cuenta tiene acceso completo a los endpoints VIP.</p>'
-    : user.is_vip
-    ? `<h3><span class="pill-vip">VIP activo</span></h3><p class="muted" style="margin-top:8px">Vence: ${new Date(user.vip_expires_at).toLocaleString("es-HN")}</p>`
-    : '<h3>Cuenta Free</h3><p class="muted" style="margin-top:8px">YouTube Audio es gratis. YouTube Video requiere VIP.</p>';
+    ? '<h3>Administrador</h3><p class="muted" style="margin-top:8px">Tu cuenta tiene acceso completo a todos los endpoints.</p>'
+    : `<h3>Tu plan actual: <span class="pill-vip">${user.plan_label}</span></h3><p class="muted" style="margin-top:8px">${Number(user.requests_limit).toLocaleString("es-HN")} solicitudes/día. ${user.plan === "free" ? "Elige un plan de pago para subir tu límite y desbloquear endpoints premium." : "Tu plan es permanente: seguirá activo hasta que lo cambies."}</p>`;
 
   document.getElementById("plans").innerHTML = plans
     .map((p) => {
-      const text = `Hola, quiero comprar ${p.name} por L${p.price}. Mi correo Orbit es ${user.email}`;
-      const features = [
-        "Acceso a todos los endpoints premium",
-        "1000 solicitudes/día",
-        "Hasta 5 API keys",
-        "Soporte prioritario"
-      ];
+      const text = `Hola, quiero comprar el plan ${p.name} de Orbit API por $${p.price} (pago único, sin vencimiento). Mi correo Orbit es ${user.email}`;
+      const isCurrent = user.plan === p.key;
 
       return `
       <div class="plan-card2 ${p.hot ? "popular" : ""}">
@@ -51,12 +85,12 @@
         </div>
         <div class="plan-badge-logo">${planetLogo}</div>
         <div class="plan-card2-body">
-          <h3>${p.name.replace(/ \d+ días$/, "")} <span class="plan-tag">${p.days}D</span></h3>
-          <div class="plan-price">L${p.price}<span> / ${p.days} días</span></div>
+          <h3>${p.name} ${isCurrent ? '<span class="plan-tag">ACTUAL</span>' : ""}</h3>
+          <div class="plan-price">$${p.price}<span> pago único</span></div>
           <ul class="plan-features">
-            ${features.map((f) => `<li>${check}${f}</li>`).join("")}
+            ${p.features.map(([included, label]) => `<li style="${included ? "" : "color:var(--muted)"}">${included ? check : dash}${label}</li>`).join("")}
           </ul>
-          <a class="btn btn-primary btn-block" target="_blank" rel="noopener" href="https://wa.me/50497305037?text=${encodeURIComponent(text)}">Comprar por WhatsApp</a>
+          <a class="btn btn-primary btn-block" target="_blank" rel="noopener" href="https://wa.me/50497305037?text=${encodeURIComponent(text)}">Pay</a>
         </div>
       </div>`;
     })
