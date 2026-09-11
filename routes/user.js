@@ -3,6 +3,7 @@ const express = require("express");
 const client = require("../db/client");
 const { requireAuth, requireVip } = require("../middleware/auth");
 const { generateOrbitIp } = require("../utils/ip");
+const { REFERRAL_BONUS_REQUESTS, REFERRAL_BONUS_DAYS, isReferralBonusActive } = require("../utils/referral");
 
 const router = express.Router();
 const FREE_DAILY_LIMIT = 100;
@@ -112,6 +113,23 @@ router.get("/vip", requireAuth, (req, res) => {
     { id: "30d", name: "VIP 30 días", days: 30, price: 60, currency: "HNL" },
     { id: "90d", name: "VIP 90 días", days: 90, price: 150, currency: "HNL" }
   ]});
+});
+
+router.get("/referral", requireAuth, async (req, res) => {
+  const invited = await client.execute({
+    sql: "SELECT COUNT(*) AS total FROM orbit_users WHERE referred_by = ?",
+    args: [req.user.id]
+  });
+
+  res.json({
+    ok: true,
+    referral_code: req.user.referral_code || null,
+    bonus_requests: REFERRAL_BONUS_REQUESTS,
+    bonus_days: REFERRAL_BONUS_DAYS,
+    bonus_active: isReferralBonusActive(req.user),
+    bonus_expires_at: req.user.referral_bonus_expires_at || null,
+    invited_count: Number(invited.rows[0]?.total || 0)
+  });
 });
 
 router.get("/ip-config", requireAuth, (req, res) => {
