@@ -1,184 +1,73 @@
-let downloadUser;
+let rankingPage = 1;
+const RANKING_PAGE_SIZE = 5;
 
-const $ = id => document.getElementById(id);
-
-function apiUrl(type, params = {}) {
-  const base = `${location.origin}/api/v1/download/${type}`;
-  const search = new URLSearchParams({
-    apikey: downloadUser.api_key,
-    ...params
-  });
-  return `${base}?${search.toString()}`;
+function dashboardAvatar(user) {
+  const initial = (user.name || "?").trim().charAt(0).toUpperCase();
+  if (user.photo) return `<img class="ranking-avatar" src="${escapeHtml(user.photo)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="ranking-avatar ranking-fallback" style="display:none">${escapeHtml(initial)}</div>`;
+  return `<div class="ranking-avatar ranking-fallback">${escapeHtml(initial)}</div>`;
 }
 
-function makeUrl(type) {
-  if (type === "ytaudio") {
-    return apiUrl("ytaudio", { url: $("audioUrl").value });
-  }
+const PLAN_PILL_CLASS = { free: "pill-free", basic: "pill-basic", plus: "pill-plus", vip: "pill-vip", superorbit: "pill-superorbit" };
 
-  if (type === "ytvideo") {
-    return apiUrl("ytvideo", {
-      url: $("videoUrl").value,
-      quality: $("videoQuality").value
-    });
-  }
-
-  if (type === "tiktok") {
-    return apiUrl("tiktok", { url: $("tiktokUrl").value });
-  }
-
-  if (type === "aptoide") {
-    return apiUrl("aptoide", {
-      query: $("aptoideQuery").value,
-      index: $("aptoideIndex").value || 0
-    });
-  }
-
-  if (type === "fdroid") {
-    return apiUrl("fdroid", {
-      query: $("fdroidQuery").value
-    });
-  }
+function userBadge(user) {
+  if (user.is_admin) return '<span class="pill-admin">admin</span>';
+  const plan = user.plan || "free";
+  return `<span class="${PLAN_PILL_CLASS[plan] || "pill-free"}">${user.plan_label || "Free"}</span>`;
 }
 
-function refreshUrls() {
-  $("audioEndpoint").textContent = makeUrl("ytaudio");
-  $("videoEndpoint").textContent = makeUrl("ytvideo");
-  $("tiktokEndpoint").textContent = makeUrl("tiktok");
-  $("aptoideEndpoint").textContent = makeUrl("aptoide");
-  $("fdroidEndpoint").textContent = makeUrl("fdroid");
-}
-
-function requireVip() {
-  if (downloadUser.is_vip || downloadUser.is_admin) return true;
-  showToast("Este endpoint requiere VIP");
-  return false;
-}
-
-async function run(type) {
-  const idMap = {
-    ytaudio: ["audioUrl", "audioResponse", "audioSend"],
-    ytvideo: ["videoUrl", "videoResponse", "videoSend"],
-    tiktok: ["tiktokUrl", "tiktokResponse", "tiktokSend"]
-  };
-
-  const [inputId, outId, btnId] = idMap[type];
-  const input = $(inputId);
-  const out = $(outId);
-  const btn = $(btnId);
-
-  if (!input.value.trim()) return showToast("Escribe una URL");
-  if (type === "ytvideo" && !requireVip()) return;
-
-  btn.disabled = true;
-  const labels = {
-    ytaudio: "Descargando audio...",
-    ytvideo: "Descargando video...",
-    tiktok: "Descargando de TikTok..."
-  };
-
-  out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>${labels[type]}</div>`;
-
-  try {
-    const r = await fetch(makeUrl(type), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
-    const text = await r.text();
-    try {
-      out.textContent = JSON.stringify(JSON.parse(text), null, 2);
-    } catch {
-      out.textContent = text || `HTTP ${r.status}`;
-    }
-  } catch {
-    out.textContent = "No se pudo contactar el endpoint";
-  } finally {
-    btn.disabled = false;
+async function loadDashboardStats(page = rankingPage) {
+  const container = document.getElementById("topUsers");
+  const { status, data } = await orbitFetch(`/api/user/dashboard-stats?page=${page}`);
+  if (status !== 200 || !data.ok) {
+    container.innerHTML = `<div class="notif-empty">${escapeHtml(data.error || "No se pudieron cargar las estadísticas")}</div>`;
+    return;
   }
+  rankingPage = Number(data.top_page || 1);
+  document.getElementById("statTotal").textContent = Number(data.total_requests || 0).toLocaleString("es-HN");
+  document.getElementById("statUserTotal").textContent = Number(data.user_total_requests || 0).toLocaleString("es-HN");
+  const totalPages = Math.max(1, Math.min(3, Math.ceil(Number(data.top_total_users || 0) / RANKING_PAGE_SIZE)));
+  document.getElementById("rankPage").textContent = `${rankingPage} / ${totalPages}`;
+  document.getElementById("rankPrev").disabled = rankingPage <= 1;
+  document.getElementById("rankNext").disabled = rankingPage >= totalPages;
+
+  if (!data.top_users?.length) { container.innerHTML = '<div class="notif-empty">Todavía no hay usuarios registrados.</div>'; return; }
+  container.innerHTML = data.top_users.map((user, index) => {
+    const position = (rankingPage - 1) * RANKING_PAGE_SIZE + index + 1;
+    return `<div class="top-user-row"><div class="top-user-position">${position}</div><div class="ranking-avatar-wrap">${dashboardAvatar(user)}</div><div class="top-user-info"><strong>${escapeHtml(user.name)} ${userBadge(user)}</strong><span>${Number(user.requests).toLocaleString("es-HN")} solicitudes</span></div><div class="top-user-count">${Number(user.requests).toLocaleString("es-HN")}</div></div>`;
+  }).join("");
 }
 
-async function runAptoideSearch() {
-  if (!requireVip()) return;
-  const query = $("aptoideQuery").value.trim();
-  if (!query) return showToast("Escribe una aplicación");
-
-  const out = $("aptoideResponse");
-  out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando en Aptoide...</div>`;
-
-  try {
-    const r = await fetch(makeUrl("aptoide"), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
-    const data = await r.json();
-    out.textContent = JSON.stringify(data, null, 2);
-  } catch {
-    out.textContent = "No se pudo contactar Aptoide";
-  }
-}
-
-async function runFdroidSearch() {
-  if (!requireVip()) return;
-  const query = $("fdroidQuery").value.trim();
-  if (!query) return showToast("Escribe una aplicación o package");
-
-  const out = $("fdroidResponse");
-  out.innerHTML = `<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando en F-Droid...</div>`;
-
-  try {
-    const r = await fetch(makeUrl("fdroid"), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
-    const data = await r.json();
-    out.textContent = JSON.stringify(data, null, 2);
-  } catch {
-    out.textContent = "No se pudo contactar F-Droid";
-  }
-}
-
-function openDownload(type, params) {
-  if (!requireVip()) return;
-  const url = apiUrl(type, params);
-  window.open(url, "_blank", "noopener,noreferrer");
+function welcomeAvatarHtml(user) {
+  const initial = (user.name || "?").trim().charAt(0).toUpperCase();
+  if (user.photo) return `<img class="profile-avatar" src="${escapeHtml(user.photo)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="profile-avatar avatar-fallback" style="display:none;place-items:center">${escapeHtml(initial)}</div>`;
+  return `<div class="profile-avatar avatar-fallback" style="display:grid;place-items:center;background:var(--surface-2);font-weight:700">${escapeHtml(initial)}</div>`;
 }
 
 (async () => {
-  downloadUser = await initShell("download");
-  if (!downloadUser) return;
-
-  refreshUrls();
-
-  [
-    "audioUrl",
-    "videoUrl",
-    "videoQuality",
-    "tiktokUrl",
-    "aptoideQuery",
-    "aptoideIndex",
-    "fdroidQuery"
-  ].forEach(id => $(id).addEventListener("input", refreshUrls));
-
-  $("videoQuality").addEventListener("change", refreshUrls);
-
-  $("audioCopy").onclick = () => copyToClipboard(makeUrl("ytaudio"), "Endpoint");
-  $("videoCopy").onclick = () => copyToClipboard(makeUrl("ytvideo"), "Endpoint");
-  $("tiktokCopy").onclick = () => copyToClipboard(makeUrl("tiktok"), "Endpoint");
-  $("aptoideCopy").onclick = () => copyToClipboard(makeUrl("aptoide"), "Endpoint");
-  $("fdroidCopy").onclick = () => copyToClipboard(makeUrl("fdroid"), "Endpoint");
-
-  $("audioSend").onclick = () => run("ytaudio");
-  $("videoSend").onclick = () => run("ytvideo");
-  $("tiktokSend").onclick = () => run("tiktok");
-
-  $("aptoideSearch").onclick = runAptoideSearch;
-  $("fdroidSearch").onclick = runFdroidSearch;
-
-  $("aptoideDownload").onclick = () => openDownload("aptoide", {
-    query: $("aptoideQuery").value,
-    download: "true",
-    index: $("aptoideIndex").value || 0
-  });
-
-  $("fdroidDownload").onclick = () => openDownload("fdroid", {
-    package: $("fdroidQuery").value,
-    download: "true"
-  });
-
-  if (!downloadUser.is_vip && !downloadUser.is_admin) {
-    $("videoResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
-    $("aptoideResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
-    $("fdroidResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
+  const user = await initShell("dashboard"); if (!user) return;
+  document.getElementById("welcomeAvatar").innerHTML = welcomeAvatarHtml(user);
+  document.getElementById("welcomeName").textContent = user.name;
+  document.getElementById("chipVerified").classList.add("on");
+  if (user.is_admin) {
+    document.getElementById("chipPlan").classList.add("on");
+    document.getElementById("chipPlan").title = "Cuenta admin";
+  } else if (user.plan && user.plan !== "free") {
+    document.getElementById("chipPlan").classList.add("on");
+    document.getElementById("chipPlan").title = `Plan ${user.plan_label} activo`;
+  } else {
+    document.getElementById("chipPlan").title = "Plan Free";
   }
+  document.getElementById("chipSecurity").classList.add("on");
+  document.getElementById("statRemaining").textContent = Number(user.requests_remaining).toLocaleString("es-HN");
+  document.getElementById("statLimit").textContent = Number(user.requests_limit).toLocaleString("es-HN");
+  document.getElementById("statKey").textContent = user.api_key;
+  document.getElementById("statOrbitIp").textContent = user.orbit_ip || "—";
+  const usageExample = `curl -X GET "${location.origin}/api/v1/busqueda?apikey=${user.api_key}&query=tu+busqueda" \\
+  -H "x-orbit-ip: ${user.orbit_ip || "TU_ORBIT_IP"}"`;
+  document.getElementById("usageExample").textContent = usageExample;
+  document.getElementById("copyUsageBtn").addEventListener("click", () => copyToClipboard(usageExample, "Ejemplo"));
+  document.getElementById("statVip").textContent = user.is_admin ? "Admin" : (user.plan_label || "Free");
+  document.getElementById("rankPrev").addEventListener("click", () => loadDashboardStats(rankingPage - 1));
+  document.getElementById("rankNext").addEventListener("click", () => loadDashboardStats(rankingPage + 1));
+  await loadDashboardStats(1);
 })();
