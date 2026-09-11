@@ -7,15 +7,39 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 .landing{position:relative;z-index:1}.landing-nav{padding:18px 0;border-bottom:1px solid var(--border);background:rgba(10,14,23,.72);backdrop-filter:blur(14px);position:sticky;top:0;z-index:30}.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}.nav-links{display:flex;align-items:center;gap:8px}.menu-toggle{display:none}.hero{padding:86px 0 70px}.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:42px;align-items:center}.eyebrow{display:inline-flex;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:12px;margin-bottom:16px}.hero h1{font-family:var(--font-head);font-size:clamp(38px,6vw,62px);line-height:1.05;letter-spacing:-1.5px;margin-bottom:18px}.hero h1 span{color:var(--accent)}.hero-lead{color:var(--muted);font-size:16px;max-width:620px;margin-bottom:26px}.hero-actions{display:flex;gap:9px;flex-wrap:wrap}.terminal{background:#090d15;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25);overflow:hidden}.terminal-head{height:42px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:6px}.terminal-head i{width:7px;height:7px;border-radius:50%;background:var(--border)}.terminal-body{padding:20px;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:#b9c4d9;overflow:auto}.terminal-body .method{color:var(--accent)}.terminal-body .ok{color:var(--success)}.section{padding:28px 0}.section-head{margin-bottom:16px}.section-head h2{font-family:var(--font-head);font-size:26px;margin-bottom:5px}.section-head p{color:var(--muted);font-size:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.feature{min-height:150px}.feature-icon{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:12px}.feature-icon svg{width:17px;height:17px}.feature h3{font-family:var(--font-head);font-size:16px;margin-bottom:8px}.feature p{font-size:13.5px;color:var(--muted)}.endpoint{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.endpoint code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text)}.endpoint small{color:var(--muted);display:block;margin-top:6px}.access{font-size:10.5px;font-weight:700;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--muted);padding:4px 8px;border-radius:999px;white-space:nowrap}.access.vip{border-color:rgba(108,140,255,.32);background:rgba(108,140,255,.15);color:#9fb1ff}.cta{margin:28px 0}.landing-footer{border-top:1px solid var(--border);padding:24px 0 34px;color:var(--muted);font-size:13px}.landing-footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.landing-footer a{color:var(--text)}
-.drawer-public{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.58);opacity:0;visibility:hidden;transition:.2s}.drawer-public.open{opacity:1;visibility:visible}.drawer-public-panel{width:min(310px,86vw);height:100%;background:var(--surface);border-right:1px solid var(--border);padding:22px}.drawer-public-panel a{display:block;padding:12px;border-radius:9px;color:var(--muted);font-size:14px}.drawer-public-panel a:hover{background:var(--surface-2);color:var(--text)}
-@media(max-width:800px){.hero-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.hero{padding-top:58px}.nav-links{display:none}.menu-toggle{display:inline-flex}.nav-inner .brand{margin-right:auto}.landing-nav .wrap{width:min(1100px,calc(100% - 24px))}}
+@media(max-width:800px){.hero-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.hero{padding-top:30px}}
+@media(max-width:420px){.topbar-right a.btn-ghost{display:none}.topbar-right .btn{padding:0 10px;font-size:12px}}
 </style>
 </head>
 <body>
 <div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse><ellipse class="orbit-ring" cx="400" cy="400" rx="280" ry="280"></ellipse><ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse><circle class="orbit-dot" cx="740" cy="330" r="4"></circle><circle class="orbit-dot" cx="120" cy="470" r="3"></circle></svg></div>
-<div class="drawer-public" id="publicDrawer"><div class="drawer-public-panel" onclick="event.stopPropagation()"><div class="brand" style="margin-bottom:18px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse><circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle></svg>Orbit API</div><a href="/">Inicio</a><a href="/docs">Documentación</a><a href="/terms">Términos</a><a href="/login">Iniciar sesión</a><a href="/register">Crear cuenta</a></div></div>
 <div class="landing">
-<header class="landing-nav"><div class="wrap nav-inner"><a class="brand" href="/"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse><circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle></svg>Orbit API</a><button class="btn btn-icon menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú">☰</button><div class="nav-links"><a class="btn btn-ghost" href="/docs">Documentación</a><a class="btn btn-ghost" href="/terms">Términos</a><a class="btn btn-ghost" href="/login">Iniciar sesión</a><a class="btn btn-primary" href="/register">Crear cuenta</a></div></div></header>
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="brand" href="/">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
+        <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
+      </svg>
+      <span>Orbit API</span>
+    </a>
+    <nav class="topbar-nav-icons">
+      <a class="topbar-nav-icon active" href="/" title="Inicio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>
+      </a>
+      <a class="topbar-nav-icon" href="/docs" title="Documentación">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>
+      </a>
+      <a class="topbar-nav-icon" href="/terms" title="Términos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+      </a>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <a class="btn btn-ghost" href="/login">Iniciar sesión</a>
+    <a class="btn btn-primary" href="/register">Crear cuenta</a>
+  </div>
+</div>
 <main>
 <section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">API · ENDPOINTS · DESARROLLO</div><h1>Tu proyecto,<br><span>conectado a Orbit.</span></h1><p class="hero-lead">Una API centralizada para búsqueda, descargas, inteligencia artificial y herramientas útiles. Crea tu cuenta, genera tu API key y empieza a integrar.</p><div class="hero-actions"><a class="btn btn-primary" href="/register">Comenzar ahora</a><a class="btn btn-ghost" href="/docs">Ver documentación</a></div></div><div class="terminal"><div class="terminal-head"><i></i><i></i><i></i></div><div class="terminal-body"><span class="method">GET</span> /api/v1/search?apikey=ORBIT-XXXXXXXX&amp;query=lofi
 
@@ -30,6 +54,5 @@
 </main>
 <footer class="landing-footer"><div class="wrap"><span>Orbit API</span><span><a href="/docs">Documentación</a> · <a href="/terms">Términos</a> · <a href="/login">Iniciar sesión</a></span></div></footer>
 </div>
-<script>const drawer=document.getElementById('publicDrawer');const toggle=document.getElementById('menuToggle');toggle?.addEventListener('click',()=>drawer.classList.add('open'));drawer.addEventListener('click',()=>drawer.classList.remove('open'));document.querySelectorAll('.drawer-public-panel a').forEach(a=>a.addEventListener('click',()=>drawer.classList.remove('open')));</script>
 </body>
 </html>
