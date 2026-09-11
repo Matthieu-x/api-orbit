@@ -17,6 +17,7 @@ const {
   isReferralBonusActive,
   grantReferralBonus
 } = require("../utils/referral");
+const { PLANS, planConfig } = require("../utils/plans");
 
 const VERIFICATION_TTL_MS = 15 * 60 * 1000;
 const RESET_TTL_MS = 30 * 60 * 1000;
@@ -35,6 +36,7 @@ const COOKIE_OPTS = {
 };
 
 function publicUser(user) {
+  const plan = Number(user.is_admin) === 1 ? "superorbit" : PLANS[user.plan] ? user.plan : "free";
   return {
     id: user.id,
     name: user.name,
@@ -46,6 +48,8 @@ function publicUser(user) {
     is_admin: Number(user.is_admin) === 1,
     is_vip: Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()),
     vip_expires_at: user.vip_expires_at || null,
+    plan,
+    plan_label: planConfig(plan).label,
     orbit_ip: user.orbit_ip_token || null,
     referral_code: user.referral_code || null,
     referral_bonus_active: isReferralBonusActive(user),
