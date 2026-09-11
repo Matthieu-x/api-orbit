@@ -50,6 +50,20 @@ async function ensureSchema() {
   await addColumnIfMissing("referred_by", "TEXT");
   await addColumnIfMissing("base_requests_limit", "INTEGER");
   await addColumnIfMissing("referral_bonus_expires_at", "TEXT");
+  await addColumnIfMissing("plan", "TEXT");
+  await addColumnIfMissing("plan_expires_at", "TEXT");
+
+  // Backfill: las cuentas VIP existentes (sistema binario anterior) pasan
+  // al tier "vip"; el resto queda en "free". plan_expires_at hereda la
+  // fecha de vip_expires_at si la tenian.
+  await client.execute({
+    sql: "UPDATE orbit_users SET plan = CASE WHEN plan IS NOT NULL AND plan != '' THEN plan WHEN vip = 1 THEN 'vip' ELSE 'free' END",
+    args: []
+  });
+  await client.execute({
+    sql: "UPDATE orbit_users SET plan_expires_at = COALESCE(plan_expires_at, vip_expires_at) WHERE plan != 'free'",
+    args: []
+  });
 
   // Usuarios ya existentes sin referral_code (instalaciones previas a este
   // feature): les generamos uno a partir de su nombre y fijamos su limite
