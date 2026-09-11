@@ -10,6 +10,13 @@ const { createSession, destroySession, SESSION_DAYS } = require("../utils/sessio
 const { requireAuth } = require("../middleware/auth");
 const { generateOrbitIp } = require("../utils/ip");
 const { sendMail, welcomeEmailHtml, verificationEmailHtml, resetPasswordEmailHtml } = require("../utils/mailer");
+const {
+  REFERRAL_BONUS_REQUESTS,
+  REFERRAL_BONUS_DAYS,
+  generateUniqueReferralCode,
+  isReferralBonusActive,
+  grantReferralBonus
+} = require("../utils/referral");
 
 const VERIFICATION_TTL_MS = 15 * 60 * 1000;
 const RESET_TTL_MS = 30 * 60 * 1000;
@@ -39,7 +46,11 @@ function publicUser(user) {
     is_admin: Number(user.is_admin) === 1,
     is_vip: Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()),
     vip_expires_at: user.vip_expires_at || null,
-    orbit_ip: user.orbit_ip_token || null
+    orbit_ip: user.orbit_ip_token || null,
+    referral_code: user.referral_code || null,
+    referral_bonus_active: isReferralBonusActive(user),
+    referral_bonus_expires_at: user.referral_bonus_expires_at || null,
+    created_at: user.created_at || null
   };
 }
 
@@ -47,7 +58,7 @@ function publicUser(user) {
 // No depende de la IP real del dispositivo ni cambia al iniciar sesion.
 
 router.post("/register", async (req, res) => {
-  const { name, email, password, captchaToken } = req.body;
+  const { name, email, password, captchaToken, ref } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ ok: false, error: "Completa todos los campos" });
@@ -71,14 +82,32 @@ router.post("/register", async (req, res) => {
     return res.status(409).json({ ok: false, error: "Ese correo ya esta registrado" });
   }
 
+  // Codigo de invitacion: opcional. Si viene y coincide con un usuario
+  // existente, tanto el nuevo usuario como quien invito ganan +100
+  // solicitudes/dia por 7 dias.
+  let referrer = null;
+  const refCode = String(ref || "").trim();
+  if (refCode) {
+    const referrerResult = await client.execute({
+      sql: "SELECT * FROM orbit_users WHERE referral_code = ?",
+      args: [refCode]
+    });
+    referrer = referrerResult.rows[0] || null;
+  }
+
+  const referralCode = await generateUniqueReferralCode(name);
+  const baseLimit = 100;
+  const bonusExpiresAt = referrer ? new Date(Date.now() + REFERRAL_BONUS_DAYS * 24 * 60 * 60 * 1000).toISOString() : null;
+  const startingLimit = referrer ? baseLimit + REFERRAL_BONUS_REQUESTS : baseLimit;
+
   const user = {
     id: crypto.randomUUID(),
     name,
     email,
     password,
     api_key: generateApiKey(),
-    requests_remaining: 100,
-    requests_limit: 100,
+    requests_remaining: startingLimit,
+    requests_limit: startingLimit,
     requests_reset_date: todayStamp(),
     created_at: new Date().toISOString(),
     orbit_ip_token: generateOrbitIp(),
@@ -88,8 +117,8 @@ router.post("/register", async (req, res) => {
 
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at)
-      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 0, ?, ?)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at, referral_code, referred_by, base_requests_limit, referral_bonus_expires_at)
+      VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 0, ?, ?, ?, ?, ?, ?)`,
     args: [
       user.id,
       user.name,
@@ -102,9 +131,27 @@ router.post("/register", async (req, res) => {
       user.created_at,
       user.orbit_ip_token,
       user.verification_code,
-      user.verification_expires_at
+      user.verification_expires_at,
+      referralCode,
+      referrer ? referrer.id : null,
+      baseLimit,
+      bonusExpiresAt
     ]
   });
+
+  if (referrer) {
+    await grantReferralBonus(referrer);
+    await client.execute({
+      sql: `INSERT INTO orbit_notifications (id, user_id, title, message, created_at) VALUES (?, ?, ?, ?, ?)`,
+      args: [
+        crypto.randomUUID(),
+        referrer.id,
+        "¡Nuevo invitado!",
+        `${name} se registró con tu enlace. Ganaste +${REFERRAL_BONUS_REQUESTS} solicitudes/día por ${REFERRAL_BONUS_DAYS} días.`,
+        new Date().toISOString()
+      ]
+    });
+  }
 
   res.json({ ok: true, email: user.email, message: "Cuenta creada. Revisa tu correo para verificarla." });
 
@@ -348,6 +395,8 @@ router.get("/github/callback", async (req, res) => {
     let user = existing.rows[0];
 
     if (!user) {
+      const referralCode = await generateUniqueReferralCode(ghUser.name || ghUser.login);
+
       user = {
         id: crypto.randomUUID(),
         name: ghUser.name || ghUser.login,
@@ -366,8 +415,8 @@ router.get("/github/callback", async (req, res) => {
 
       await client.execute({
         sql: `INSERT INTO orbit_users
-          (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at, github_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 0, ?, ?, ?)`,
+          (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, allowed_ips, orbit_ip_token, email_verified, verification_code, verification_expires_at, github_id, referral_code, base_requests_limit)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0, NULL, NULL, ?, 0, ?, ?, ?, ?, ?)`,
         args: [
           user.id,
           user.name,
@@ -382,7 +431,9 @@ router.get("/github/callback", async (req, res) => {
           user.orbit_ip_token,
           user.verification_code,
           user.verification_expires_at,
-          user.github_id
+          user.github_id,
+          referralCode,
+          100
         ]
       });
 
