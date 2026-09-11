@@ -28,6 +28,7 @@
   .notfound h1 {
     font-size: 22px;
   }
+  .notfound .links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -40,10 +41,20 @@
 </div>
 
 <div class="notfound">
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="color:var(--accent)">
+    <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
+    <circle cx="12" cy="12" r="2.6" fill="currentColor"></circle>
+  </svg>
+  <span class="dashboard-badge">ERROR 404</span>
   <div class="code">404</div>
-  <h1>Esta orbita no existe</h1>
-  <p class="muted">La pagina que buscas no esta disponible.</p>
+  <h1>Esta órbita no existe</h1>
+  <p class="muted">La página que buscas no está disponible.</p>
   <a class="btn btn-primary" href="/">Volver al inicio</a>
+  <div class="links">
+    <a class="chip" href="/dashboard">Dashboard</a>
+    <a class="chip" href="/docs">Documentación</a>
+    <a class="chip" href="/login">Iniciar sesión</a>
+  </div>
 </div>
 
 </body>
