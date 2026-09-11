@@ -72,6 +72,37 @@
         <div class="json-console" id="pwResponse">Ajusta las opciones y genera...</div>
       </div>
 
+      <div class="card" style="margin-top:20px">
+        <div class="endpoint-page-head">
+          <div>
+            <span class="method">GET</span>
+            <h3 style="margin-top:10px">Traductor</h3>
+            <p class="muted" style="margin-top:5px">Traduce texto entre idiomas.</p>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px">
+          <label>text</label>
+          <input id="trText" placeholder="Texto a traducir">
+        </div>
+        <div class="field-row" style="margin-top:12px;gap:14px;flex-wrap:wrap">
+          <div class="field" style="flex:1;min-width:120px">
+            <label>from (opcional)</label>
+            <input id="trFrom" placeholder="auto" value="auto">
+          </div>
+          <div class="field" style="flex:1;min-width:120px">
+            <label>to</label>
+            <input id="trTo" placeholder="es" value="es">
+          </div>
+        </div>
+        <div class="endpoint-row" id="trEndpointUrl"></div>
+        <div class="copy-row">
+          <button class="btn btn-ghost" id="trCopyBtn">Copiar endpoint</button>
+          <button class="btn btn-primary" id="trSendBtn">Traducir</button>
+        </div>
+        <div class="panel-label" style="margin-top:18px">Respuesta</div>
+        <div class="json-console" id="trResponse">Escribe un texto y tradúcelo...</div>
+      </div>
+
     </div>
   </div>
   <script src="/js/app.js"></script>
