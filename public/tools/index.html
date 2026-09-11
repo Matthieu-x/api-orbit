@@ -103,6 +103,83 @@
         <div class="json-console" id="trResponse">Escribe un texto y tradúcelo...</div>
       </div>
 
+      <div class="card" style="margin-top:20px">
+        <div class="endpoint-page-head">
+          <div>
+            <span class="method">GET</span>
+            <h3 style="margin-top:10px">Base64</h3>
+            <p class="muted" style="margin-top:5px">Codifica o decodifica texto en Base64. Generación local, sin API externa.</p>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px">
+          <label>text</label>
+          <input id="b64Text" placeholder="Texto a codificar o decodificar">
+        </div>
+        <div class="field-row" style="margin-top:12px;gap:14px;flex-wrap:wrap">
+          <label class="muted" style="display:flex;align-items:center;gap:6px"><input type="radio" name="b64Action" id="b64Encode" checked> encode</label>
+          <label class="muted" style="display:flex;align-items:center;gap:6px"><input type="radio" name="b64Action" id="b64Decode"> decode</label>
+        </div>
+        <div class="endpoint-row" id="b64EndpointUrl"></div>
+        <div class="copy-row">
+          <button class="btn btn-ghost" id="b64CopyBtn">Copiar endpoint</button>
+          <button class="btn btn-primary" id="b64SendBtn">Procesar</button>
+        </div>
+        <div class="panel-label" style="margin-top:18px">Respuesta</div>
+        <div class="json-console" id="b64Response">Escribe un texto...</div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="endpoint-page-head">
+          <div>
+            <span class="method">GET</span>
+            <h3 style="margin-top:10px">Hash</h3>
+            <p class="muted" style="margin-top:5px">Genera hashes MD5, SHA1, SHA256 o SHA512 de un texto. Generación local, sin API externa.</p>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px">
+          <label>text</label>
+          <input id="hashText" placeholder="Texto a hashear">
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>algorithm (opcional)</label>
+          <select id="hashAlgo">
+            <option value="">Todos</option>
+            <option value="md5">MD5</option>
+            <option value="sha1">SHA1</option>
+            <option value="sha256" selected>SHA256</option>
+            <option value="sha512">SHA512</option>
+          </select>
+        </div>
+        <div class="endpoint-row" id="hashEndpointUrl"></div>
+        <div class="copy-row">
+          <button class="btn btn-ghost" id="hashCopyBtn">Copiar endpoint</button>
+          <button class="btn btn-primary" id="hashSendBtn">Generar hash</button>
+        </div>
+        <div class="panel-label" style="margin-top:18px">Respuesta</div>
+        <div class="json-console" id="hashResponse">Escribe un texto...</div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="endpoint-page-head">
+          <div>
+            <span class="method">GET</span>
+            <h3 style="margin-top:10px">UUID</h3>
+            <p class="muted" style="margin-top:5px">Genera identificadores únicos UUID v4. Generación local, sin API externa.</p>
+          </div>
+        </div>
+        <div class="field" style="margin-top:18px">
+          <label>count (1-50)</label>
+          <input id="uuidCount" placeholder="1" value="1">
+        </div>
+        <div class="endpoint-row" id="uuidEndpointUrl"></div>
+        <div class="copy-row">
+          <button class="btn btn-ghost" id="uuidCopyBtn">Copiar endpoint</button>
+          <button class="btn btn-primary" id="uuidSendBtn">Generar</button>
+        </div>
+        <div class="panel-label" style="margin-top:18px">Respuesta</div>
+        <div class="json-console" id="uuidResponse">Genera un UUID...</div>
+      </div>
+
     </div>
   </div>
   <script src="/js/app.js"></script>
