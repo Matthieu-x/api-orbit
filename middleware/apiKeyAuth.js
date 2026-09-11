@@ -1,6 +1,7 @@
 const client = require("../db/client");
 const { todayStamp } = require("../utils/keygen");
 const { revertExpiredReferralBonus } = require("../utils/referral");
+const { hasMinPlan, planConfig } = require("../utils/plans");
 
 async function ensureRequestLogTable() {
   await client.execute(`
@@ -51,17 +52,9 @@ function apiKeyAuth(options = {}) {
       const user = result.rows[0];
       const today = todayStamp();
 
-      // Un VIP vencido vuelve automáticamente a Free.
-      if (Number(user.is_admin) !== 1 && Number(user.vip) === 1 && user.vip_expires_at && new Date(user.vip_expires_at).getTime() <= Date.now()) {
-        await client.execute({
-          sql: "UPDATE orbit_users SET vip = 0, vip_expires_at = NULL, requests_limit = 100, requests_remaining = CASE WHEN requests_remaining > 100 THEN 100 ELSE requests_remaining END WHERE id = ?",
-          args: [user.id]
-        });
-        user.vip = 0;
-        user.vip_expires_at = null;
-        user.requests_limit = 100;
-        user.requests_remaining = Math.min(Number(user.requests_remaining), 100);
-      }
+      // Los planes de Orbit API son permanentes: no vencen solos. Un admin
+      // es quien los cambia (ver POST /api/admin/users/:id/plan). Por eso
+      // aquí ya no hay auto-downgrade por fecha.
 
       // Bono de invitados vencido: vuelve al limite base del usuario.
       await revertExpiredReferralBonus(user);
@@ -87,11 +80,11 @@ function apiKeyAuth(options = {}) {
         });
       }
 
-      if (options.vip && !isVipActive(user)) {
+      if (options.minPlan && !hasMinPlan(user, options.minPlan)) {
         return res.status(403).json({
           ok: false,
-          vip_required: true,
-          error: "Este endpoint es exclusivo para usuarios VIP"
+          plan_required: options.minPlan,
+          error: `Este endpoint requiere el plan ${planConfig(options.minPlan).label} o superior`
         });
       }
 
