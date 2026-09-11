@@ -3,6 +3,9 @@ const apiKeyAuth = require("../../../middleware/apiKeyAuth");
 const { generateQrBuffer, generateQrDataUrl } = require("../../../services/qr");
 const { generatePassword, parseBool } = require("../../../services/password");
 const { translateText } = require("../../../services/translate");
+const { base64Process } = require("../../../services/encode");
+const { hashText, hashAll } = require("../../../services/hash");
+const { generateUuids } = require("../../../services/uuid");
 
 const router = express.Router();
 
@@ -14,6 +17,9 @@ const router = express.Router();
 router.use("/qr", apiKeyAuth);
 router.use("/password", apiKeyAuth);
 router.use("/translate", apiKeyAuth);
+router.use("/base64", apiKeyAuth);
+router.use("/hash", apiKeyAuth);
+router.use("/uuid", apiKeyAuth);
 
 // ─────────────────────────────────────────────
 // QR CODE (generación 100% local, sin API externa)
@@ -136,6 +142,115 @@ router.get("/translate", async (req, res) => {
       from: result.from,
       to: result.to,
       result: result.translated
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// BASE64 (encode/decode 100% local, sin API externa)
+// ─────────────────────────────────────────────
+
+router.get("/base64", (req, res) => {
+  const text = String(req.query.text || "").trim();
+  const action = String(req.query.action || "encode").trim().toLowerCase();
+
+  if (!text) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'text' es requerido"
+    });
+  }
+
+  if (!["encode", "decode"].includes(action)) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'action' debe ser 'encode' o 'decode'"
+    });
+  }
+
+  try {
+    const result = base64Process(text, action);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      action,
+      text,
+      result
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// HASH (MD5/SHA1/SHA256/SHA512, 100% local, sin API externa)
+// ─────────────────────────────────────────────
+
+router.get("/hash", (req, res) => {
+  const text = String(req.query.text || "").trim();
+  const algorithm = req.query.algorithm ? String(req.query.algorithm).trim().toLowerCase() : null;
+
+  if (!text) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'text' es requerido"
+    });
+  }
+
+  try {
+    if (algorithm) {
+      const result = hashText(text, algorithm);
+      return res.json({
+        status: true,
+        creator: "Orbit",
+        algorithm,
+        text,
+        result
+      });
+    }
+
+    const result = hashAll(text);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      text,
+      result
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// UUID (generación 100% local, sin API externa)
+// ─────────────────────────────────────────────
+
+router.get("/uuid", (req, res) => {
+  try {
+    const results = generateUuids(req.query.count);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      total: results.length,
+      result: results[0],
+      results
     });
   } catch (error) {
     return res.status(400).json({
