@@ -26,8 +26,8 @@ router.use("/tiktok-search", apiKeyAuth, tiktokSearchRoutes);
 router.use("/sticker-search", apiKeyAuth, stickerSearchRoutes);
 router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
-router.use("/ia", createApiKeyAuth({ vip: true }), iaRoutes);
+router.use("/ia", createApiKeyAuth({ minPlan: "vip" }), iaRoutes);
 router.use("/tools", toolsRoutes);
-router.use("/anime", createApiKeyAuth({ vip: true }), animeRoutes);
+router.use("/anime", createApiKeyAuth({ minPlan: "plus" }), animeRoutes);
 
 module.exports = router;
