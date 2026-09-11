@@ -4,981 +4,179 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documentación — Orbit API</title>
-
 <link rel="stylesheet" href="/css/style.css">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
-.page-nav{
-  padding:18px 0;
-  border-bottom:1px solid var(--border);
-  background:rgba(10,14,23,.88);
-  backdrop-filter:blur(14px);
-  position:sticky;
-  top:0;
-  z-index:20;
-}
-
-.page-nav-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
-
-.nav-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.docs-layout{
-  display:grid;
-  grid-template-columns:230px minmax(0,1fr);
-  gap:20px;
-  padding-top:30px;
-}
-
-.docs-sidebar{
-  position:sticky;
-  top:92px;
-  height:max-content;
-}
-
-.docs-sidebar .card{
-  padding:12px;
-}
-
-.docs-sidebar a{
-  display:block;
-  padding:10px 12px;
-  border-radius:9px;
-  color:var(--muted);
-  font-size:13.5px;
-  text-decoration:none;
-  transition:.2s;
-}
-
-.docs-sidebar a:hover,
-.docs-sidebar a.active{
-  background:var(--accent-soft);
-  color:var(--text);
-}
-
-.docs-content{
-  min-width:0;
-}
-
-.docs-hero{
-  margin-bottom:18px;
-}
-
-/* FOTO PRINCIPAL */
-.docs-cover{
-  width:100%;
-  height:auto;
-  display:block;
-  max-height:420px;
-  object-fit:cover;
-  border-radius:16px;
-  border:1px solid var(--border);
-  margin-bottom:18px;
-  box-shadow:0 10px 40px rgba(0,0,0,.25);
-}
-
-.docs-hero h1{
-  font-family:var(--font-head);
-  font-size:clamp(28px,5vw,42px);
-  margin-bottom:8px;
-}
-
-.docs-hero p{
-  color:var(--muted);
-  max-width:720px;
-}
-
-.doc-section{
-  margin-bottom:18px;
-  scroll-margin-top:92px;
-}
-
-.doc-section h2{
-  font-family:var(--font-head);
-  font-size:20px;
-  margin-bottom:8px;
-}
-
-.doc-section h3{
-  font-size:15px;
-  margin:18px 0 8px;
-}
-
-.doc-section p,
-.doc-section li{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.65;
-}
-
-.doc-section ul{
-  padding-left:20px;
-}
-
-.codebox{
-  background:#090d15;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:15px;
-  overflow-x:auto;
-  margin-top:10px;
-  font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
-  color:#b9c4d9;
-  white-space:pre;
-  -webkit-overflow-scrolling:touch;
-}
-
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  margin-top:10px;
-  border:1px solid var(--border);
-  border-radius:10px;
-}
-
-.endpoint-table{
-  width:100%;
-  min-width:560px;
-  border-collapse:collapse;
-  font-size:13px;
-}
-
-.endpoint-table th,
-.endpoint-table td{
-  padding:11px 9px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-  vertical-align:top;
-}
-
-.endpoint-table tr:last-child td{
-  border-bottom:0;
-}
-
-.endpoint-table th{
-  color:var(--text);
-  font-weight:600;
-}
-
-.endpoint-table td{
-  color:var(--muted);
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  border:1px solid var(--border);
-  background:var(--surface-2);
-  border-radius:7px;
-  padding:3px 7px;
-  font-size:11px;
-  color:var(--text);
-  white-space:nowrap;
-}
-
-.badge.method-get{
-  border-color:rgba(61,214,140,.3);
-  background:rgba(61,214,140,.12);
-  color:#72e7ae;
-  font-weight:700;
-}
-
-.badge.access-free{
-  border-color:var(--border);
-  background:rgba(255,255,255,.05);
-  color:var(--muted);
-  font-weight:700;
-}
-
-.badge.access-vip{
-  border-color:rgba(108,140,255,.32);
-  background:rgba(108,140,255,.15);
-  color:#9fb1ff;
-  font-weight:700;
-}
-
-.ip-image{
-  width:100%;
-  display:block;
-  border-radius:12px;
-  border:1px solid var(--border);
-  margin-top:10px;
-}
-
-.footer{
-  padding:28px 0 38px;
-  color:var(--muted);
-  font-size:13px;
-}
-
-.footer a{
-  color:var(--text);
-}
-
-/* TABLET */
-@media(max-width:900px){
-  .docs-layout{
-    grid-template-columns:1fr;
-    gap:18px;
-  }
-
-  .docs-sidebar{
-    position:static;
-  }
-
-  .docs-sidebar .card{
-    display:flex;
-    gap:5px;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  .docs-sidebar a{
-    white-space:nowrap;
-  }
-}
-
-/* TELÉFONOS */
-@media(max-width:600px){
-
-  .page-nav{
-    padding:12px 0;
-  }
-
-  .page-nav-inner{
-    gap:8px;
-  }
-
-  .brand{
-    font-size:15px;
-    white-space:nowrap;
-  }
-
-  .brand svg{
-    width:21px;
-    height:21px;
-  }
-
-  .nav-actions{
-    gap:5px;
-    flex-wrap:nowrap;
-  }
-
-  .nav-actions .btn{
-    height:36px;
-    padding:0 10px;
-    font-size:12px;
-    white-space:nowrap;
-  }
-
-  .docs-layout{
-    padding-top:18px;
-  }
-
-  .docs-cover{
-    border-radius:12px;
-    margin-bottom:15px;
-    max-height:240px;
-    object-fit:cover;
-  }
-
-  .docs-hero{
-    margin-bottom:14px;
-  }
-
-  .docs-hero h1{
-    font-size:30px;
-    margin-top:8px !important;
-  }
-
-  .docs-hero p{
-    font-size:13px;
-    line-height:1.55;
-  }
-
-  .docs-sidebar .card{
-    padding:7px;
-    border-radius:10px;
-  }
-
-  .docs-sidebar a{
-    padding:8px 10px;
-    font-size:12px;
-  }
-
-  .doc-section{
-    margin-bottom:12px;
-    border-radius:12px;
-  }
-
-  .doc-section h2{
-    font-size:18px;
-  }
-
-  .doc-section h3{
-    font-size:14px;
-    margin-top:15px;
-  }
-
-  .doc-section p,
-  .doc-section li{
-    font-size:13px;
-    line-height:1.6;
-  }
-
-  .codebox{
-    padding:12px;
-    font-size:11.5px;
-    border-radius:9px;
-  }
-
-  .endpoint-table{
-    min-width:520px;
-    font-size:11.5px;
-  }
-
-  .endpoint-table th,
-  .endpoint-table td{
-    padding:9px 8px;
-  }
-
-  .badge{
-    font-size:10px;
-    padding:3px 6px;
-  }
-
-  .footer{
-    padding:20px 0 28px;
-    text-align:center;
-    line-height:1.8;
-  }
-}
-
-/* TELÉFONOS MUY PEQUEÑOS */
-@media(max-width:380px){
-
-  .brand{
-    font-size:14px;
-  }
-
-  .nav-actions .btn{
-    padding:0 8px;
-    font-size:11px;
-  }
-
-  .docs-cover{
-    max-height:190px;
-  }
-
-  .docs-hero h1{
-    font-size:27px;
-  }
-
-  .docs-sidebar a{
-    font-size:11.5px;
-    padding:8px;
-  }
-}
+.page-nav{padding:18px 0;border-bottom:1px solid var(--border);background:rgba(10,14,23,.88);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.page-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.nav-actions{display:flex;gap:8px;flex-wrap:wrap}
+.docs-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;padding-top:30px}
+.docs-sidebar{position:sticky;top:80px;height:max-content}
+.docs-sidebar .card{padding:12px}
+.docs-sidebar a{display:block;padding:10px 12px;border-radius:9px;color:var(--muted);font-size:13.5px}
+.docs-sidebar a:hover,.docs-sidebar a.active{background:var(--accent-soft);color:var(--text)}
+.docs-content{min-width:0}
+.docs-hero{margin-bottom:18px}
+.docs-hero h1{font-family:var(--font-head);font-size:clamp(28px,5vw,42px);margin-bottom:8px}
+.docs-hero p{color:var(--muted);max-width:720px}
+.doc-section{margin-bottom:18px;scroll-margin-top:80px}
+.doc-section h2{font-family:var(--font-head);font-size:20px;margin-bottom:8px}
+.doc-section h3{font-size:15px;margin:18px 0 8px}
+.doc-section p,.doc-section li{color:var(--muted);font-size:14px}
+.doc-section ul{padding-left:20px}
+.codebox{background:#090d15;border:1px solid var(--border);border-radius:10px;padding:15px;overflow:auto;margin-top:10px;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:#b9c4d9;white-space:pre}
+.endpoint-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.endpoint-table th,.endpoint-table td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.endpoint-table th{color:var(--text);font-weight:600}
+.endpoint-table td{color:var(--muted)}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--border);background:var(--surface-2);border-radius:7px;padding:3px 7px;font-size:11px;color:var(--text)}
+.badge.method-get{border-color:rgba(61,214,140,.3);background:rgba(61,214,140,.12);color:#72e7ae;font-weight:700}
+.badge.access-free{border-color:var(--border);background:rgba(255,255,255,.05);color:var(--muted);font-weight:700}
+.badge.access-vip{border-color:rgba(108,140,255,.32);background:rgba(108,140,255,.15);color:#9fb1ff;font-weight:700}
+.footer{padding:28px 0 38px;color:var(--muted);font-size:13px}
+.footer a{color:var(--text)}
+@media(max-width:760px){.docs-layout{grid-template-columns:1fr}.docs-sidebar{position:static}.docs-sidebar .card{display:flex;gap:5px;overflow:auto}.docs-sidebar a{white-space:nowrap}.endpoint-table{font-size:12px}.endpoint-table th:nth-child(3),.endpoint-table td:nth-child(3){display:none}}
+@media(max-width:420px){.topbar-right a.btn-ghost{display:none}.topbar-right .btn{padding:0 10px;font-size:12px}}
 </style>
 </head>
-
 <body>
+<div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse><ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse><circle class="orbit-dot" cx="710" cy="300" r="4"></circle></svg></div>
 
-<div class="orbit-bg">
-  <svg viewBox="0 0 800 800">
-    <ellipse
-      class="orbit-ring"
-      cx="400"
-      cy="400"
-      rx="360"
-      ry="150"
-      transform="rotate(-12 400 400)">
-    </ellipse>
-
-    <ellipse
-      class="orbit-ring"
-      cx="400"
-      cy="400"
-      rx="200"
-      ry="340"
-      transform="rotate(18 400 400)">
-    </ellipse>
-
-    <circle
-      class="orbit-dot"
-      cx="710"
-      cy="300"
-      r="4">
-    </circle>
-  </svg>
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="brand" href="/">
+      <img src="https://files.catbox.moe/hm29hr.png" alt="Orbit API" width="22" height="22" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex:0 0 auto">
+      <span>Orbit API</span>
+    </a>
+    <nav class="topbar-nav-icons">
+      <a class="topbar-nav-icon" href="/" title="Inicio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>
+      </a>
+      <a class="topbar-nav-icon active" href="/docs" title="Documentación">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>
+      </a>
+      <a class="topbar-nav-icon" href="/terms" title="Términos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+      </a>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <a class="btn btn-ghost" href="/login">Iniciar sesión</a>
+    <a class="btn btn-primary" href="/register">Crear cuenta</a>
+  </div>
 </div>
 
-<header class="page-nav">
-  <div class="wrap page-nav-inner">
-
-    <a class="brand" href="/">
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none">
-
-        <ellipse
-          cx="12"
-          cy="12"
-          rx="10"
-          ry="4.2"
-          stroke="currentColor"
-          stroke-width="1.4"
-          transform="rotate(-18 12 12)">
-        </ellipse>
-
-        <circle
-          cx="12"
-          cy="12"
-          r="2.6"
-          fill="var(--accent)">
-        </circle>
-
-      </svg>
-
-      Orbit API
-    </a>
-
-    <div class="nav-actions">
-      <a class="btn btn-ghost" href="/terms">
-        Términos
-      </a>
-
-      <a class="btn btn-primary" href="/register">
-        Crear cuenta
-      </a>
-    </div>
-
-  </div>
-</header>
-
 <main class="app-shell">
-
   <div class="wrap docs-layout">
-
-    <aside class="docs-sidebar">
-      <div class="card">
-
-        <a class="active" href="#inicio">
-          Introducción
-        </a>
-
-        <a href="#auth">
-          Autenticación
-        </a>
-
-        <a href="#search">
-          Search
-        </a>
-
-        <a href="#download">
-          Download
-        </a>
-
-        <a href="#pinterest">
-          Pinterest
-        </a>
-
-        <a href="#ia">
-          IA
-        </a>
-
-        <a href="#tools">
-          Tools
-        </a>
-
-        <a href="#ip">
-          Seguridad por IP
-        </a>
-
-        <a href="#errores">
-          Errores
-        </a>
-
-      </div>
-    </aside>
+    <aside class="docs-sidebar"><div class="card">
+      <a class="active" href="#inicio">Introducción</a>
+      <a href="#auth">Autenticación</a>
+      <a href="#search">Search</a>
+      <a href="#download">Download</a>
+      <a href="#pinterest">Pinterest</a>
+      <a href="#ia">IA</a>
+      <a href="#tools">Tools</a>
+      <a href="#ip">Seguridad por IP</a>
+      <a href="#errores">Errores</a>
+    </div></aside>
 
     <section class="docs-content">
-
-      <div class="docs-hero" id="inicio">
-
-        <img
-          class="docs-cover"
-          src="https://files.catbox.moe/hm29hr.png"
-          alt="Orbit API">
-
-        <span class="dashboard-badge">
-          REFERENCIA · API
-        </span>
-
-        <h1 style="margin-top:10px">
-          Documentación
-        </h1>
-
-        <p>
-          Referencia de los endpoints disponibles en Orbit API,
-          sus parámetros y la forma correcta de realizar solicitudes.
-        </p>
-
-      </div>
-
+      <div class="docs-hero" id="inicio"><span class="dashboard-badge">REFERENCIA · API</span><h1 style="margin-top:10px">Documentación</h1><p>Referencia de los endpoints disponibles en Orbit API, sus parámetros y la forma correcta de realizar solicitudes.</p></div>
 
       <article class="card doc-section" id="auth">
-
-        <h2>
-          Autenticación
-        </h2>
-
-        <p>
-          Los endpoints protegidos utilizan tu API key.
-          Puedes enviarla como parámetro <strong>apikey</strong>
-          o mediante el header <strong>X-API-Key</strong>.
-        </p>
-
+        <h2>Autenticación</h2>
+        <p>Los endpoints protegidos utilizan tu API key. Puedes enviarla como parámetro <strong>apikey</strong> o mediante el header <strong>X-API-Key</strong>.</p>
         <div class="codebox">GET /api/v1/search?apikey=TU_API_KEY&amp;query=lofi
 
 # También puedes usar:
 X-API-Key: TU_API_KEY</div>
-
-        <h3>
-          Límites
-        </h3>
-
-        <p>
-          Las solicitudes autenticadas consumen el límite diario
-          asociado a tu cuenta. Las funciones VIP requieren una
-          cuenta con acceso VIP.
-        </p>
-
+        <h3>Límites</h3><p>Las solicitudes autenticadas consumen el límite diario asociado a tu cuenta. Las funciones VIP requieren una cuenta con acceso VIP.</p>
       </article>
-
 
       <article class="card doc-section" id="search">
-
-        <h2>
-          Search
-        </h2>
-
-        <p>
-          Busca contenido en YouTube. El parámetro
-          <strong>query</strong> es obligatorio y admite hasta
-          100 caracteres.
-        </p>
-
+        <h2>Search</h2><p>Busca contenido en YouTube. El parámetro <strong>query</strong> es obligatorio y admite hasta 100 caracteres.</p>
         <div class="codebox">GET /api/v1/search?apikey=TU_API_KEY&amp;query=lofi</div>
-
-        <div class="table-wrap">
-          <table class="endpoint-table">
-
-            <thead>
-              <tr>
-                <th>Método</th>
-                <th>Parámetro</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>
-                  <span class="badge method-get">
-                    GET
-                  </span>
-                </td>
-
-                <td>
-                  query
-                </td>
-
-                <td>
-                  Término de búsqueda. Obligatorio.
-                </td>
-              </tr>
-            </tbody>
-
-          </table>
-        </div>
-
+        <table class="endpoint-table"><thead><tr><th>Método</th><th>Parámetro</th><th>Descripción</th></tr></thead><tbody><tr><td><span class="badge method-get">GET</span></td><td>query</td><td>Término de búsqueda. Obligatorio.</td></tr></tbody></table>
       </article>
-
 
       <article class="card doc-section" id="download">
-
-        <h2>
-          Download
-        </h2>
-
-        <p>
-          Servicios de descarga disponibles en Orbit API.
-        </p>
-
-        <div class="table-wrap">
-          <table class="endpoint-table">
-
-            <thead>
-              <tr>
-                <th>Endpoint</th>
-                <th>Acceso</th>
-                <th>Uso</th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              <tr>
-                <td>
-                  /api/v1/download/ytaudio
-                </td>
-
-                <td>
-                  <span class="badge access-free">
-                    FREE
-                  </span>
-                </td>
-
-                <td>
-                  Descarga audio de YouTube.
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  /api/v1/download/ytvideo
-                </td>
-
-                <td>
-                  <span class="badge access-vip">
-                    VIP
-                  </span>
-                </td>
-
-                <td>
-                  Descarga video de YouTube.
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  /api/v1/download/tiktok
-                </td>
-
-                <td>
-                  <span class="badge access-free">
-                    FREE
-                  </span>
-                </td>
-
-                <td>
-                  Procesa descargas de TikTok.
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  /api/v1/download/aptoide
-                </td>
-
-                <td>
-                  <span class="badge access-vip">
-                    VIP
-                  </span>
-                </td>
-
-                <td>
-                  Obtiene aplicaciones desde Aptoide.
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  /api/v1/download/fdroid
-                </td>
-
-                <td>
-                  <span class="badge access-vip">
-                    VIP
-                  </span>
-                </td>
-
-                <td>
-                  Obtiene aplicaciones desde F-Droid.
-                </td>
-              </tr>
-
-            </tbody>
-
-          </table>
-        </div>
-
+        <h2>Download</h2><p>Servicios de descarga disponibles en Orbit API.</p>
+        <table class="endpoint-table"><thead><tr><th>Endpoint</th><th>Acceso</th><th>Uso</th></tr></thead><tbody>
+          <tr><td>/api/v1/download/ytaudio</td><td><span class="badge access-free">FREE</span></td><td>Descarga audio de YouTube.</td></tr>
+          <tr><td>/api/v1/download/ytvideo</td><td><span class="badge access-vip">VIP</span></td><td>Descarga video de YouTube.</td></tr>
+          <tr><td>/api/v1/download/tiktok</td><td><span class="badge access-free">FREE</span></td><td>Procesa descargas de TikTok.</td></tr>
+          <tr><td>/api/v1/download/aptoide</td><td><span class="badge access-vip">VIP</span></td><td>Obtiene aplicaciones desde Aptoide.</td></tr>
+          <tr><td>/api/v1/download/fdroid</td><td><span class="badge access-vip">VIP</span></td><td>Obtiene aplicaciones desde F-Droid.</td></tr>
+        </tbody></table>
       </article>
-
 
       <article class="card doc-section" id="pinterest">
-
-        <h2>
-          Pinterest
-        </h2>
-
-        <p>
-          Busca contenido de Pinterest. Requiere
-          <strong>query</strong>; también puedes indicar
-          <strong>type</strong> cuando el endpoint lo admita.
-        </p>
-
+        <h2>Pinterest</h2><p>Busca contenido de Pinterest. Requiere <strong>query</strong>; también puedes indicar <strong>type</strong> cuando el endpoint lo admita.</p>
         <div class="codebox">GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper
 GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper&amp;type=image</div>
-
       </article>
-
 
       <article class="card doc-section" id="ia">
-
-        <h2>
-          IA
-        </h2>
-
-        <p>
-          Endpoint de inteligencia artificial disponible
-          para cuentas con acceso VIP.
-        </p>
-
+        <h2>IA</h2><p>Endpoint de inteligencia artificial disponible para cuentas con acceso VIP.</p>
         <div class="codebox">GET /api/v1/ia?apikey=TU_API_KEY&amp;text=Hola</div>
-
-        <p>
-          Admite <strong>text</strong> como parámetro obligatorio
-          y <strong>promptSystem</strong> como parámetro opcional.
-        </p>
-
+        <p>Admite <strong>text</strong> como parámetro obligatorio y <strong>promptSystem</strong> como parámetro opcional.</p>
       </article>
 
-
       <article class="card doc-section" id="tools">
-
-        <h2>
-          Tools
-        </h2>
-
-        <p>
-          Herramientas auxiliares de Orbit API.
-        </p>
-
-        <h3>
-          QR
-        </h3>
-
-        <div class="codebox">GET /api/v1/tools/qr?apikey=TU_API_KEY&amp;text=https://example.com
+        <h2>Tools</h2><p>Herramientas auxiliares de Orbit API.</p>
+        <h3>QR</h3><div class="codebox">GET /api/v1/tools/qr?apikey=TU_API_KEY&amp;text=https://example.com
 
 # Formato opcional:
 &amp;format=image
 &amp;size=500
 &amp;dark=%23000000
 &amp;light=%23ffffff</div>
-
-        <p>
-          <strong>text</strong> o <strong>url</strong> son necesarios.
-          El texto admite hasta 2000 caracteres.
-          <strong>format</strong> puede ser image, json o base64.
-        </p>
-
+        <p><strong>text</strong> o <strong>url</strong> son necesarios. El texto admite hasta 2000 caracteres. <strong>format</strong> puede ser image, json o base64.</p>
       </article>
 
-
       <article class="card doc-section" id="ip">
+        <h2>Seguridad por IP</h2>
+        <p>Cada API key queda ligada a la IP desde la que se usa. Esto evita que alguien que consiga tu key la use desde otro lugar: si la IP no coincide, la solicitud se bloquea automáticamente.</p>
 
-        <h2>
-          Seguridad por IP
-        </h2>
-
-        <p>
-          Cada API key queda ligada a la IP desde la que se usa.
-          Esto evita que alguien que consiga tu key la use desde
-          otro lugar: si la IP no coincide, la solicitud se bloquea
-          automáticamente.
-        </p>
-
-
-        <h3>
-          Cómo se registra tu IP
-        </h3>
-
+        <h3>Cómo se registra tu IP</h3>
         <ul>
-
-          <li>
-            La primera vez que usas tu API key
-            (o la próxima vez que inicias sesión),
-            tu IP actual queda registrada como la dueña
-            de la cuenta.
-          </li>
-
-          <li>
-            Cuentas <strong>Free</strong> pueden tener
-            1 IP registrada, que se actualiza sola
-            en cada login.
-          </li>
-
-          <li>
-            Cuentas <strong>VIP</strong> y <strong>admin</strong>
-            pueden registrar hasta 5 IPs a la vez
-            (por ejemplo, tu computadora y el servidor
-            donde corre tu bot).
-          </li>
-
+          <li>La primera vez que usas tu API key (o la próxima vez que inicias sesión), tu IP actual queda registrada como la dueña de la cuenta.</li>
+          <li>Cuentas <strong>Free</strong> pueden tener 1 IP registrada, que se actualiza sola en cada login.</li>
+          <li>Cuentas <strong>VIP</strong> y <strong>admin</strong> pueden registrar hasta 5 IPs a la vez (por ejemplo, tu computadora y el servidor donde corre tu bot).</li>
         </ul>
 
+        <h3>Si usas tu key en un bot</h3>
+        <p>La IP que se registra es la del servidor donde corre el bot, no la de cada persona que le escribe. Todos los usuarios de tu bot siguen funcionando igual, sin importar desde dónde te escriban.</p>
 
-        <h3>
-          Si usas tu key en un bot
-        </h3>
+        <h3>Página "Configurar IP"</h3>
+        <p>Desde el dashboard, en <strong>Configurar IP</strong>, puedes ver tu IP actual y restablecerla si cambiaste de red. Las cuentas VIP y admin además pueden agregar o quitar IPs manualmente.</p>
+        <img src="https://files.catbox.moe/n24qak.jpg" alt="Página Configurar IP en el dashboard de Orbit API" style="width:100%;border-radius:12px;border:1px solid var(--border);margin-top:10px">
 
-        <p>
-          La IP que se registra es la del servidor donde corre
-          el bot, no la de cada persona que le escribe.
-          Todos los usuarios de tu bot siguen funcionando igual,
-          sin importar desde dónde te escriban.
-        </p>
-
-
-        <h3>
-          Página "Configurar IP"
-        </h3>
-
-        <p>
-          Desde el dashboard, en <strong>Configurar IP</strong>,
-          puedes ver tu IP actual y restablecerla si cambiaste
-          de red. Las cuentas VIP y admin además pueden agregar
-          o quitar IPs manualmente.
-        </p>
-
-        <img
-          class="ip-image"
-          src="https://files.catbox.moe/n24qak.jpg"
-          alt="Página Configurar IP en el dashboard de Orbit API">
-
-
-        <h3>
-          Respuesta cuando una IP no coincide
-        </h3>
-
+        <h3>Respuesta cuando una IP no coincide</h3>
         <div class="codebox">HTTP 403
 {
   "ok": false,
   "ip_blocked": true,
   "error": "Esta API key esta restringida a otra IP. Si eres el dueno, vuelve a iniciar sesion o restablece tu IP desde el dashboard."
 }</div>
-
       </article>
-
 
       <article class="card doc-section" id="errores">
-
-        <h2>
-          Respuestas y errores
-        </h2>
-
-        <div class="table-wrap">
-
-          <table class="endpoint-table">
-
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Significado</th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              <tr>
-                <td>200</td>
-                <td>
-                  Solicitud procesada correctamente.
-                </td>
-              </tr>
-
-              <tr>
-                <td>400</td>
-                <td>
-                  Faltan parámetros o son inválidos.
-                </td>
-              </tr>
-
-              <tr>
-                <td>401</td>
-                <td>
-                  API key ausente o inválida.
-                </td>
-              </tr>
-
-              <tr>
-                <td>403</td>
-                <td>
-                  El endpoint requiere acceso VIP,
-                  o la solicitud viene de una IP distinta
-                  a la registrada
-                  (<span class="badge">ip_blocked</span>).
-                </td>
-              </tr>
-
-              <tr>
-                <td>404</td>
-                <td>
-                  Recurso o ruta no encontrada.
-                </td>
-              </tr>
-
-              <tr>
-                <td>429</td>
-                <td>
-                  Sin solicitudes disponibles por hoy.
-                </td>
-              </tr>
-
-              <tr>
-                <td>500</td>
-                <td>
-                  Error interno al procesar la solicitud.
-                </td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
+        <h2>Respuestas y errores</h2>
+        <table class="endpoint-table"><thead><tr><th>Código</th><th>Significado</th></tr></thead><tbody>
+          <tr><td>200</td><td>Solicitud procesada correctamente.</td></tr>
+          <tr><td>400</td><td>Faltan parámetros o son inválidos.</td></tr>
+          <tr><td>401</td><td>API key ausente o inválida.</td></tr>
+          <tr><td>403</td><td>El endpoint requiere acceso VIP, o la solicitud viene de una IP distinta a la registrada (<span class="badge">ip_blocked</span>).</td></tr>
+          <tr><td>404</td><td>Recurso o ruta no encontrada.</td></tr>
+          <tr><td>429</td><td>Sin solicitudes disponibles por hoy.</td></tr>
+          <tr><td>500</td><td>Error interno al procesar la solicitud.</td></tr>
+        </tbody></table>
       </article>
-
     </section>
-
   </div>
-
-
-  <footer class="wrap footer">
-    Orbit API ·
-    <a href="/terms">Términos de uso</a>
-    ·
-    <a href="/">Inicio</a>
-  </footer>
-
+  <footer class="wrap footer">Orbit API · <a href="/terms">Términos de uso</a> · <a href="/">Inicio</a></footer>
 </main>
-
 </body>
 </html>
