@@ -66,21 +66,7 @@ const FONT = "'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 const FONT_HEAD = "'Sora','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 const MONO = "'SFMono-Regular',Consolas,Menlo,monospace";
 
-// Logo: mismo trazo de anillo + punto que usa el fondo (.orbit-bg) y la
-// marca del topbar en la app, hecho solo con tablas/CSS inline (sin
-// imagenes externas) para que cargue siempre en cualquier cliente.
-function logoMarkHtml() {
-  return `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 18px auto;">
-      <tr>
-        <td style="width:40px;height:40px;border-radius:50%;border:1.5px solid ${COLORS.accent};background:${COLORS.surface2};text-align:center;vertical-align:middle;">
-          <div style="width:9px;height:9px;border-radius:50%;background:${COLORS.accent};margin:15.5px auto;"></div>
-        </td>
-      </tr>
-    </table>`;
-}
-
-function emailShell({ preheader = "", eyebrow = "ORBIT API", title, bodyHtml }) {
+function emailShell({ preheader = "", title, bodyHtml }) {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -90,24 +76,13 @@ function emailShell({ preheader = "", eyebrow = "ORBIT API", title, bodyHtml }) 
 </head>
 <body style="margin:0;padding:0;background:${COLORS.bg};">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};padding:36px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:${COLORS.surface};border:1px solid ${COLORS.border};border-radius:16px;overflow:hidden;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;">
           <tr>
-            <td style="padding:34px 32px 8px 32px;text-align:center;">
-              ${logoMarkHtml()}
-              <p style="margin:0 0 4px 0;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:.08em;color:${COLORS.accent};text-transform:uppercase;">${escapeHtml(eyebrow)}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 34px 32px;font-family:${FONT};color:${COLORS.text};">
+            <td style="padding:8px 20px 0 20px;font-family:${FONT};color:${COLORS.text};">
               ${bodyHtml}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:20px 32px;border-top:1px solid ${COLORS.border};text-align:center;">
-              <p style="margin:0;font-family:${FONT};font-size:11.5px;color:${COLORS.muted};">Orbit API · Si no reconoces esta actividad, ignora este correo.</p>
             </td>
           </tr>
         </table>
