@@ -1,11 +1,66 @@
 function fillProfile(user) {
   document.getElementById("profileAvatar").src = user.photo || fallbackAvatarUrl(user.name);
   document.getElementById("profileName").textContent = user.name;
-  document.getElementById("profileEmail").textContent = user.email;
   document.getElementById("statRemaining").textContent = user.requests_remaining;
   document.getElementById("statLimit").textContent = user.requests_limit;
   document.getElementById("statKey").textContent = user.api_key;
   document.getElementById("nameInput").value = user.name;
+
+  const memberSince = user.created_at ? new Date(user.created_at).toLocaleDateString("es-HN", { year: "numeric", month: "long", day: "numeric" }) : "—";
+  document.getElementById("profileMemberSince").textContent = `Miembro desde ${memberSince}`;
+
+  const planBadge = document.getElementById("profilePlanBadge");
+  if (user.is_admin) {
+    planBadge.textContent = "ADMIN";
+    planBadge.className = "badge-plan vip";
+  } else if (user.is_vip) {
+    planBadge.textContent = "VIP";
+    planBadge.className = "badge-plan vip";
+  } else {
+    planBadge.textContent = "FREE";
+    planBadge.className = "badge-plan free";
+  }
+
+  const used = Math.max(0, Number(user.requests_limit) - Number(user.requests_remaining));
+  const pct = Math.min(100, Math.round((used / Math.max(1, Number(user.requests_limit))) * 100));
+  document.getElementById("usageBigNumber").textContent = `${Number(user.requests_limit).toLocaleString("es-HN")} requests al día`;
+  document.getElementById("usageFractionPill").textContent = `${used} / ${Number(user.requests_limit).toLocaleString("es-HN")}`;
+  document.getElementById("usageBarFill").style.width = `${pct}%`;
+  document.getElementById("usageRemainingText").textContent = `${Number(user.requests_remaining).toLocaleString("es-HN")} restantes · ${used} usados`;
+
+  const bonusBox = document.getElementById("bonusBox");
+  if (user.referral_bonus_active) {
+    const until = user.referral_bonus_expires_at ? new Date(user.referral_bonus_expires_at).toLocaleDateString("es-HN") : "";
+    bonusBox.textContent = `🎁 Tienes un bono de invitados activo hasta el ${until}.`;
+    bonusBox.classList.add("show");
+  } else {
+    bonusBox.classList.remove("show");
+  }
+}
+
+async function loadReferralInfo() {
+  const { status, data } = await orbitFetch("/api/user/referral");
+  if (status !== 200 || !data.ok) return;
+
+  const link = `${location.origin}/register?ref=${data.referral_code || ""}`;
+  document.getElementById("inviteLinkInput").value = link;
+  document.getElementById("inviteCount").textContent = data.invited_count;
+  document.getElementById("inviteBonusStatus").textContent = data.bonus_active
+    ? `+${data.bonus_requests}/día activo`
+    : "Sin bono activo";
+
+  document.getElementById("copyInviteBtn").addEventListener("click", () => copyToClipboard(link, "Enlace de invitación"));
+}
+
+function refreshShellAvatar() {
+  const avatarBtn = document.getElementById("avatarBtn");
+  if (avatarBtn) avatarBtn.innerHTML = renderAvatar(orbitUser);
+  const dropdownHead = document.querySelector(".profile-dropdown-head");
+  if (dropdownHead) {
+    const nameBlock = dropdownHead.querySelector("span");
+    dropdownHead.innerHTML = renderAvatar(orbitUser);
+    if (nameBlock) dropdownHead.appendChild(nameBlock);
+  }
 }
 
 function fallbackAvatarUrl(name) {
@@ -52,8 +107,7 @@ function fallbackAvatarUrl(name) {
     document.getElementById("profileAvatar").src = data.photo || fallbackAvatarUrl(user.name);
     photoUrl.value = data.photo || "";
     orbitUser.photo = data.photo || null;
-    const topAvatarLink = document.querySelector('.topbar-right a[href="/perfil"]');
-    if (topAvatarLink) topAvatarLink.innerHTML = renderAvatar(orbitUser);
+    refreshShellAvatar();
     showToast(data.photo ? "Foto actualizada" : "Foto eliminada");
   });
 
@@ -72,8 +126,7 @@ function fallbackAvatarUrl(name) {
     document.getElementById("profileAvatar").src = fallbackAvatarUrl(user.name);
     photoUrl.value = "";
     orbitUser.photo = null;
-    const topAvatarLink = document.querySelector('.topbar-right a[href="/perfil"]');
-    if (topAvatarLink) topAvatarLink.innerHTML = renderAvatar(orbitUser);
+    refreshShellAvatar();
     showToast("Foto eliminada");
   });
 
