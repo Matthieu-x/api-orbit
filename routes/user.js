@@ -4,17 +4,12 @@ const client = require("../db/client");
 const { requireAuth, requireVip } = require("../middleware/auth");
 const { generateOrbitIp } = require("../utils/ip");
 const { REFERRAL_BONUS_REQUESTS, REFERRAL_BONUS_DAYS, isReferralBonusActive } = require("../utils/referral");
+const { PLAN_ORDER, planConfig, planOf } = require("../utils/plans");
 
 const router = express.Router();
-const FREE_DAILY_LIMIT = 100;
-const VIP_DAILY_LIMIT = 1000;
 
 async function ensureRequestLogTable() {
   await client.execute(`CREATE TABLE IF NOT EXISTS orbit_request_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, endpoint TEXT NOT NULL, method TEXT NOT NULL, created_at TEXT NOT NULL)`);
-}
-
-function activeVip(user) {
-  return Number(user.is_admin) === 1 || (Number(user.vip) === 1 && (!user.vip_expires_at || new Date(user.vip_expires_at).getTime() > Date.now()));
 }
 
 router.get("/dashboard-stats", requireAuth, async (req, res) => {
@@ -28,9 +23,9 @@ router.get("/dashboard-stats", requireAuth, async (req, res) => {
     const userResult = await client.execute({ sql: "SELECT COUNT(*) AS total FROM orbit_request_logs WHERE user_id = ?", args: [req.user.id] });
     const countUsers = await client.execute("SELECT COUNT(*) AS total FROM orbit_users");
     const topResult = await client.execute({
-      sql: `SELECT u.id, u.name, u.photo, u.is_admin, u.vip, u.vip_expires_at, COALESCE(COUNT(r.id), 0) AS requests
+      sql: `SELECT u.id, u.name, u.photo, u.is_admin, u.vip, u.vip_expires_at, u.plan, COALESCE(COUNT(r.id), 0) AS requests
             FROM orbit_users u LEFT JOIN orbit_request_logs r ON r.user_id = u.id
-            GROUP BY u.id, u.name, u.photo, u.is_admin, u.vip, u.vip_expires_at
+            GROUP BY u.id, u.name, u.photo, u.is_admin, u.vip, u.vip_expires_at, u.plan
             ORDER BY requests DESC, u.name ASC LIMIT ? OFFSET ?`,
       args: [pageSize, offset]
     });
@@ -46,7 +41,10 @@ router.get("/dashboard-stats", requireAuth, async (req, res) => {
       top_users: topResult.rows.map(row => ({
         id: row.id, name: row.name, photo: row.photo, is_admin: Number(row.is_admin) === 1,
         is_vip: Number(row.is_admin) === 1 || (Number(row.vip) === 1 && (!row.vip_expires_at || new Date(row.vip_expires_at).getTime() > Date.now())),
-        vip_expires_at: row.vip_expires_at || null, requests: Number(row.requests || 0)
+        vip_expires_at: row.vip_expires_at || null,
+        plan: planOf(row),
+        plan_label: planConfig(planOf(row)).label,
+        requests: Number(row.requests || 0)
       }))
     });
   } catch (error) {
@@ -108,11 +106,12 @@ router.delete("/notifications/:id", requireAuth, async (req, res) => {
 });
 
 router.get("/vip", requireAuth, (req, res) => {
-  res.json({ ok: true, is_vip: activeVip(req.user), vip_expires_at: req.user.vip_expires_at || null, plans: [
-    { id: "7d", name: "VIP 7 días", days: 7, price: 25, currency: "HNL" },
-    { id: "30d", name: "VIP 30 días", days: 30, price: 60, currency: "HNL" },
-    { id: "90d", name: "VIP 90 días", days: 90, price: 150, currency: "HNL" }
-  ]});
+  res.json({
+    ok: true,
+    plan: planOf(req.user),
+    plan_label: planConfig(planOf(req.user)).label,
+    plans: PLAN_ORDER.filter((key) => key !== "free").map((key) => planConfig(key))
+  });
 });
 
 router.get("/referral", requireAuth, async (req, res) => {
