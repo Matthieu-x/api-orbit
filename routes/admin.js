@@ -3,6 +3,8 @@ const crypto = require("crypto");
 
 const client = require("../db/client");
 const { requireAdmin } = require("../middleware/auth");
+const { PLAN_ORDER, planConfig } = require("../utils/plans");
+const { sendMail, planActivatedEmailHtml } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -11,12 +13,12 @@ router.get("/users", requireAdmin, async (req, res) => {
 
   const result = search
     ? await client.execute({
-        sql: `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, vip, vip_expires_at, created_at
+        sql: `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, vip, vip_expires_at, plan, created_at
               FROM orbit_users WHERE name LIKE ? OR email LIKE ? ORDER BY created_at DESC`,
         args: [`%${search}%`, `%${search}%`]
       })
     : await client.execute(
-        `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, vip, vip_expires_at, created_at
+        `SELECT id, name, email, photo, api_key, requests_remaining, requests_limit, is_admin, vip, vip_expires_at, plan, created_at
          FROM orbit_users ORDER BY created_at DESC`
       );
 
@@ -49,43 +51,69 @@ router.post("/users/:id/add-requests", requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
-router.post("/users/:id/vip", requireAdmin, async (req, res) => {
-  const days = Number(req.body.days);
-  if (!Number.isInteger(days) || days < 1 || days > 3650) {
-    return res.status(400).json({ ok: false, error: "Los dias VIP deben estar entre 1 y 3650" });
+router.post("/users/:id/plan", requireAdmin, async (req, res) => {
+  const plan = String(req.body.plan || "").trim();
+
+  if (!PLAN_ORDER.includes(plan) || plan === "free") {
+    return res.status(400).json({ ok: false, error: "Plan invalido" });
   }
 
-  const target = await client.execute({ sql: "SELECT id, is_admin, vip, vip_expires_at FROM orbit_users WHERE id = ?", args: [req.params.id] });
+  const target = await client.execute({
+    sql: "SELECT id, name, email, is_admin, referral_bonus_expires_at FROM orbit_users WHERE id = ?",
+    args: [req.params.id]
+  });
   if (!target.rows.length) return res.status(404).json({ ok: false, error: "Usuario no encontrado" });
 
   const user = target.rows[0];
   if (Number(user.is_admin) === 1) {
-    return res.status(400).json({ ok: false, error: "Los administradores ya tienen acceso VIP" });
+    return res.status(400).json({ ok: false, error: "Los administradores ya tienen acceso completo" });
   }
 
-  const now = new Date();
-  const currentExpiry = user.vip_expires_at ? new Date(user.vip_expires_at) : null;
-  const base = currentExpiry && currentExpiry.getTime() > now.getTime() ? currentExpiry : now;
-  const expires = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
+  const config = planConfig(plan);
+  const isVipTier = config.tierRank >= planConfig("vip").tierRank;
+  const bonusActive = user.referral_bonus_expires_at && new Date(user.referral_bonus_expires_at).getTime() > Date.now();
+  const effectiveLimit = config.requestsLimit + (bonusActive ? 100 : 0);
 
+  // Los planes de Orbit API son permanentes: quedan activos hasta que un
+  // admin los cambie, no vencen ni tienen fecha de renovacion.
   await client.execute({
-    sql: "UPDATE orbit_users SET vip = 1, vip_expires_at = ?, requests_limit = 1000, requests_remaining = CASE WHEN requests_remaining < 1000 THEN 1000 ELSE requests_remaining END WHERE id = ?",
-    args: [expires.toISOString(), req.params.id]
+    sql: `UPDATE orbit_users
+          SET plan = ?, plan_expires_at = NULL, vip = ?, vip_expires_at = NULL,
+              base_requests_limit = ?, requests_limit = ?,
+              requests_remaining = CASE WHEN requests_remaining < ? THEN ? ELSE requests_remaining END
+          WHERE id = ?`,
+    args: [plan, isVipTier ? 1 : 0, config.requestsLimit, effectiveLimit, effectiveLimit, effectiveLimit, req.params.id]
   });
 
-  res.json({ ok: true, vip: true, vip_expires_at: expires.toISOString() });
+  sendMail({
+    to: user.email,
+    subject: `Tu plan ahora es ${config.label} — Orbit API`,
+    html: planActivatedEmailHtml({
+      name: user.name,
+      planLabel: config.label,
+      requestsLimit: config.requestsLimit,
+      price: config.price
+    })
+  });
+
+  res.json({ ok: true, plan });
 });
 
-router.delete("/users/:id/vip", requireAdmin, async (req, res) => {
+router.delete("/users/:id/plan", requireAdmin, async (req, res) => {
   const target = await client.execute({ sql: "SELECT id, is_admin FROM orbit_users WHERE id = ?", args: [req.params.id] });
   if (!target.rows.length) return res.status(404).json({ ok: false, error: "Usuario no encontrado" });
-  if (Number(target.rows[0].is_admin) === 1) return res.status(400).json({ ok: false, error: "No se puede quitar el acceso VIP de un administrador" });
+  if (Number(target.rows[0].is_admin) === 1) return res.status(400).json({ ok: false, error: "No se puede cambiar el plan de un administrador" });
 
+  const freeLimit = planConfig("free").requestsLimit;
   await client.execute({
-    sql: "UPDATE orbit_users SET vip = 0, vip_expires_at = NULL, requests_limit = 100, requests_remaining = CASE WHEN requests_remaining > 100 THEN 100 ELSE requests_remaining END WHERE id = ?",
-    args: [req.params.id]
+    sql: `UPDATE orbit_users
+          SET plan = 'free', plan_expires_at = NULL, vip = 0, vip_expires_at = NULL,
+              base_requests_limit = ?, requests_limit = ?,
+              requests_remaining = CASE WHEN requests_remaining > ? THEN ? ELSE requests_remaining END
+          WHERE id = ?`,
+    args: [freeLimit, freeLimit, freeLimit, freeLimit, req.params.id]
   });
-  res.json({ ok: true, vip: false });
+  res.json({ ok: true, plan: "free" });
 });
 
 router.post("/notifications", requireAdmin, async (req, res) => {
