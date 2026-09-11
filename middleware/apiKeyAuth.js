@@ -1,5 +1,6 @@
 const client = require("../db/client");
 const { todayStamp } = require("../utils/keygen");
+const { revertExpiredReferralBonus } = require("../utils/referral");
 
 async function ensureRequestLogTable() {
   await client.execute(`
@@ -61,6 +62,9 @@ function apiKeyAuth(options = {}) {
         user.requests_limit = 100;
         user.requests_remaining = Math.min(Number(user.requests_remaining), 100);
       }
+
+      // Bono de invitados vencido: vuelve al limite base del usuario.
+      await revertExpiredReferralBonus(user);
 
       // x-orbit-ip es una segunda credencial. NO se compara con la IP real
       // del dispositivo, proxy, Render, VPS, Wi-Fi, datos móviles, etc.
