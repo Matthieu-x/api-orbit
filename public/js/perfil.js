@@ -10,16 +10,9 @@ function fillProfile(user) {
   document.getElementById("profileMemberSince").textContent = `Miembro desde ${memberSince}`;
 
   const planBadge = document.getElementById("profilePlanBadge");
-  if (user.is_admin) {
-    planBadge.textContent = "ADMIN";
-    planBadge.className = "badge-plan vip";
-  } else if (user.is_vip) {
-    planBadge.textContent = "VIP";
-    planBadge.className = "badge-plan vip";
-  } else {
-    planBadge.textContent = "FREE";
-    planBadge.className = "badge-plan free";
-  }
+  const planClassMap = { free: "free", basic: "vip", plus: "vip", vip: "vip", superorbit: "vip" };
+  planBadge.textContent = user.is_admin ? "ADMIN" : (user.plan_label || "Free").toUpperCase();
+  planBadge.className = `badge-plan ${user.is_admin ? "vip" : (planClassMap[user.plan] || "free")}`;
 
   const used = Math.max(0, Number(user.requests_limit) - Number(user.requests_remaining));
   const pct = Math.min(100, Math.round((used / Math.max(1, Number(user.requests_limit))) * 100));
