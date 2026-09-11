@@ -74,6 +74,7 @@ function fallbackAvatarUrl(name) {
   if (!user) return;
 
   fillProfile(user);
+  loadReferralInfo();
 
   const photoUrl = document.getElementById("photoUrl");
   const photoForm = document.getElementById("photoForm");
