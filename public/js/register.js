@@ -1,6 +1,10 @@
 let orbitCaptchaWidgetId = null;
 let orbitSitekey = null;
 
+if (new URLSearchParams(location.search).get("ref")) {
+  document.getElementById("refBox")?.classList.add("show");
+}
+
 async function onHcaptchaReady() {
   const { data } = await orbitFetch("/api/auth/config");
   orbitSitekey = data.hcaptchaSitekey;
@@ -33,13 +37,16 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
   submitBtn.disabled = true;
   submitBtn.textContent = "Creando cuenta...";
 
+  const ref = new URLSearchParams(location.search).get("ref") || "";
+
   const { status, data } = await orbitFetch("/api/auth/register", {
     method: "POST",
     body: JSON.stringify({
       name: form.name.value,
       email: form.email.value,
       password: form.password.value,
-      captchaToken
+      captchaToken,
+      ref
     })
   });
 
