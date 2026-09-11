@@ -26,6 +26,28 @@ function trUrl(){
 }
 function trUpdate(){document.getElementById("trEndpointUrl").textContent=trUrl();}
 
+function b64Url(){
+  const t=document.getElementById("b64Text").value;
+  const action=document.getElementById("b64Decode").checked?"decode":"encode";
+  return `${location.origin}/api/v1/tools/base64?apikey=${encodeURIComponent(toolsUser.api_key)}&text=${encodeURIComponent(t)}&action=${action}`;
+}
+function b64Update(){document.getElementById("b64EndpointUrl").textContent=b64Url();}
+
+function hashUrl(){
+  const t=document.getElementById("hashText").value;
+  const algo=document.getElementById("hashAlgo").value;
+  let u=`${location.origin}/api/v1/tools/hash?apikey=${encodeURIComponent(toolsUser.api_key)}&text=${encodeURIComponent(t)}`;
+  if(algo) u+=`&algorithm=${encodeURIComponent(algo)}`;
+  return u;
+}
+function hashUpdate(){document.getElementById("hashEndpointUrl").textContent=hashUrl();}
+
+function uuidUrl(){
+  const count=document.getElementById("uuidCount").value.trim()||"1";
+  return `${location.origin}/api/v1/tools/uuid?apikey=${encodeURIComponent(toolsUser.api_key)}&count=${encodeURIComponent(count)}`;
+}
+function uuidUpdate(){document.getElementById("uuidEndpointUrl").textContent=uuidUrl();}
+
 (async()=>{
   toolsUser=await initShell("tools");
   if(!toolsUser)return;
@@ -103,6 +125,76 @@ function trUpdate(){document.getElementById("trEndpointUrl").textContent=trUrl()
       trOut.textContent="No se pudo contactar el endpoint";
     }finally{
       trBtn.disabled=false;
+    }
+  };
+
+  const b64Inputs=[document.getElementById("b64Text"),document.getElementById("b64Encode"),document.getElementById("b64Decode")];
+  b64Update();
+  b64Inputs.forEach(el=>el.addEventListener(el.type==="radio"?"change":"input",b64Update));
+  document.getElementById("b64CopyBtn").onclick=()=>copyToClipboard(b64Url(),"Endpoint");
+
+  const b64Out=document.getElementById("b64Response");
+  const b64Btn=document.getElementById("b64SendBtn");
+
+  b64Btn.onclick=async()=>{
+    const b64Text=document.getElementById("b64Text");
+    if(!b64Text.value.trim())return showToast("Escribe un texto");
+    b64Btn.disabled=true;
+    b64Out.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Procesando...</div>';
+    try{
+      const r=await fetch(b64Url(),{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
+      const data=await r.json();
+      b64Out.textContent=JSON.stringify(data,null,2);
+    }catch(e){
+      b64Out.textContent="No se pudo contactar el endpoint";
+    }finally{
+      b64Btn.disabled=false;
+    }
+  };
+
+  const hashInputs=[document.getElementById("hashText"),document.getElementById("hashAlgo")];
+  hashUpdate();
+  hashInputs.forEach(el=>el.addEventListener(el.tagName==="SELECT"?"change":"input",hashUpdate));
+  document.getElementById("hashCopyBtn").onclick=()=>copyToClipboard(hashUrl(),"Endpoint");
+
+  const hashOut=document.getElementById("hashResponse");
+  const hashBtn=document.getElementById("hashSendBtn");
+
+  hashBtn.onclick=async()=>{
+    const hashText=document.getElementById("hashText");
+    if(!hashText.value.trim())return showToast("Escribe un texto");
+    hashBtn.disabled=true;
+    hashOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Generando hash...</div>';
+    try{
+      const r=await fetch(hashUrl(),{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
+      const data=await r.json();
+      hashOut.textContent=JSON.stringify(data,null,2);
+    }catch(e){
+      hashOut.textContent="No se pudo contactar el endpoint";
+    }finally{
+      hashBtn.disabled=false;
+    }
+  };
+
+  const uuidInput=document.getElementById("uuidCount");
+  uuidUpdate();
+  uuidInput.addEventListener("input",uuidUpdate);
+  document.getElementById("uuidCopyBtn").onclick=()=>copyToClipboard(uuidUrl(),"Endpoint");
+
+  const uuidOut=document.getElementById("uuidResponse");
+  const uuidBtn=document.getElementById("uuidSendBtn");
+
+  uuidBtn.onclick=async()=>{
+    uuidBtn.disabled=true;
+    uuidOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Generando...</div>';
+    try{
+      const r=await fetch(uuidUrl(),{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
+      const data=await r.json();
+      uuidOut.textContent=JSON.stringify(data,null,2);
+    }catch(e){
+      uuidOut.textContent="No se pudo contactar el endpoint";
+    }finally{
+      uuidBtn.disabled=false;
     }
   };
 })();
