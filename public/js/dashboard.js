@@ -7,10 +7,12 @@ function dashboardAvatar(user) {
   return `<div class="ranking-avatar ranking-fallback">${escapeHtml(initial)}</div>`;
 }
 
+const PLAN_PILL_CLASS = { free: "pill-free", basic: "pill-basic", plus: "pill-plus", vip: "pill-vip", superorbit: "pill-superorbit" };
+
 function userBadge(user) {
   if (user.is_admin) return '<span class="pill-admin">admin</span>';
-  if (user.is_vip) return '<span class="pill-vip">VIP</span>';
-  return '<span class="pill-free">Free</span>';
+  const plan = user.plan || "free";
+  return `<span class="${PLAN_PILL_CLASS[plan] || "pill-free"}">${user.plan_label || "Free"}</span>`;
 }
 
 async function loadDashboardStats(page = rankingPage) {
@@ -49,9 +51,9 @@ function welcomeAvatarHtml(user) {
   if (user.is_admin) {
     document.getElementById("chipPlan").classList.add("on");
     document.getElementById("chipPlan").title = "Cuenta admin";
-  } else if (user.is_vip) {
+  } else if (user.plan && user.plan !== "free") {
     document.getElementById("chipPlan").classList.add("on");
-    document.getElementById("chipPlan").title = "Plan VIP activo";
+    document.getElementById("chipPlan").title = `Plan ${user.plan_label} activo`;
   } else {
     document.getElementById("chipPlan").title = "Plan Free";
   }
@@ -64,8 +66,7 @@ function welcomeAvatarHtml(user) {
   -H "x-orbit-ip: ${user.orbit_ip || "TU_ORBIT_IP"}"`;
   document.getElementById("usageExample").textContent = usageExample;
   document.getElementById("copyUsageBtn").addEventListener("click", () => copyToClipboard(usageExample, "Ejemplo"));
-  const vip = user.is_admin ? "Admin" : user.is_vip ? `VIP · ${user.vip_expires_at ? new Date(user.vip_expires_at).toLocaleDateString("es-HN") : "Activo"}` : "Free";
-  document.getElementById("statVip").textContent = vip;
+  document.getElementById("statVip").textContent = user.is_admin ? "Admin" : (user.plan_label || "Free");
   document.getElementById("rankPrev").addEventListener("click", () => loadDashboardStats(rankingPage - 1));
   document.getElementById("rankNext").addEventListener("click", () => loadDashboardStats(rankingPage + 1));
   await loadDashboardStats(1);
