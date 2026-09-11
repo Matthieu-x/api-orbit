@@ -21,12 +21,11 @@
 <div class="app-shell">
   <div class="wrap" style="padding-top:30px; max-width: 720px">
 
-    <h1 class="section-title">Perfil</h1>
-    <p class="muted" style="margin-bottom:22px">Administra tu cuenta de Orbit API.</p>
+    <span class="dashboard-badge">CUENTA · MI PERFIL</span>
 
-    <div class="card">
+    <div class="card" style="margin-top:14px">
       <div class="profile-header">
-        <div class="profile-avatar-wrap">
+        <div class="profile-avatar-wrap lg">
           <img class="profile-avatar" id="profileAvatar" src="" alt="" onerror="this.src=fallbackAvatarUrl(document.getElementById('profileName').textContent)">
           <button class="profile-avatar-edit" id="photoEditBtn" type="button" title="Cambiar foto">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5Z"/></svg>
@@ -34,26 +33,64 @@
         </div>
         <div>
           <h3 id="profileName">—</h3>
-          <p class="muted" id="profileEmail" style="font-size:13.5px">—</p>
+          <p class="muted" id="profileMemberSince" style="font-size:13px;margin-top:2px">—</p>
+          <div class="profile-head-badges">
+            <span class="badge-plan free" id="profilePlanBadge">FREE</span>
+            <span class="badge-verified">Correo verificado</span>
+          </div>
         </div>
       </div>
+      <a class="btn btn-primary btn-block" href="/dashboard" style="margin-top:18px">Dashboard</a>
+    </div>
 
-      <div class="stat-grid" style="margin-bottom:24px">
-        <div class="stat-card">
-          <div class="label">Solicitudes restantes hoy</div>
-          <div class="value" id="statRemaining">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Limite diario</div>
-          <div class="value" id="statLimit">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Tu API key</div>
-          <div class="value mono" id="statKey" style="font-size:15px">—</div>
-        </div>
+    <div class="card" style="margin-top:16px">
+      <p class="muted" style="font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:10px">Uso de la API hoy</p>
+      <div class="usage-headline">
+        <span class="big-number" id="usageBigNumber">— requests al día</span>
+        <span class="usage-fraction-pill" id="usageFractionPill">—</span>
       </div>
+      <div class="usage-bar"><div class="usage-bar-fill" id="usageBarFill" style="width:0%"></div></div>
+      <div class="usage-meta-row">
+        <span id="usageRemainingText">—</span>
+        <span>reset 00:00 UTC</span>
+      </div>
+      <div class="success-box" id="bonusBox" style="margin-top:14px"></div>
+    </div>
 
-      <hr class="divider">
+    <div class="card invite-card" id="seccion-invitar" style="margin-top:16px">
+      <h3 style="margin-bottom:4px">Invita y gana</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:14px">Comparte tu enlace: tú y tu invitado ganan +100 requests/día por 7 días cuando se registre.</p>
+      <div class="invite-row">
+        <input type="text" id="inviteLinkInput" readonly>
+        <button class="btn btn-primary" id="copyInviteBtn" type="button">Copiar</button>
+      </div>
+      <div class="invite-stats">
+        <div><strong id="inviteCount">—</strong><span>Invitados</span></div>
+        <div><strong id="inviteBonusStatus">—</strong><span>Bono actual</span></div>
+      </div>
+    </div>
+
+    <div class="tab-nav" style="margin-top:26px" id="profileTabNav">
+      <a href="#seccion-usuario" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>
+        Usuario
+      </a>
+      <a href="#seccion-apikey">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8"/><path d="M16 7l2 2"/><path d="M13 10l2 2"/></svg>
+        API Keys
+      </a>
+      <a href="#seccion-invitar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H8l-4 4V4Z"/></svg>
+        Invitar
+      </a>
+      <a href="#seccion-seguridad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>
+        Seguridad
+      </a>
+    </div>
+
+    <div class="card" id="seccion-usuario" style="margin-top:0">
+      <h3 style="margin-bottom:14px">Usuario</h3>
 
       <div class="error-box" id="errorBox"></div>
 
@@ -76,10 +113,28 @@
         </div>
         <button type="submit" class="btn btn-primary" id="saveNameBtn">Guardar cambios</button>
       </form>
+    </div>
 
-      <hr class="divider">
+    <div class="card" id="seccion-apikey" style="margin-top:16px">
+      <h3 style="margin-bottom:14px">API Keys</h3>
+      <div class="stat-grid" style="margin-bottom:0">
+        <div class="stat-card">
+          <div class="label">Solicitudes restantes hoy</div>
+          <div class="value" id="statRemaining">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Limite diario</div>
+          <div class="value" id="statLimit">—</div>
+        </div>
+        <div class="stat-card" style="grid-column:1/-1">
+          <div class="label">Tu API key</div>
+          <div class="value mono" id="statKey" style="font-size:15px">—</div>
+        </div>
+      </div>
+    </div>
 
-      <h3 style="margin-bottom:6px">Seguridad</h3>
+    <div class="card" id="seccion-seguridad" style="margin-top:16px">
+      <h3 style="margin-bottom:6px">Contraseña y sesión</h3>
       <p class="muted" style="margin-bottom:16px;font-size:14px">Restablece tu contraseña o elimina tu cuenta permanentemente.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button type="button" class="btn btn-ghost" id="resetPasswordBtn">Restablecer contraseña</button>
