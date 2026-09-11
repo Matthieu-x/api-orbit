@@ -593,10 +593,13 @@ th { color: var(--muted); font-weight: 500; font-size: 12px; }
 
 
 /* Orbit VIP + endpoint sections */
-.pill-vip,.pill-free,.pill-admin{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;vertical-align:middle}
+.pill-vip,.pill-free,.pill-admin,.pill-basic,.pill-plus,.pill-superorbit{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;vertical-align:middle}
 .pill-vip{background:rgba(108,140,255,.15);color:#9fb1ff;border:1px solid rgba(108,140,255,.32)}
 .pill-free{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
 .pill-admin{background:rgba(61,214,140,.12);color:#72e7ae;border:1px solid rgba(61,214,140,.25)}
+.pill-basic{background:rgba(245,196,81,.12);color:#f5c451;border:1px solid rgba(245,196,81,.3)}
+.pill-plus{background:rgba(108,140,255,.1);color:#8ba0f5;border:1px solid rgba(108,140,255,.24)}
+.pill-superorbit{background:rgba(255,92,122,.12);color:#ff8da3;border:1px solid rgba(255,92,122,.28)}
 .admin-vip-date{display:block;margin-top:4px;color:var(--muted);font-size:10px}
 .ranking-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px}
 .ranking-pagination span{min-width:60px;text-align:center;color:var(--muted);font-size:12px}
