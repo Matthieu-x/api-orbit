@@ -2,6 +2,7 @@ const express = require("express");
 const apiKeyAuth = require("../../../middleware/apiKeyAuth");
 const { generateQrBuffer, generateQrDataUrl } = require("../../../services/qr");
 const { generatePassword, parseBool } = require("../../../services/password");
+const { translateText } = require("../../../services/translate");
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
 // Para endpoints FREE (solo requiere API key válida)
 router.use("/qr", apiKeyAuth);
 router.use("/password", apiKeyAuth);
+router.use("/translate", apiKeyAuth);
 
 // ─────────────────────────────────────────────
 // QR CODE (generación 100% local, sin API externa)
@@ -90,6 +92,50 @@ router.get("/password", (req, res) => {
       length,
       result: results[0],
       results
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// TRANSLATE (Google Translate público, sin API key propia)
+// ─────────────────────────────────────────────
+
+router.get("/translate", async (req, res) => {
+  const text = String(req.query.text || req.query.texto || "").trim();
+  const to = String(req.query.to || req.query.destino || "es").trim();
+  const from = String(req.query.from || req.query.origen || "auto").trim();
+
+  if (!text) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'text' es requerido"
+    });
+  }
+
+  if (text.length > 3000) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'text' es demasiado largo (máximo 3000 caracteres)"
+    });
+  }
+
+  try {
+    const result = await translateText(text, to, from);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      text,
+      from: result.from,
+      to: result.to,
+      result: result.translated
     });
   } catch (error) {
     return res.status(400).json({
