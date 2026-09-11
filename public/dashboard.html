@@ -1,41 +1,124 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Orbit API</title>
 <link rel="stylesheet" href="/css/style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-</head><body>
-<div class="orbit-bg"><svg viewBox="0 0 800 800"><ellipse class="orbit-ring" cx="400" cy="400" rx="360" ry="150" transform="rotate(-12 400 400)"></ellipse></svg></div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="orbit-bg">
+  <svg viewBox="0 0 800 800">
+    <ellipse class="orbit-ring" cx="400" cy="400" rx="200" ry="340" transform="rotate(18 400 400)"></ellipse>
+  </svg>
+</div>
+
 <div id="shellMount"></div>
-<div class="app-shell"><div class="wrap" style="padding-top:30px">
-<h1 class="section-title">Dashboard</h1><p class="muted" style="margin-bottom:22px">Resumen de tu cuenta en Orbit API.</p>
-<div class="card" style="margin-bottom:20px;border-color:rgba(245,196,81,.35);background:linear-gradient(135deg, rgba(245,196,81,.08), var(--surface));">
-<h3 style="margin-bottom:6px">🎁 Únete al grupo y llévate 1 semana VIP</h3>
-<p class="muted" style="margin-bottom:16px;font-size:14px">Entra al grupo de WhatsApp de Orbit API — avisamos caídas, novedades y resolvemos dudas ahí. Al unirte, te regalamos 1 semana de VIP.</p>
-<a class="btn btn-warning" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&amp;p=a&amp;mlu=4&amp;ilr=4" target="_blank" rel="noopener">Únete al grupo</a>
+
+<div class="app-shell">
+  <div class="wrap" style="padding-top:26px; max-width: 720px">
+
+    <div class="welcome-card">
+      <div class="profile-avatar-wrap" id="welcomeAvatar"></div>
+      <div>
+        <h2>Bienvenido de nuevo, <span id="welcomeName">—</span> <a class="welcome-edit-link" href="/perfil" title="Editar perfil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5Z"/></svg>
+        </a></h2>
+        <p>Este es el resumen de tu cuenta en Orbit API.</p>
+      </div>
+    </div>
+
+    <div class="status-chip-row">
+      <span class="status-chip" id="chipVerified" title="Correo verificado">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+      </span>
+      <span class="status-chip" id="chipPlan" title="Plan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10.5" width="15" height="9" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>
+      </span>
+      <span class="status-chip" id="chipSecurity" title="Orbit IP configurada">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg>
+      </span>
+    </div>
+
+    <div class="quick-actions">
+      <a class="quick-action-card" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
+        <span class="quick-action-icon tone-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M12 8a4 4 0 004 4 4 4 0 00-4 4 4 4 0 00-4-4 4 4 0 004-4Z"/></svg>
+        </span>
+        <span><strong>Sugerir endpoint</strong><span>Pide lo que te gustaría ver</span></span>
+      </a>
+      <a class="quick-action-card" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
+        <span class="quick-action-icon tone-danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0Z"/></svg>
+        </span>
+        <span><strong>Reportar error</strong><span>Un endpoint falla</span></span>
+      </a>
+      <a class="quick-action-card full" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
+        <span class="quick-action-icon tone-accent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4V4Z"/></svg>
+        </span>
+        <span><strong>Abrir ticket</strong><span>Habla con soporte</span></span>
+      </a>
+    </div>
+
+    <div class="icon-stat-grid" style="margin-top:18px">
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg>
+        </span>
+        <span><span class="label">RESTANTES HOY</span><span class="value" id="statRemaining">—</span></span>
+      </div>
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-6"/></svg>
+        </span>
+        <span><span class="label">LÍMITE DIARIO</span><span class="value" id="statLimit">—</span></span>
+      </div>
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h16v5"/><path d="M3 9h18l-1.2 10.2a1 1 0 01-1 .8H5.2a1 1 0 01-1-.8L3 9Z"/></svg>
+        </span>
+        <span><span class="label">PLAN</span><span class="value" id="statVip">—</span></span>
+      </div>
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </span>
+        <span><span class="label">ORBIT IP</span><span class="value" id="statOrbitIp" style="font-size:14px">—</span></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="margin-bottom:10px">Tu API key</h3>
+      <div class="stat-card" style="margin-bottom:14px">
+        <div class="value mono" id="statKey" style="font-size:14px;word-break:break-all">—</div>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin-bottom:8px">Ejemplo de uso:</p>
+      <pre class="code-block" id="usageExample" style="white-space:pre-wrap;word-break:break-all">—</pre>
+      <button class="btn btn-ghost" id="copyUsageBtn" type="button" style="margin-top:10px">Copiar ejemplo</button>
+    </div>
+
+    <div class="card" id="estadisticas" style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--accent)"><path d="M12 2 14.9 8.6 22 9.6l-5 4.9 1.2 7-6.2-3.4-6.2 3.4 1.2-7-5-4.9 7.1-1z"/></svg>
+        <h3 style="margin:0">Top de usuarios</h3>
+      </div>
+      <div id="topUsers"><div class="notif-empty">Cargando...</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+        <button class="btn btn-ghost" id="rankPrev" type="button">Anterior</button>
+        <span class="muted" id="rankPage" style="font-size:12.5px">1 / 1</span>
+        <button class="btn btn-ghost" id="rankNext" type="button">Siguiente</button>
+      </div>
+    </div>
+
+  </div>
 </div>
-<div class="stat-grid">
-<div class="stat-card"><div class="label">Solicitudes restantes hoy</div><div class="value" id="statRemaining">—</div></div>
-<div class="stat-card"><div class="label">Límite diario</div><div class="value" id="statLimit">—</div></div>
-<div class="stat-card"><div class="label">Solicitudes totales de Orbit API</div><div class="value" id="statTotal">—</div></div>
-<div class="stat-card"><div class="label">Tus solicitudes totales</div><div class="value" id="statUserTotal">—</div></div>
-<div class="stat-card"><div class="label">Estado de cuenta</div><div class="value" id="statVip">—</div></div>
-<div class="stat-card" style="grid-column:1/-1"><div class="label">Tu API key</div><div class="value mono" id="statKey" style="font-size:15px;word-break:break-all">—</div></div>
-<div class="stat-card" style="grid-column:1/-1"><div class="label">Tu Orbit IP</div><div class="value mono" id="statOrbitIp" style="font-size:15px;word-break:break-all">—</div></div>
-</div>
-<div class="card" style="margin-top:20px">
-<div class="dashboard-card-head"><div><h3>Cómo usar tu API key</h3><p class="muted" style="font-size:14px">Cada solicitud necesita tu <code>apikey</code> como parámetro en la URL y tu Orbit IP en el header <code>x-orbit-ip</code>.</p></div></div>
-<div class="json-console" id="usageExample" style="white-space:pre-wrap;word-break:break-all">—</div>
-<div style="margin-top:12px"><button class="btn btn-ghost" id="copyUsageBtn">Copiar ejemplo</button></div>
-</div>
-<div class="card dashboard-ranking-card" style="margin-top:20px">
-<div class="dashboard-card-head"><div><h3>🏆 Top de usuarios</h3><p class="muted" style="font-size:14px">Los primeros 15 por solicitudes. Administradores, VIP y usuarios Free aparecen identificados.</p></div></div>
-<div id="topUsers" class="top-users-list"><div class="notif-empty">Cargando estadísticas...</div></div>
-<div class="ranking-pagination"><button class="btn btn-ghost" id="rankPrev" disabled>Anterior</button><span id="rankPage">1 / 1</span><button class="btn btn-ghost" id="rankNext" disabled>Siguiente</button></div>
-</div>
-<div class="card"><h3 style="margin-bottom:6px">¿Quieres VIP?</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Desbloquea la descarga de video y amplía tu límite diario.</p><a class="btn btn-primary" href="/vip">Ver planes VIP</a></div>
-<div class="card"><h3 style="margin-bottom:6px">Explora los endpoints</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Search y Download están separados para que el proyecto no parezca una caja de cables humanos.</p><a class="btn btn-primary" href="/search">Ir a Search</a> <a class="btn btn-ghost" href="/download">Ir a Download</a></div>
-</div></div>
-<script src="/js/app.js"></script><script src="/js/shell.js"></script><script src="/js/dashboard.js"></script>
-</body></html>
+
+<script src="/js/app.js"></script>
+<script src="/js/shell.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
