@@ -1,17 +1,22 @@
 let orbitUser = null;
 
 const ICONS = {
-  menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
-  close: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   bell: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
   trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></svg>',
-  home: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>',
-  grid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
-  user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>',
-  shield: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg>',
-  logout: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 21H5a1 1 0 01-1-1V4a1 1 0 011-1h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>',
-  code: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>',
-  lock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>'
+  home: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 001 1h10a1 1 0 001-1v-9"/></svg>',
+  code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4 2 12l6 8"/><path d="M16 4l6 8-6 8"/></svg>',
+  chart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-6"/></svg>',
+  store: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h16v5"/><path d="M3 9h18l-1.2 10.2a1 1 0 01-1 .8H5.2a1 1 0 01-1-.8L3 9Z"/><path d="M9 13v5"/><path d="M15 13v5"/></svg>',
+  chat: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H8l-4 4V4Z"/></svg>',
+  user: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>',
+  shield: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg>',
+  logout: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 21H5a1 1 0 01-1-1V4a1 1 0 011-1h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>',
+  lock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9" rx="1.8"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>',
+  search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  download: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>',
+  sparkle: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M12 8a4 4 0 004 4 4 4 0 00-4 4 4 4 0 00-4-4 4 4 0 004-4Z"/></svg>',
+  tools: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 015 5l-6 6a4 4 0 01-5-5l1-1"/><path d="M9 9 4 4"/><path d="m6 12-3 3 3 3 3-3"/></svg>',
+  anime: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M8 15c1.2 1 2.6 1.5 4 1.5s2.8-.5 4-1.5"/></svg>'
 };
 
 function timeAgo(iso) {
@@ -40,61 +45,40 @@ async function initShell(activePage) {
 
   orbitUser = data.user;
 
-  const endpointLinks = [
-    { key: "search", href: "/search", label: "Search", icon: ICONS.code },
-    { key: "download", href: "/download", label: "Download", icon: ICONS.code },
-    { key: "ia", href: "/ia", label: "IA", icon: ICONS.code },
-    { key: "tools", href: "/tools", label: "Tools", icon: ICONS.code },
-    { key: "anime", href: "/anime", label: "Anime", icon: ICONS.code }
+  const mainNav = [
+    { key: "dashboard", href: "/dashboard", label: "Inicio", icon: ICONS.home },
+    { key: "endpoints", href: "/endpoints", label: "Endpoints", icon: ICONS.code },
+    { key: "dashboard-stats", href: "/dashboard#estadisticas", label: "Estadísticas", icon: ICONS.chart },
+    { key: "vip", href: "/vip", label: "Planes", icon: ICONS.store },
+    { key: "soporte", href: "https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4", label: "Soporte", icon: ICONS.chat, external: true }
   ];
 
-  const otherLinks = [
-    { key: "dashboard", href: "/dashboard", label: "Dashboard", icon: ICONS.grid },
-    { key: "vip", href: "/vip", label: "VIP", icon: ICONS.shield },
-    { key: "perfil", href: "/perfil", label: "Perfil", icon: ICONS.user }
+  const toolLinks = [
+    { href: "/search", label: "Search", icon: ICONS.search },
+    { href: "/download", label: "Download", icon: ICONS.download },
+    { href: "/ia", label: "IA", icon: ICONS.sparkle },
+    { href: "/tools", label: "Herramientas", icon: ICONS.tools },
+    { href: "/anime", label: "Anime", icon: ICONS.anime }
   ];
-
-  otherLinks.push({ key: "ip-config", href: "/ip-config", label: "Configurar IP", icon: ICONS.lock });
-
-  if (orbitUser.is_admin) {
-    otherLinks.push({ key: "admin", href: "/admin", label: "Panel de admin", icon: ICONS.shield });
-  }
-
-  const renderLinks = (list) =>
-    list
-      .map(
-        (l) => `<a class="drawer-link ${l.key === activePage ? "active" : ""}" href="${l.href}">${l.icon}<span>${l.label}</span></a>`
-      )
-      .join("");
-
-  const drawerLinks = `${renderLinks(endpointLinks)}<hr class="drawer-divider">${renderLinks(otherLinks)}`;
 
   document.getElementById("shellMount").innerHTML = `
-    <div class="drawer-backdrop" id="drawerBackdrop"></div>
-    <div class="drawer" id="drawer">
-      <div class="drawer-brand brand">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
-          <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
-        </svg>
-        Orbit API
-      </div>
-      ${drawerLinks}
-      <div class="drawer-spacer"></div>
-      <a class="drawer-link" href="/" id="drawerHome">${ICONS.home}<span>Inicio</span></a>
-      <a class="drawer-link" href="#" id="logoutLink">${ICONS.logout}<span>Cerrar sesion</span></a>
-    </div>
-
     <div class="topbar">
       <div class="topbar-left">
-        <button class="btn btn-icon" id="menuBtn" type="button" aria-label="Abrir menú">${ICONS.menu}</button>
-        <div class="brand">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <a class="brand" href="/dashboard">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <ellipse cx="12" cy="12" rx="10" ry="4.2" stroke="currentColor" stroke-width="1.4" transform="rotate(-18 12 12)"></ellipse>
             <circle cx="12" cy="12" r="2.6" fill="var(--accent)"></circle>
           </svg>
-          Orbit API
-        </div>
+          <span>Orbit API</span>
+        </a>
+        <nav class="topbar-nav-icons">
+          ${mainNav
+            .map(
+              (l) =>
+                `<a class="topbar-nav-icon ${l.key === activePage ? "active" : ""}" href="${l.href}" title="${l.label}" ${l.external ? 'target="_blank" rel="noopener"' : ""}>${l.icon}</a>`
+            )
+            .join("")}
+        </nav>
       </div>
       <div class="topbar-right">
         <div class="notif-wrap">
@@ -107,30 +91,40 @@ async function initShell(activePage) {
             <div id="notifList"><div class="notif-empty">Cargando...</div></div>
           </div>
         </div>
-        <a href="/perfil">${renderAvatar(orbitUser)}</a>
+        <div class="notif-wrap">
+          <button class="btn btn-icon" id="avatarBtn" type="button" aria-label="Abrir menú de cuenta" style="padding:0;overflow:hidden;border-radius:10px">
+            ${renderAvatar(orbitUser)}
+          </button>
+          <div class="dropdown profile-dropdown" id="avatarDropdown">
+            <a class="profile-dropdown-head" href="/perfil">
+              ${renderAvatar(orbitUser)}
+              <span>
+                <strong>${escapeHtml(orbitUser.name)}</strong>
+                <span>Ver tu perfil</span>
+              </span>
+            </a>
+            <div class="profile-dropdown-usage">
+              <div class="usage-meta-row">
+                <span>Uso de hoy</span>
+                <span>${Number(orbitUser.requests_limit - orbitUser.requests_remaining)}/${Number(orbitUser.requests_limit)}</span>
+              </div>
+              <div class="usage-bar" style="margin-top:8px;margin-bottom:0">
+                <div class="usage-bar-fill" style="width:${Math.min(100, Math.round(((orbitUser.requests_limit - orbitUser.requests_remaining) / Math.max(1, orbitUser.requests_limit)) * 100))}%"></div>
+              </div>
+            </div>
+            <div class="profile-dropdown-links">
+              <a class="drawer-link" href="/perfil">${ICONS.user}<span>Mi perfil</span></a>
+              ${toolLinks.map((l) => `<a class="drawer-link" href="${l.href}">${l.icon}<span>${l.label}</span></a>`).join("")}
+              <a class="drawer-link" href="/ip-config">${ICONS.lock}<span>Configurar IP</span></a>
+              ${orbitUser.is_admin ? `<a class="drawer-link" href="/admin">${ICONS.shield}<span>Panel de admin</span></a>` : ""}
+              <hr class="drawer-divider">
+              <a class="drawer-link" href="#" id="logoutLink">${ICONS.logout}<span>Cerrar sesión</span></a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `;
-
-  const drawer = document.getElementById("drawer");
-  const backdrop = document.getElementById("drawerBackdrop");
-
-  function openDrawer() {
-    drawer.classList.add("open");
-    backdrop.classList.add("open");
-    document.body.classList.add("drawer-open");
-  }
-  function closeDrawer() {
-    drawer.classList.remove("open");
-    backdrop.classList.remove("open");
-    document.body.classList.remove("drawer-open");
-  }
-
-  document.getElementById("menuBtn").addEventListener("click", openDrawer);
-  backdrop.addEventListener("click", closeDrawer);
-  document.querySelectorAll(".drawer-link").forEach((link) => {
-    if (link.id !== "logoutLink") link.addEventListener("click", closeDrawer);
-  });
 
   document.getElementById("logoutLink").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -140,14 +134,25 @@ async function initShell(activePage) {
 
   const notifBtn = document.getElementById("notifBtn");
   const notifDropdown = document.getElementById("notifDropdown");
+  const avatarBtn = document.getElementById("avatarBtn");
+  const avatarDropdown = document.getElementById("avatarDropdown");
 
   notifBtn.addEventListener("click", () => {
+    avatarDropdown.classList.remove("open");
     notifDropdown.classList.toggle("open");
+  });
+
+  avatarBtn.addEventListener("click", () => {
+    notifDropdown.classList.remove("open");
+    avatarDropdown.classList.toggle("open");
   });
 
   document.addEventListener("click", (e) => {
     if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
       notifDropdown.classList.remove("open");
+    }
+    if (!avatarDropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+      avatarDropdown.classList.remove("open");
     }
   });
 
