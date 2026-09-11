@@ -43,25 +43,10 @@
       </span>
     </div>
 
-    <div class="quick-actions">
-      <a class="quick-action-card" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
-        <span class="quick-action-icon tone-success">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="M12 8a4 4 0 004 4 4 4 0 00-4 4 4 4 0 00-4-4 4 4 0 004-4Z"/></svg>
-        </span>
-        <span><strong>Sugerir endpoint</strong><span>Pide lo que te gustaría ver</span></span>
-      </a>
-      <a class="quick-action-card" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
-        <span class="quick-action-icon tone-danger">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0Z"/></svg>
-        </span>
-        <span><strong>Reportar error</strong><span>Un endpoint falla</span></span>
-      </a>
-      <a class="quick-action-card full" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">
-        <span class="quick-action-icon tone-accent">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4V4Z"/></svg>
-        </span>
-        <span><strong>Abrir ticket</strong><span>Habla con soporte</span></span>
-      </a>
+    <div class="card" style="margin-top:18px;border-color:rgba(245,196,81,.35);background:linear-gradient(135deg, rgba(245,196,81,.08), var(--surface))">
+      <h3 style="margin-bottom:6px">🎁 Únete al grupo y llévate 1 semana VIP</h3>
+      <p class="muted" style="margin-bottom:16px;font-size:14px">Entra al grupo de WhatsApp de Orbit API — avisamos caídas, novedades y resolvemos dudas ahí. Al unirte, te regalamos 1 semana de VIP.</p>
+      <a class="btn btn-warning" href="https://chat.whatsapp.com/E6dq6gwGK4o0fdxn6WEZxP?s=cl&p=a&mlu=4&ilr=4" target="_blank" rel="noopener">Únete al grupo</a>
     </div>
 
     <div class="icon-stat-grid" style="margin-top:18px">
@@ -89,6 +74,18 @@
         </span>
         <span><span class="label">ORBIT IP</span><span class="value" id="statOrbitIp" style="font-size:14px">—</span></span>
       </div>
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-4 4"/></svg>
+        </span>
+        <span><span class="label">TOTAL ORBIT API</span><span class="value" id="statTotal" style="font-size:16px">—</span></span>
+      </div>
+      <div class="icon-stat-card">
+        <span class="icon-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-4 5-6 7.5-6s6.1 2 7.5 6"/></svg>
+        </span>
+        <span><span class="label">TUS SOLICITUDES TOTALES</span><span class="value" id="statUserTotal" style="font-size:16px">—</span></span>
+      </div>
     </div>
 
     <div class="card" style="margin-top:14px">
@@ -106,13 +103,16 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--accent)"><path d="M12 2 14.9 8.6 22 9.6l-5 4.9 1.2 7-6.2-3.4-6.2 3.4 1.2-7-5-4.9 7.1-1z"/></svg>
         <h3 style="margin:0">Top de usuarios</h3>
       </div>
-      <div id="topUsers"><div class="notif-empty">Cargando...</div></div>
+      <div id="topUsers" class="top-users-list"><div class="notif-empty">Cargando...</div></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
         <button class="btn btn-ghost" id="rankPrev" type="button">Anterior</button>
         <span class="muted" id="rankPage" style="font-size:12.5px">1 / 1</span>
         <button class="btn btn-ghost" id="rankNext" type="button">Siguiente</button>
       </div>
     </div>
+
+    <div class="card" style="margin-top:16px"><h3 style="margin-bottom:6px">¿Quieres VIP?</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Desbloquea la descarga de video y amplía tu límite diario.</p><a class="btn btn-primary" href="/vip">Ver planes VIP</a></div>
+    <div class="card" style="margin-top:16px"><h3 style="margin-bottom:6px">Explora los endpoints</h3><p class="muted" style="margin-bottom:18px;font-size:14px">Search y Download están separados para que el proyecto no parezca una caja de cables humanos.</p><a class="btn btn-primary" href="/search">Ir a Search</a> <a class="btn btn-ghost" href="/download">Ir a Download</a></div>
 
   </div>
 </div>
