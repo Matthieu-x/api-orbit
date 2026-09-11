@@ -1,16 +1,13 @@
-// services/tiktokSearch.js
 const axios = require("axios");
 
 const TIKTOK_API_URL = "https://api.lempi.lat/s/tiktok";
-const TIKTOK_API_KEY =
-  process.env.LEMPI_API_KEY || "PON_AQUI_TU_API_KEY";
+const TIKTOK_API_KEY = "lem_b3c37229eb1597b655ebf09727367d1f35af0486";
 
 function mapVideo(v) {
   return {
     id: v.id || null,
     desc: v.titulo || "",
     createTime: v.publicado || null,
-
     video: {
       cover: v.autor?.avatar || null,
       duration: v.duracion || 0,
@@ -18,7 +15,6 @@ function mapVideo(v) {
       download: v.video || null,
       ratio: v.calidad || null
     },
-
     author: {
       id: null,
       uniqueId: v.autor?.usuario || null,
@@ -27,7 +23,6 @@ function mapVideo(v) {
       verified: v.autor?.verificado || false,
       signature: null
     },
-
     stats: {
       diggCount: v.estadisticas?.likes || 0,
       shareCount: v.estadisticas?.compartidos || 0,
@@ -35,7 +30,6 @@ function mapVideo(v) {
       playCount: v.estadisticas?.vistas || 0,
       favoriteCount: v.estadisticas?.favoritos || 0
     },
-
     music: v.musica
       ? {
           id: null,
@@ -45,7 +39,6 @@ function mapVideo(v) {
           authorName: v.musica.autor || null
         }
       : null,
-
     url: v.url || null
   };
 }
@@ -63,9 +56,7 @@ async function searchTikTok(query, limit = 10) {
     const data = response.data;
 
     console.log(
-      `[tiktokSearch] status=${data?.status} total=${
-        data?.total ?? 0
-      }`
+      `[tiktokSearch] status=${data?.status} total=${data?.total ?? 0}`
     );
 
     if (!data?.status) {
@@ -75,10 +66,7 @@ async function searchTikTok(query, limit = 10) {
       };
     }
 
-    if (
-      !Array.isArray(data.resultados) ||
-      data.resultados.length === 0
-    ) {
+    if (!Array.isArray(data.resultados) || data.resultados.length === 0) {
       return {
         videos: [],
         debug: "No se encontraron resultados."
