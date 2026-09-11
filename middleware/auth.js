@@ -1,5 +1,6 @@
 const client = require("../db/client");
 const { getSession } = require("../utils/session");
+const { revertExpiredReferralBonus } = require("../utils/referral");
 
 async function requireAuth(req, res, next) {
   const token = req.cookies.orbit_session;
@@ -18,7 +19,7 @@ async function requireAuth(req, res, next) {
     return res.status(401).json({ ok: false, error: "Cuenta no encontrada" });
   }
 
-  req.user = result.rows[0];
+  req.user = await revertExpiredReferralBonus(result.rows[0]);
   next();
 }
 
