@@ -16,10 +16,12 @@ const router = express.Router();
 router.use("/ytaudio", apiKeyAuth);
 router.use("/tiktok", apiKeyAuth);
 
-// Para endpoints VIP (requiere API key VIP activa)
-router.use("/ytvideo", createApiKeyAuth({ vip: true }));
-router.use("/aptoide", createApiKeyAuth({ vip: true }));
-router.use("/fdroid", createApiKeyAuth({ vip: true }));
+// Para endpoints Plus (descarga de video)
+router.use("/ytvideo", createApiKeyAuth({ minPlan: "plus" }));
+
+// Para endpoints VIP (acceso completo)
+router.use("/aptoide", createApiKeyAuth({ minPlan: "vip" }));
+router.use("/fdroid", createApiKeyAuth({ minPlan: "vip" }));
 
 // ─────────────────────────────────────────────
 // YOUTUBE AUDIO
