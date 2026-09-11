@@ -46,6 +46,32 @@ async function ensureSchema() {
   await addColumnIfMissing("reset_token", "TEXT");
   await addColumnIfMissing("reset_expires_at", "TEXT");
   await addColumnIfMissing("github_id", "TEXT");
+  await addColumnIfMissing("referral_code", "TEXT");
+  await addColumnIfMissing("referred_by", "TEXT");
+  await addColumnIfMissing("base_requests_limit", "INTEGER");
+  await addColumnIfMissing("referral_bonus_expires_at", "TEXT");
+
+  // Usuarios ya existentes sin referral_code (instalaciones previas a este
+  // feature): les generamos uno a partir de su nombre y fijamos su limite
+  // base al limite que ya tenian (para no tocar VIP/admin existentes).
+  const { generateUniqueReferralCode } = require("../utils/referral");
+  const usersWithoutReferralCode = await client.execute({
+    sql: "SELECT id, name, requests_limit FROM orbit_users WHERE referral_code IS NULL OR referral_code = ''",
+    args: []
+  });
+
+  for (const row of usersWithoutReferralCode.rows) {
+    const code = await generateUniqueReferralCode(row.name);
+    await client.execute({
+      sql: "UPDATE orbit_users SET referral_code = ?, base_requests_limit = COALESCE(base_requests_limit, requests_limit) WHERE id = ?",
+      args: [code, row.id]
+    });
+  }
+
+  await client.execute({
+    sql: "UPDATE orbit_users SET base_requests_limit = requests_limit WHERE base_requests_limit IS NULL",
+    args: []
+  });
 
   // Migra usuarios existentes al nuevo sistema. Cada cuenta recibe su propio
   // Orbit IP falso y estable, sin usar la IP real del cliente.
@@ -124,10 +150,13 @@ async function ensureAdmin(email, name) {
 
   if (existing.rows.length > 0) return;
 
+  const { generateUniqueReferralCode } = require("../utils/referral");
+  const referralCode = await generateUniqueReferralCode(name);
+
   await client.execute({
     sql: `INSERT INTO orbit_users
-      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, NULL)`,
+      (id, name, email, password, photo, api_key, requests_remaining, requests_limit, requests_reset_date, is_admin, created_at, vip, vip_expires_at, referral_code, base_requests_limit)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 1, NULL, ?, ?)`,
     args: [
       crypto.randomUUID(),
       name,
@@ -138,7 +167,9 @@ async function ensureAdmin(email, name) {
       999999,
       999999,
       todayStamp(),
-      new Date().toISOString()
+      new Date().toISOString(),
+      referralCode,
+      999999
     ]
   });
 
