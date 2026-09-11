@@ -18,6 +18,14 @@ function pwUrl(){
 }
 function pwUpdate(){document.getElementById("pwEndpointUrl").textContent=pwUrl();}
 
+function trUrl(){
+  const t=document.getElementById("trText").value;
+  const from=document.getElementById("trFrom").value.trim()||"auto";
+  const to=document.getElementById("trTo").value.trim()||"es";
+  return `${location.origin}/api/v1/tools/translate?apikey=${encodeURIComponent(toolsUser.api_key)}&text=${encodeURIComponent(t)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+}
+function trUpdate(){document.getElementById("trEndpointUrl").textContent=trUrl();}
+
 (async()=>{
   toolsUser=await initShell("tools");
   if(!toolsUser)return;
@@ -71,6 +79,30 @@ function pwUpdate(){document.getElementById("pwEndpointUrl").textContent=pwUrl()
       pwOut.textContent="No se pudo contactar el endpoint";
     }finally{
       pwBtn.disabled=false;
+    }
+  };
+
+  const trInputs=[document.getElementById("trText"),document.getElementById("trFrom"),document.getElementById("trTo")];
+  trUpdate();
+  trInputs.forEach(el=>el.addEventListener("input",trUpdate));
+  document.getElementById("trCopyBtn").onclick=()=>copyToClipboard(trUrl(),"Endpoint");
+
+  const trOut=document.getElementById("trResponse");
+  const trBtn=document.getElementById("trSendBtn");
+
+  trBtn.onclick=async()=>{
+    const trText=document.getElementById("trText");
+    if(!trText.value.trim())return showToast("Escribe un texto");
+    trBtn.disabled=true;
+    trOut.innerHTML='<div class="json-console-loading"><span class="orbit-spinner"></span>Traduciendo...</div>';
+    try{
+      const r=await fetch(trUrl(),{headers:{"x-orbit-ip":toolsUser.orbit_ip||""}});
+      const data=await r.json();
+      trOut.textContent=JSON.stringify(data,null,2);
+    }catch(e){
+      trOut.textContent="No se pudo contactar el endpoint";
+    }finally{
+      trBtn.disabled=false;
     }
   };
 })();
