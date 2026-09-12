@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   try {
     const result = await askOrbitIa(text, { systemPrompt: promptSystem });
     if (!result.status) return res.status(500).json({ status: false, creator: "Orbit", error: result.error });
-    res.json({ status: true, creator: "Orbit", access: "vip", data: { response: result.response }, timestamp: new Date().toISOString() });
+    res.json({ status: true, creator: "Orbit", access: req.endpointMinPlan, data: { response: result.response }, timestamp: new Date().toISOString() });
   } catch (error) {
     res.status(500).json({ status: false, creator: "Orbit", error: error.message });
   }
