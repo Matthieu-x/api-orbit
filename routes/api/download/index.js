@@ -173,7 +173,7 @@ router.get("/aptoide", async (req, res) => {
     return res.json({
       status: true,
       creator: "Orbit",
-      access: "vip",
+      access: req.endpointMinPlan,
       source: "Aptoide",
       count: apps.length,
       result: apps
@@ -213,7 +213,7 @@ router.get("/fdroid", async (req, res) => {
       return res.json({
         status: true,
         creator: "Orbit",
-        access: "vip",
+        access: req.endpointMinPlan,
         source: "F-Droid",
         result: info
       });
@@ -223,7 +223,7 @@ router.get("/fdroid", async (req, res) => {
     return res.json({
       status: true,
       creator: "Orbit",
-      access: "vip",
+      access: req.endpointMinPlan,
       source: "F-Droid",
       count: apps.length,
       result: apps
