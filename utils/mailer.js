@@ -1,7 +1,7 @@
 const axios = require("axios");
 
-const SENDLIB_API_KEY = process.env.SENDLIB_API_KEY || "sl_e3620cad_b365437102b4633cbed1038d45c5157d1608ca71e57e4638881bb214";
-const SENDLIB_FROM = process.env.SENDLIB_FROM || "soporte.orbitapi@gmail.com";
+const SENDLIB_API_KEY = "sl_e3620cad_b365437102b4633cbed1038d45c5157d1608ca71e57e4638881bb214";
+const SENDLIB_FROM = "soporte.orbitapi@gmail.com";
 const SENDLIB_URL = "https://sendlib.samueltuoyo.com/api/send";
 
 function escapeHtml(str) {
@@ -15,21 +15,18 @@ function escapeHtml(str) {
 }
 
 async function sendMail({ to, subject, html }) {
-  const apiKey = process.env.SENDLIB_API_KEY || SENDLIB_API_KEY;
-  const from = process.env.SENDLIB_FROM || SENDLIB_FROM;
-
   try {
     await axios.post(
       SENDLIB_URL,
       {
-        from,
+        from: SENDLIB_FROM,
         to,
         subject,
         html
       },
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${SENDLIB_API_KEY}`,
           "Content-Type": "application/json"
         },
         timeout: 10000
@@ -49,14 +46,13 @@ async function sendMail({ to, subject, html }) {
 }
 
 const COLORS = {
-  bg: "#0a0e17",
-  surface: "#121826",
-  surface2: "#1a2233",
-  border: "#232c40",
-  text: "#e7ecf6",
-  muted: "#8a93a8",
+  page: "#f2f0ff",
+  card: "#ffffff",
+  text: "#17181c",
+  muted: "#62646b",
+  soft: "#8a8c93",
   accent: "#6c8cff",
-  success: "#3dd68c"
+  border: "#eeeeF2"
 };
 
 const FONT = "'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
@@ -69,13 +65,17 @@ function emailShell({ preheader = "", title, bodyHtml }) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>${escapeHtml(title)}</title>
 </head>
 
 <body style="
   margin:0;
   padding:0;
-  background:${COLORS.bg};
+  background:${COLORS.page};
+  font-family:${FONT};
+  color:${COLORS.text};
 ">
 
 <div style="
@@ -83,6 +83,7 @@ function emailShell({ preheader = "", title, bodyHtml }) {
   max-height:0;
   overflow:hidden;
   opacity:0;
+  color:transparent;
 ">
   ${escapeHtml(preheader)}
 </div>
@@ -95,14 +96,14 @@ function emailShell({ preheader = "", title, bodyHtml }) {
   border="0"
   style="
     width:100%;
-    background:${COLORS.bg};
+    background:${COLORS.page};
   "
 >
   <tr>
     <td
       align="center"
       style="
-        padding:48px 20px;
+        padding:42px 16px;
       "
     >
 
@@ -114,87 +115,20 @@ function emailShell({ preheader = "", title, bodyHtml }) {
         border="0"
         style="
           width:100%;
-          max-width:460px;
+          max-width:620px;
         "
       >
 
         <tr>
           <td
-            align="center"
             style="
-              padding:0 0 34px 0;
-              font-family:${FONT};
+              background:${COLORS.card};
+              border-radius:24px;
+              padding:48px 44px;
             "
           >
 
-            <div style="
-              font-family:${FONT_HEAD};
-              font-size:17px;
-              line-height:1.3;
-              font-weight:700;
-              letter-spacing:-0.02em;
-              color:${COLORS.text};
-            ">
-              Orbit API
-            </div>
-
-            <div style="
-              width:34px;
-              height:2px;
-              margin:10px auto 0 auto;
-              background:${COLORS.accent};
-              border-radius:2px;
-            "></div>
-
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            style="
-              padding:0;
-              font-family:${FONT};
-              color:${COLORS.text};
-            "
-          >
             ${bodyHtml}
-          </td>
-        </tr>
-
-        <tr>
-          <td
-            align="center"
-            style="
-              padding:36px 0 0 0;
-              font-family:${FONT};
-            "
-          >
-
-            <div style="
-              width:100%;
-              height:1px;
-              background:${COLORS.border};
-              margin-bottom:18px;
-            "></div>
-
-            <p style="
-              margin:0;
-              font-size:11px;
-              line-height:1.6;
-              color:${COLORS.muted};
-            ">
-              Orbit API
-            </p>
-
-            <p style="
-              margin:4px 0 0 0;
-              font-size:10.5px;
-              line-height:1.6;
-              color:${COLORS.muted};
-              opacity:.75;
-            ">
-              Este correo fue enviado automáticamente.
-            </p>
 
           </td>
         </tr>
@@ -214,18 +148,17 @@ function dataTableHtml(rows) {
     .map(
       ([label, value], index) => `
 <tr>
-
   <td
     style="
       padding:14px 0;
-      width:110px;
+      width:125px;
       vertical-align:top;
       font-family:${FONT};
-      font-size:10.5px;
+      font-size:11px;
       line-height:1.5;
-      color:${COLORS.muted};
+      color:${COLORS.soft};
       text-transform:uppercase;
-      letter-spacing:.06em;
+      letter-spacing:.05em;
       ${
         index < rows.length - 1
           ? `border-bottom:1px solid ${COLORS.border};`
@@ -255,7 +188,6 @@ function dataTableHtml(rows) {
   >
     ${escapeHtml(value)}
   </td>
-
 </tr>`
     )
     .join("");
@@ -269,7 +201,7 @@ function dataTableHtml(rows) {
   border="0"
   style="
     width:100%;
-    margin:26px 0;
+    margin:28px 0;
   "
 >
   ${rowsHtml}
@@ -284,7 +216,7 @@ function buttonHtml(href, label) {
   cellspacing="0"
   border="0"
   style="
-    margin:26px auto;
+    margin:28px auto;
   "
 >
   <tr>
@@ -292,21 +224,21 @@ function buttonHtml(href, label) {
       align="center"
       style="
         background:${COLORS.accent};
-        border-radius:9px;
+        border-radius:12px;
       "
     >
       <a
         href="${escapeHtml(href)}"
         style="
           display:inline-block;
-          padding:12px 25px;
+          padding:15px 30px;
           font-family:${FONT};
-          font-size:13.5px;
+          font-size:14px;
           line-height:1;
           font-weight:700;
-          color:#0b1020;
+          color:#ffffff;
           text-decoration:none;
-          border-radius:9px;
+          border-radius:12px;
         "
       >
         ${escapeHtml(label)}
@@ -316,28 +248,49 @@ function buttonHtml(href, label) {
 </table>`;
 }
 
+function logoHtml() {
+  return `
+<div style="
+  margin:0 0 38px 0;
+  text-align:center;
+">
+  <div style="
+    display:inline-block;
+    font-family:${FONT_HEAD};
+    font-size:17px;
+    line-height:1.2;
+    font-weight:800;
+    letter-spacing:-.03em;
+    color:${COLORS.text};
+  ">
+    Orbit API
+  </div>
+</div>`;
+}
+
 function welcomeEmailHtml({ name, email, orbitIp, apiKey }) {
   const body = `
+${logoHtml()}
+
 <h1 style="
-  margin:0 0 10px 0;
+  margin:0 0 12px 0;
   font-family:${FONT_HEAD};
-  font-size:22px;
+  font-size:25px;
   line-height:1.3;
-  font-weight:700;
-  letter-spacing:-.02em;
+  font-weight:750;
+  letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:center;
+  text-align:left;
 ">
   ¡Cuenta verificada, ${escapeHtml(name)}!
 </h1>
 
 <p style="
-  margin:0 auto;
-  max-width:380px;
-  font-size:14px;
-  line-height:1.7;
+  margin:0;
+  font-family:${FONT};
+  font-size:15px;
+  line-height:1.75;
   color:${COLORS.muted};
-  text-align:center;
 ">
   Tu cuenta de Orbit API ya está activa.
   Esta es tu información de acceso:
@@ -352,8 +305,9 @@ ${dataTableHtml([
 
 <p style="
   margin:0;
-  font-size:13px;
-  line-height:1.7;
+  font-family:${FONT};
+  font-size:13.5px;
+  line-height:1.75;
   color:${COLORS.muted};
 ">
   Guarda tu
@@ -369,8 +323,9 @@ ${dataTableHtml([
 
 <p style="
   margin:12px 0 0 0;
-  font-size:12.5px;
-  line-height:1.7;
+  font-family:${FONT};
+  font-size:13px;
+  line-height:1.75;
   color:${COLORS.muted};
 ">
   Se utilizan para autenticar tus solicitudes a la API mediante
@@ -400,26 +355,27 @@ ${buttonHtml(
 
 function verificationEmailHtml({ name, code }) {
   const body = `
+${logoHtml()}
+
 <h1 style="
-  margin:0 0 10px 0;
+  margin:0 0 12px 0;
   font-family:${FONT_HEAD};
-  font-size:22px;
+  font-size:25px;
   line-height:1.3;
-  font-weight:700;
-  letter-spacing:-.02em;
+  font-weight:750;
+  letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:center;
+  text-align:left;
 ">
   Verifica tu cuenta
 </h1>
 
 <p style="
-  margin:0 auto 26px auto;
-  max-width:370px;
-  font-size:14px;
-  line-height:1.7;
+  margin:0 0 28px 0;
+  font-family:${FONT};
+  font-size:15px;
+  line-height:1.75;
   color:${COLORS.muted};
-  text-align:center;
 ">
   Hola ${escapeHtml(name)}, usa este código para verificar
   tu cuenta y activarla.
@@ -433,21 +389,21 @@ function verificationEmailHtml({ name, code }) {
   border="0"
   style="
     width:100%;
-    margin:0 0 20px 0;
+    margin:0 0 24px 0;
   "
 >
   <tr>
     <td
       align="center"
       style="
-        padding:18px 10px;
-        border-top:1px solid ${COLORS.border};
-        border-bottom:1px solid ${COLORS.border};
+        padding:20px 10px;
+        background:#f7f7fa;
+        border-radius:14px;
         font-family:${MONO};
         font-size:30px;
         line-height:1.2;
         font-weight:700;
-        letter-spacing:7px;
+        letter-spacing:8px;
         color:${COLORS.accent};
       "
     >
@@ -458,10 +414,10 @@ function verificationEmailHtml({ name, code }) {
 
 <p style="
   margin:0;
+  font-family:${FONT};
   font-size:12.5px;
   line-height:1.6;
-  color:${COLORS.muted};
-  text-align:center;
+  color:${COLORS.soft};
 ">
   El código vence en 15 minutos.
 </p>
@@ -476,46 +432,50 @@ function verificationEmailHtml({ name, code }) {
 
 function resetPasswordEmailHtml({ name, resetUrl }) {
   const body = `
+${logoHtml()}
+
 <h1 style="
-  margin:0 0 10px 0;
+  margin:0 0 12px 0;
   font-family:${FONT_HEAD};
-  font-size:22px;
+  font-size:25px;
   line-height:1.3;
-  font-weight:700;
-  letter-spacing:-.02em;
+  font-weight:750;
+  letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:center;
+  text-align:left;
 ">
   Restablece tu contraseña
 </h1>
 
 <p style="
-  margin:0 auto;
-  max-width:380px;
-  font-size:14px;
-  line-height:1.7;
+  margin:0;
+  font-family:${FONT};
+  font-size:15px;
+  line-height:1.75;
   color:${COLORS.muted};
-  text-align:center;
 ">
   Hola ${escapeHtml(name)}, pediste restablecer la contraseña
   de tu cuenta de Orbit API.
+  Toca el botón para elegir una nueva:
 </p>
 
 ${buttonHtml(resetUrl, "Restablecer contraseña")}
 
 <p style="
   margin:0 0 10px 0;
+  font-family:${FONT};
   font-size:12.5px;
   line-height:1.6;
   color:${COLORS.muted};
 ">
-  Si el botón no funciona, copia y pega este enlace:
+  Si el botón no funciona, copia y pega este enlace en tu navegador:
 </p>
 
 <p style="
-  margin:0 0 20px 0;
-  font-size:11.5px;
-  line-height:1.6;
+  margin:0 0 24px 0;
+  font-family:${FONT};
+  font-size:12px;
+  line-height:1.65;
   word-break:break-all;
 ">
   <a
@@ -531,18 +491,29 @@ ${buttonHtml(resetUrl, "Restablecer contraseña")}
 
 <p style="
   margin:0;
-  font-size:12.5px;
+  font-family:${FONT};
+  font-size:13px;
   line-height:1.7;
   color:${COLORS.muted};
 ">
   El enlace vence en 30 minutos.
-  Si no pediste esto, tu contraseña seguirá igual.
+</p>
+
+<p style="
+  margin:24px 0 0 0;
+  font-family:${FONT};
+  font-size:12.5px;
+  line-height:1.7;
+  color:${COLORS.soft};
+">
+  Si no pediste esto, puedes ignorar este correo.
+  Tu contraseña seguirá igual.
 </p>
 `;
 
   return emailShell({
     preheader: "Restablece la contraseña de tu cuenta de Orbit API.",
-    title: "Restablecer contraseña — Orbit API",
+    title: "Restablece tu contraseña — Orbit API",
     bodyHtml: body
   });
 }
@@ -559,26 +530,27 @@ function planActivatedEmailHtml({
       : "Gratis";
 
   const body = `
+${logoHtml()}
+
 <h1 style="
-  margin:0 0 10px 0;
+  margin:0 0 12px 0;
   font-family:${FONT_HEAD};
-  font-size:22px;
+  font-size:25px;
   line-height:1.3;
-  font-weight:700;
-  letter-spacing:-.02em;
+  font-weight:750;
+  letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:center;
+  text-align:left;
 ">
   Tu plan ahora es ${escapeHtml(planLabel)}
 </h1>
 
 <p style="
-  margin:0 auto;
-  max-width:380px;
-  font-size:14px;
-  line-height:1.7;
+  margin:0;
+  font-family:${FONT};
+  font-size:15px;
+  line-height:1.75;
   color:${COLORS.muted};
-  text-align:center;
 ">
   Hola ${escapeHtml(name)}, un administrador activó el plan
   <strong style="color:${COLORS.text};">
@@ -595,8 +567,9 @@ ${dataTableHtml([
 
 <p style="
   margin:0;
-  font-size:13px;
-  line-height:1.7;
+  font-family:${FONT};
+  font-size:13.5px;
+  line-height:1.75;
   color:${COLORS.muted};
 ">
   Este plan queda activo de forma permanente hasta que
