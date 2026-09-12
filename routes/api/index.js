@@ -28,6 +28,6 @@ router.use("/download", downloadRoutes);
 router.use("/pinterest", apiKeyAuth, pinterestRoutes);
 router.use("/ia", createApiKeyAuth({ minPlan: "vip" }), iaRoutes);
 router.use("/tools", toolsRoutes);
-router.use("/anime", createApiKeyAuth({ minPlan: "plus" }), animeRoutes);
+router.use("/anime", animeRoutes);
 
 module.exports = router;
