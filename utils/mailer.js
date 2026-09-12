@@ -72,7 +72,7 @@ function emailShell({ preheader = "", title, bodyHtml }) {
 <body style="
   margin:0;
   padding:0;
-  background:${COLORS.bg};
+  background:transparent;
   font-family:${FONT};
   color:${COLORS.text};
 ">
@@ -95,14 +95,14 @@ function emailShell({ preheader = "", title, bodyHtml }) {
   border="0"
   style="
     width:100%;
-    background:${COLORS.bg};
+    background:transparent;
   "
 >
   <tr>
     <td
       align="center"
       style="
-        padding:70px 24px;
+        padding:0;
       "
     >
 
@@ -115,13 +115,16 @@ function emailShell({ preheader = "", title, bodyHtml }) {
         style="
           width:100%;
           max-width:620px;
+          background:#ffffff;
+          border-radius:16px;
+          overflow:hidden;
         "
       >
         <tr>
           <td
             style="
-              padding:0;
-              background:transparent;
+              padding:48px 40px;
+              background:#ffffff;
               font-family:${FONT};
               color:${COLORS.text};
             "
