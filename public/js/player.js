@@ -82,10 +82,7 @@
     } catch {}
   }
 
-  if (state.closed) {
-    buildReopenTab();
-    return;
-  }
+  
 
   buildPlayer();
 
