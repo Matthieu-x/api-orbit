@@ -35,7 +35,7 @@
     { title: "Delincuente", artist: "Tokischa, Anuel AA & Ñengo Flow", url: "https://files.catbox.moe/hwl9er.mp3" },
     { title: "Dardos (ft. Prince Royce)", artist: "Romeo Santos", url: "https://files.catbox.moe/ay0s00.mp3" },
     { title: "Hilito", artist: "Romeo Santos", url: "https://files.catbox.moe/akwuj1.mp3" },
-    { title: "Loco", artist: "Neon Vggs", url: "https://files.catbox.moe/pyvz0c.mp3" },
+    { title: "Loco", artist: "Neton Vega", url: "https://files.catbox.moe/pyvz0c.mp3" },
     { title: "Netflix and Chill", artist: "Luis Carrillo, Omar Camacho y Oscar Maydon", url: "https://files.catbox.moe/tqfzyt.mp3" },
     { title: "La Cumbia De La Alfrediza", artist: "Yahir Saldívar", url: "https://files.catbox.moe/7i1903.mp3" },
     { title: "La Chona", artist: "Los Tucanes De Tijuana", url: "https://files.catbox.moe/vgvoji.mp3" },
