@@ -4,6 +4,19 @@ const SENDLIB_API_KEY = "sl_e3620cad_b365437102b4633cbed1038d45c5157d1608ca71e57
 const SENDLIB_FROM = "soporte.orbitapi@gmail.com";
 const SENDLIB_URL = "https://sendlib.samueltuoyo.com/api/send";
 
+const COLORS = {
+  bg: "#f2f0ff",
+  text: "#17181c",
+  muted: "#5f6067",
+  soft: "#85868d",
+  accent: "#6c8cff",
+  codeBg: "#f7f6fb"
+};
+
+const FONT = "'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const FONT_HEAD = "'Sora','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const MONO = "'SFMono-Regular',Consolas,Menlo,monospace";
+
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;",
@@ -45,20 +58,6 @@ async function sendMail({ to, subject, html }) {
   }
 }
 
-const COLORS = {
-  page: "#f2f0ff",
-  card: "#ffffff",
-  text: "#17181c",
-  muted: "#62646b",
-  soft: "#8a8c93",
-  accent: "#6c8cff",
-  border: "#eeeeF2"
-};
-
-const FONT = "'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const FONT_HEAD = "'Sora','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const MONO = "'SFMono-Regular',Consolas,Menlo,monospace";
-
 function emailShell({ preheader = "", title, bodyHtml }) {
   return `<!DOCTYPE html>
 <html lang="es">
@@ -73,7 +72,7 @@ function emailShell({ preheader = "", title, bodyHtml }) {
 <body style="
   margin:0;
   padding:0;
-  background:${COLORS.page};
+  background:${COLORS.bg};
   font-family:${FONT};
   color:${COLORS.text};
 ">
@@ -96,14 +95,14 @@ function emailShell({ preheader = "", title, bodyHtml }) {
   border="0"
   style="
     width:100%;
-    background:${COLORS.page};
+    background:${COLORS.bg};
   "
 >
   <tr>
     <td
       align="center"
       style="
-        padding:42px 16px;
+        padding:70px 24px;
       "
     >
 
@@ -118,21 +117,18 @@ function emailShell({ preheader = "", title, bodyHtml }) {
           max-width:620px;
         "
       >
-
         <tr>
           <td
             style="
-              background:${COLORS.card};
-              border-radius:24px;
-              padding:48px 44px;
+              padding:0;
+              background:transparent;
+              font-family:${FONT};
+              color:${COLORS.text};
             "
           >
-
             ${bodyHtml}
-
           </td>
         </tr>
-
       </table>
 
     </td>
@@ -161,7 +157,7 @@ function dataTableHtml(rows) {
       letter-spacing:.05em;
       ${
         index < rows.length - 1
-          ? `border-bottom:1px solid ${COLORS.border};`
+          ? "border-bottom:1px solid rgba(40,40,50,.10);"
           : ""
       }
     "
@@ -181,7 +177,7 @@ function dataTableHtml(rows) {
       word-break:break-all;
       ${
         index < rows.length - 1
-          ? `border-bottom:1px solid ${COLORS.border};`
+          ? "border-bottom:1px solid rgba(40,40,50,.10);"
           : ""
       }
     "
@@ -201,7 +197,7 @@ function dataTableHtml(rows) {
   border="0"
   style="
     width:100%;
-    margin:28px 0;
+    margin:30px 0;
   "
 >
   ${rowsHtml}
@@ -216,7 +212,7 @@ function buttonHtml(href, label) {
   cellspacing="0"
   border="0"
   style="
-    margin:28px auto;
+    margin:30px 0;
   "
 >
   <tr>
@@ -224,21 +220,21 @@ function buttonHtml(href, label) {
       align="center"
       style="
         background:${COLORS.accent};
-        border-radius:12px;
+        border-radius:11px;
       "
     >
       <a
         href="${escapeHtml(href)}"
         style="
           display:inline-block;
-          padding:15px 30px;
+          padding:16px 34px;
           font-family:${FONT};
           font-size:14px;
           line-height:1;
           font-weight:700;
           color:#ffffff;
           text-decoration:none;
-          border-radius:12px;
+          border-radius:11px;
         "
       >
         ${escapeHtml(label)}
@@ -248,39 +244,16 @@ function buttonHtml(href, label) {
 </table>`;
 }
 
-function logoHtml() {
-  return `
-<div style="
-  margin:0 0 38px 0;
-  text-align:center;
-">
-  <div style="
-    display:inline-block;
-    font-family:${FONT_HEAD};
-    font-size:17px;
-    line-height:1.2;
-    font-weight:800;
-    letter-spacing:-.03em;
-    color:${COLORS.text};
-  ">
-    Orbit API
-  </div>
-</div>`;
-}
-
 function welcomeEmailHtml({ name, email, orbitIp, apiKey }) {
   const body = `
-${logoHtml()}
-
 <h1 style="
-  margin:0 0 12px 0;
+  margin:0 0 14px 0;
   font-family:${FONT_HEAD};
   font-size:25px;
   line-height:1.3;
-  font-weight:750;
+  font-weight:700;
   letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:left;
 ">
   ¡Cuenta verificada, ${escapeHtml(name)}!
 </h1>
@@ -355,17 +328,14 @@ ${buttonHtml(
 
 function verificationEmailHtml({ name, code }) {
   const body = `
-${logoHtml()}
-
 <h1 style="
-  margin:0 0 12px 0;
+  margin:0 0 14px 0;
   font-family:${FONT_HEAD};
   font-size:25px;
   line-height:1.3;
-  font-weight:750;
+  font-weight:700;
   letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:left;
 ">
   Verifica tu cuenta
 </h1>
@@ -396,9 +366,8 @@ ${logoHtml()}
     <td
       align="center"
       style="
-        padding:20px 10px;
-        background:#f7f7fa;
-        border-radius:14px;
+        padding:18px 10px;
+        background:${COLORS.codeBg};
         font-family:${MONO};
         font-size:30px;
         line-height:1.2;
@@ -432,17 +401,14 @@ ${logoHtml()}
 
 function resetPasswordEmailHtml({ name, resetUrl }) {
   const body = `
-${logoHtml()}
-
 <h1 style="
-  margin:0 0 12px 0;
+  margin:0 0 14px 0;
   font-family:${FONT_HEAD};
   font-size:25px;
   line-height:1.3;
-  font-weight:750;
+  font-weight:700;
   letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:left;
 ">
   Restablece tu contraseña
 </h1>
@@ -530,17 +496,14 @@ function planActivatedEmailHtml({
       : "Gratis";
 
   const body = `
-${logoHtml()}
-
 <h1 style="
-  margin:0 0 12px 0;
+  margin:0 0 14px 0;
   font-family:${FONT_HEAD};
   font-size:25px;
   line-height:1.3;
-  font-weight:750;
+  font-weight:700;
   letter-spacing:-.025em;
   color:${COLORS.text};
-  text-align:left;
 ">
   Tu plan ahora es ${escapeHtml(planLabel)}
 </h1>
