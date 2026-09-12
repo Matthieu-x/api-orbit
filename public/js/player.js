@@ -71,7 +71,12 @@
   let state = loadState();
 
   function saveState(patch) {
-    state = { ...state, ...patch };
+    // Releemos lo mas reciente antes de escribir: si el usuario cerro el
+    // reproductor en OTRA pestaña, esa pestaña no debe pisarlo con su
+    // propia copia vieja en memoria (ej. al guardar el currentTime cada
+    // pocos segundos).
+    const fresh = loadState();
+    state = { ...fresh, ...patch };
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {}
@@ -90,6 +95,7 @@
     document.body.appendChild(root);
 
     const styleEl = document.createElement("style");
+    styleEl.setAttribute("data-orbit-player", "");
     styleEl.textContent = `
       #orbitPlayerRoot{position:fixed;z-index:9999;right:${state.right}px;bottom:${state.bottom}px;font-family:'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif;user-select:none;}
       #orbitPlayerRoot *{box-sizing:border-box;}
@@ -165,6 +171,7 @@
     function buildMini() {
       const el = document.createElement("div");
       el.className = "op-mini" + (state.playing ? " op-playing" : "");
+      el.title = "Arrastra para mover · doble clic para regresar a la esquina";
       el.innerHTML = `<div class="op-ring"></div>${icon("note")}`;
       makeDraggable(el, root, (wasClick) => {
         if (wasClick) {
@@ -314,6 +321,29 @@
       syncPlayButtonIcon();
       syncMiniPlayingClass();
     });
+    let consecutiveErrors = 0;
+
+    audio.addEventListener("error", () => {
+      consecutiveErrors += 1;
+      const hint = root.querySelector("[data-resume-hint]");
+      if (hint) {
+        hint.textContent = "Esta canción falló, pasando a la siguiente...";
+        hint.style.display = "block";
+      }
+      // Si TODAS las canciones fallan (ej. sin internet), no giramos en
+      // círculo infinito: nos detenemos tras dar una vuelta completa.
+      if (consecutiveErrors >= PLAYLIST.length) {
+        saveState({ playing: false });
+        if (hint) hint.textContent = "No se pudo reproducir ninguna canción. Revisa tu conexión.";
+        return;
+      }
+      setTimeout(() => changeTrack(1), 600);
+    });
+
+    audio.addEventListener("playing", () => {
+      consecutiveErrors = 0;
+    });
+
     audio.addEventListener("ended", () => changeTrack(1));
 
     let lastSave = 0;
@@ -331,7 +361,36 @@
       if (document.visibilityState === "hidden") saveState({ time: audio.currentTime });
     });
 
+    // Si el usuario cierra el reproductor (o lo pausa) en OTRA pestaña,
+    // esta pestaña se entera al vuelo y deja de sonar / se cierra tambien.
+    window.addEventListener("storage", (e) => {
+      if (e.key !== STORAGE_KEY) return;
+      let fresh;
+      try {
+        fresh = JSON.parse(e.newValue || "{}");
+      } catch {
+        return;
+      }
+      if (fresh.closed && !audio.paused) {
+        audio.pause();
+        state = fresh;
+        root.remove();
+        document.querySelectorAll("style[data-orbit-player]").forEach((s) => s.remove());
+        buildReopenTab();
+      }
+    });
+
+    function resetPosition() {
+      const defaultRight = 18;
+      const defaultBottom = 18;
+      root.style.right = defaultRight + "px";
+      root.style.bottom = defaultBottom + "px";
+      saveState({ right: defaultRight, bottom: defaultBottom });
+    }
+
     function makeDraggable(handleEl, containerEl, onClick) {
+      handleEl.addEventListener("dblclick", resetPosition);
+
       let startX, startY, startRight, startBottom, moved, pointerId;
 
       handleEl.addEventListener("pointerdown", (e) => {
@@ -386,7 +445,23 @@
       );
     }
     render();
-    if (state.playing) attemptPlay();
+
+    if (state.playing) {
+      attemptPlay();
+
+      // El navegador puede bloquear el play() automático de arriba (politica
+      // de autoplay). Para que se sienta "automatico" igual, en cuanto el
+      // usuario toque CUALQUIER parte de la pagina nueva (un link, un botón,
+      // lo que sea) retomamos la música de inmediato, sin que tenga que
+      // buscar el botón de play del reproductor.
+      const resumeOnFirstInteraction = () => {
+        if (audio.paused && loadState().playing) audio.play().catch(() => {});
+        document.removeEventListener("pointerdown", resumeOnFirstInteraction);
+        document.removeEventListener("keydown", resumeOnFirstInteraction);
+      };
+      document.addEventListener("pointerdown", resumeOnFirstInteraction, { once: true });
+      document.addEventListener("keydown", resumeOnFirstInteraction, { once: true });
+    }
   }
 
   function buildReopenTab() {
