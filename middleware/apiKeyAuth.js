@@ -126,6 +126,10 @@ function apiKeyAuth(options = {}) {
       user.requests_remaining = Math.max(0, Number(user.requests_remaining) - 1);
       req.apiUser = user;
       req.apiUserIsVip = isVipActive(user);
+      // El handler de la ruta puede leer esto para reportar el tier real
+      // requerido en vez de dejarlo hardcodeado (y que se desincronice si
+      // el minPlan cambia aquí pero no se actualiza en la respuesta).
+      req.endpointMinPlan = options.minPlan || "free";
       next();
     } catch (error) {
       console.error("Error autenticando API:", error);
