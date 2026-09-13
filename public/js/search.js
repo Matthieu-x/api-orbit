@@ -64,6 +64,19 @@ function animeSearchUpdate() {
     animeSearchUrl();
 }
 
+function appleMusicUrl() {
+  const q = document.getElementById("appleMusicQueryInput").value;
+
+  return `${location.origin}/api/v1/search/applemusic?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
+}
+
+function appleMusicUpdate() {
+  document.getElementById("appleMusicEndpointUrl").textContent =
+    appleMusicUrl();
+}
+
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -295,6 +308,46 @@ function escapeHtml(str) {
           showToast("Pégalo en Anime Episodes (página Anime)");
         });
       });
+    } catch (e) {
+      out.textContent = "No se pudo contactar el endpoint";
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  const appleMusicInput = document.getElementById("appleMusicQueryInput");
+
+  appleMusicUpdate();
+
+  appleMusicInput.addEventListener("input", appleMusicUpdate);
+
+  document.getElementById("appleMusicCopyBtn").onclick = () => {
+    copyToClipboard(appleMusicUrl(), "Endpoint");
+  };
+
+  document.getElementById("appleMusicSendBtn").onclick = async () => {
+    if (!appleMusicInput.value.trim()) {
+      return showToast("Escribe algo para buscar");
+    }
+
+    const out = document.getElementById("appleMusicResult");
+    const btn = document.getElementById("appleMusicSendBtn");
+
+    btn.disabled = true;
+
+    out.innerHTML =
+      '<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando...</div>';
+
+    try {
+      const r = await fetch(appleMusicUrl(), {
+        headers: {
+          "x-orbit-ip": searchUser.orbit_ip || ""
+        }
+      });
+
+      const data = await r.json();
+
+      out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {
       out.textContent = "No se pudo contactar el endpoint";
     } finally {
