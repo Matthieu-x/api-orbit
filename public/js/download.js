@@ -48,10 +48,7 @@ function refreshUrls() {
   $("aptoideEndpoint").textContent = makeUrl("aptoide");
   $("fdroidEndpoint").textContent = makeUrl("fdroid");
   $("appleMusicEndpoint").textContent = apiUrl("applemusic", { url: $("appleMusicUrl").value });
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  $("spotifyDlEndpoint").textContent = apiUrl("spotifydl", { url: $("spotifyDlUrl").value });
 }
 
 // Mismo orden de tiers que utils/plans.js en el backend.
@@ -161,7 +158,8 @@ function openDownload(type, params) {
     "aptoideQuery",
     "aptoideIndex",
     "fdroidQuery",
-    "appleMusicUrl"
+    "appleMusicUrl",
+    "spotifyDlUrl"
   ].forEach(id => $(id).addEventListener("input", refreshUrls));
 
   $("videoQuality").addEventListener("change", refreshUrls);
@@ -192,6 +190,7 @@ function openDownload(type, params) {
 
   if (!hasMinPlan("plus")) {
     $("videoResponse").textContent = "Este endpoint requiere el plan Plus o superior. Ve a /vip para activar tu plan.";
+    $("spotifyDlResponse").textContent = "Este endpoint requiere el plan Plus o superior. Ve a /vip para activar tu plan.";
   }
   if (!hasMinPlan("vip")) {
     $("aptoideResponse").textContent = "Este endpoint requiere el plan VIP o superior. Ve a /vip para activar tu plan.";
@@ -212,20 +211,30 @@ function openDownload(type, params) {
     try {
       const r = await fetch(apiUrl("applemusic", { url }), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
       const data = await r.json();
+      out.textContent = JSON.stringify(data, null, 2);
+    } catch {
+      out.textContent = "No se pudo contactar el endpoint";
+    } finally {
+      btn.disabled = false;
+    }
+  };
 
-      if (!data.status || !data.result) {
-        out.textContent = JSON.stringify(data, null, 2);
-        return;
-      }
+  $("spotifyDlCopy").onclick = () => copyToClipboard(apiUrl("spotifydl", { url: $("spotifyDlUrl").value }), "Endpoint");
 
-      const track = data.result;
-      out.innerHTML =
-        `<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">` +
-        `<img src="${escapeHtml(track.image)}" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;flex:0 0 auto">` +
-        `<div><strong style="display:block;font-size:13.5px">${escapeHtml(track.title)}</strong><span class="muted" style="font-size:12px">${escapeHtml(track.artist)}</span></div>` +
-        `</div>` +
-        `<a class="btn btn-primary btn-block" href="${escapeHtml(track.download)}" target="_blank" rel="noopener" style="margin-bottom:10px">Descargar MP3</a>` +
-        `<pre style="white-space:pre-wrap;word-break:break-all;margin:0">${JSON.stringify(data, null, 2)}</pre>`;
+  $("spotifyDlSend").onclick = async () => {
+    if (!requirePlan("plus", "Plus")) return;
+    const url = $("spotifyDlUrl").value.trim();
+    if (!url) return showToast("Pega la url de un resultado de Spotify Search");
+
+    const btn = $("spotifyDlSend");
+    const out = $("spotifyDlResponse");
+    btn.disabled = true;
+    out.innerHTML = '<div class="json-console-loading"><span class="orbit-spinner"></span>Obteniendo descarga...</div>';
+
+    try {
+      const r = await fetch(apiUrl("spotifydl", { url }), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
+      const data = await r.json();
+      out.textContent = JSON.stringify(data, null, 2);
     } catch {
       out.textContent = "No se pudo contactar el endpoint";
     } finally {
