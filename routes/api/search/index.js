@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const { searchAppleMusic } = require("../../../services/applemusic");
+const { searchSpotify } = require("../../../services/spotify");
 
 const router = express.Router();
 
@@ -67,6 +68,20 @@ router.get("/applemusic", async (req, res) => {
     res.json({ status: true, creator: "Orbit", access: "free", query, total: results.length, results, timestamp: new Date().toISOString() });
   } catch (error) {
     res.status(500).json({ status: false, creator: "Orbit", error: "No se pudo buscar en Apple Music", detail: error.message });
+  }
+});
+
+router.get("/spotify", async (req, res) => {
+  const query = String(req.query.query || req.query.q || "").trim();
+  if (!query) return res.status(400).json({ status: false, creator: "Orbit", error: "El parámetro query es requerido" });
+
+  const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 30);
+
+  try {
+    const results = await searchSpotify(query, limit);
+    res.json({ status: true, creator: "Orbit", access: "free", query, total: results.length, results, timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(500).json({ status: false, creator: "Orbit", error: "No se pudo buscar en Spotify", detail: error.message });
   }
 });
 
