@@ -47,11 +47,24 @@ function refreshUrls() {
   $("tiktokEndpoint").textContent = makeUrl("tiktok");
   $("aptoideEndpoint").textContent = makeUrl("aptoide");
   $("fdroidEndpoint").textContent = makeUrl("fdroid");
+  $("appleMusicEndpoint").textContent = apiUrl("applemusic", { url: $("appleMusicUrl").value });
 }
 
-function requireVip() {
-  if (downloadUser.is_vip || downloadUser.is_admin) return true;
-  showToast("Este endpoint requiere VIP");
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Mismo orden de tiers que utils/plans.js en el backend.
+const PLAN_RANK = { free: 0, basic: 1, plus: 2, vip: 3, superorbit: 4 };
+
+function hasMinPlan(minPlan) {
+  if (downloadUser.is_admin) return true;
+  return (PLAN_RANK[downloadUser.plan] || 0) >= PLAN_RANK[minPlan];
+}
+
+function requirePlan(minPlan, label) {
+  if (hasMinPlan(minPlan)) return true;
+  showToast(`Este endpoint requiere el plan ${label} o superior`);
   return false;
 }
 
@@ -68,7 +81,7 @@ async function run(type) {
   const btn = $(btnId);
 
   if (!input.value.trim()) return showToast("Escribe una URL");
-  if (type === "ytvideo" && !requireVip()) return;
+  if (type === "ytvideo" && !requirePlan("plus", "Plus")) return;
 
   btn.disabled = true;
   const labels = {
@@ -95,7 +108,7 @@ async function run(type) {
 }
 
 async function runAptoideSearch() {
-  if (!requireVip()) return;
+  if (!requirePlan("vip", "VIP")) return;
   const query = $("aptoideQuery").value.trim();
   if (!query) return showToast("Escribe una aplicación");
 
@@ -112,7 +125,7 @@ async function runAptoideSearch() {
 }
 
 async function runFdroidSearch() {
-  if (!requireVip()) return;
+  if (!requirePlan("vip", "VIP")) return;
   const query = $("fdroidQuery").value.trim();
   if (!query) return showToast("Escribe una aplicación o package");
 
@@ -129,7 +142,7 @@ async function runFdroidSearch() {
 }
 
 function openDownload(type, params) {
-  if (!requireVip()) return;
+  if (!requirePlan("vip", "VIP")) return;
   const url = apiUrl(type, params);
   window.open(url, "_blank", "noopener,noreferrer");
 }
@@ -147,7 +160,8 @@ function openDownload(type, params) {
     "tiktokUrl",
     "aptoideQuery",
     "aptoideIndex",
-    "fdroidQuery"
+    "fdroidQuery",
+    "appleMusicUrl"
   ].forEach(id => $(id).addEventListener("input", refreshUrls));
 
   $("videoQuality").addEventListener("change", refreshUrls);
@@ -176,9 +190,46 @@ function openDownload(type, params) {
     download: "true"
   });
 
-  if (!downloadUser.is_vip && !downloadUser.is_admin) {
-    $("videoResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
-    $("aptoideResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
-    $("fdroidResponse").textContent = "Este endpoint requiere VIP. Ve a /vip para activar tu plan.";
+  if (!hasMinPlan("plus")) {
+    $("videoResponse").textContent = "Este endpoint requiere el plan Plus o superior. Ve a /vip para activar tu plan.";
   }
+  if (!hasMinPlan("vip")) {
+    $("aptoideResponse").textContent = "Este endpoint requiere el plan VIP o superior. Ve a /vip para activar tu plan.";
+    $("fdroidResponse").textContent = "Este endpoint requiere el plan VIP o superior. Ve a /vip para activar tu plan.";
+  }
+
+  $("appleMusicCopy").onclick = () => copyToClipboard(apiUrl("applemusic", { url: $("appleMusicUrl").value }), "Endpoint");
+
+  $("appleMusicSend").onclick = async () => {
+    const url = $("appleMusicUrl").value.trim();
+    if (!url) return showToast("Pega la url de un resultado de Apple Music Search");
+
+    const btn = $("appleMusicSend");
+    const out = $("appleMusicResponse");
+    btn.disabled = true;
+    out.innerHTML = '<div class="json-console-loading"><span class="orbit-spinner"></span>Obteniendo descarga...</div>';
+
+    try {
+      const r = await fetch(apiUrl("applemusic", { url }), { headers: { "x-orbit-ip": downloadUser.orbit_ip || "" } });
+      const data = await r.json();
+
+      if (!data.status || !data.result) {
+        out.textContent = JSON.stringify(data, null, 2);
+        return;
+      }
+
+      const track = data.result;
+      out.innerHTML =
+        `<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">` +
+        `<img src="${escapeHtml(track.image)}" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;flex:0 0 auto">` +
+        `<div><strong style="display:block;font-size:13.5px">${escapeHtml(track.title)}</strong><span class="muted" style="font-size:12px">${escapeHtml(track.artist)}</span></div>` +
+        `</div>` +
+        `<a class="btn btn-primary btn-block" href="${escapeHtml(track.download)}" target="_blank" rel="noopener" style="margin-bottom:10px">Descargar MP3</a>` +
+        `<pre style="white-space:pre-wrap;word-break:break-all;margin:0">${JSON.stringify(data, null, 2)}</pre>`;
+    } catch {
+      out.textContent = "No se pudo contactar el endpoint";
+    } finally {
+      btn.disabled = false;
+    }
+  };
 })();
