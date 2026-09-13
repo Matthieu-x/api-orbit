@@ -77,6 +77,18 @@ function appleMusicUpdate() {
     appleMusicUrl();
 }
 
+function spotifyUrl() {
+  const q = document.getElementById("spotifyQueryInput").value;
+
+  return `${location.origin}/api/v1/search/spotify?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
+}
+
+function spotifyUpdate() {
+  document.getElementById("spotifyEndpointUrl").textContent = spotifyUrl();
+}
+
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -340,6 +352,46 @@ function escapeHtml(str) {
 
     try {
       const r = await fetch(appleMusicUrl(), {
+        headers: {
+          "x-orbit-ip": searchUser.orbit_ip || ""
+        }
+      });
+
+      const data = await r.json();
+
+      out.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      out.textContent = "No se pudo contactar el endpoint";
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  const spotifyInput = document.getElementById("spotifyQueryInput");
+
+  spotifyUpdate();
+
+  spotifyInput.addEventListener("input", spotifyUpdate);
+
+  document.getElementById("spotifyCopyBtn").onclick = () => {
+    copyToClipboard(spotifyUrl(), "Endpoint");
+  };
+
+  document.getElementById("spotifySendBtn").onclick = async () => {
+    if (!spotifyInput.value.trim()) {
+      return showToast("Escribe algo para buscar");
+    }
+
+    const out = document.getElementById("spotifyResult");
+    const btn = document.getElementById("spotifySendBtn");
+
+    btn.disabled = true;
+
+    out.innerHTML =
+      '<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando...</div>';
+
+    try {
+      const r = await fetch(spotifyUrl(), {
         headers: {
           "x-orbit-ip": searchUser.orbit_ip || ""
         }
