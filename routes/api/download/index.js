@@ -275,7 +275,7 @@ router.get("/applemusic", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-// SPOTIFY DOWNLOAD (vía api.delirius.online) — FREE
+// SPOTIFY DOWNLOAD (vía api.delirius.online) — PLUS o superior
 // ─────────────────────────────────────────────
 
 router.get("/spotifydl", async (req, res) => {
