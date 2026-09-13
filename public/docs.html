@@ -22,6 +22,7 @@
 .docs-hero p{color:var(--muted);max-width:720px}
 .doc-section{margin-bottom:18px;scroll-margin-top:80px}
 .doc-section h2{font-family:var(--font-head);font-size:20px;margin-bottom:8px}
+.doc-section h2 .badge,.doc-section h3 .badge{margin-left:6px;vertical-align:middle}
 .doc-section h3{font-size:15px;margin:18px 0 8px}
 .doc-section p,.doc-section li{color:var(--muted);font-size:14px}
 .doc-section ul{padding-left:20px}
@@ -33,6 +34,7 @@
 .badge{display:inline-flex;align-items:center;border:1px solid var(--border);background:var(--surface-2);border-radius:7px;padding:3px 7px;font-size:11px;color:var(--text)}
 .badge.method-get{border-color:rgba(61,214,140,.3);background:rgba(61,214,140,.12);color:#72e7ae;font-weight:700}
 .badge.access-free{border-color:var(--border);background:rgba(255,255,255,.05);color:var(--muted);font-weight:700}
+.badge.access-plus{border-color:rgba(108,140,255,.24);background:rgba(108,140,255,.1);color:#8ba0f5;font-weight:700}
 .badge.access-vip{border-color:rgba(108,140,255,.32);background:rgba(108,140,255,.15);color:#9fb1ff;font-weight:700}
 .footer{padding:28px 0 38px;color:var(--muted);font-size:13px}
 .footer a{color:var(--text)}
@@ -76,6 +78,7 @@
       <a href="#download">Download</a>
       <a href="#pinterest">Pinterest</a>
       <a href="#ia">IA</a>
+      <a href="#anime">Anime</a>
       <a href="#tools">Tools</a>
       <a href="#ip">Seguridad por IP</a>
       <a href="#errores">Errores</a>
@@ -98,13 +101,20 @@ X-API-Key: TU_API_KEY</div>
         <h2>Search</h2><p>Busca contenido en YouTube. El parámetro <strong>query</strong> es obligatorio y admite hasta 100 caracteres.</p>
         <div class="codebox">GET /api/v1/search?apikey=TU_API_KEY&amp;query=lofi</div>
         <table class="endpoint-table"><thead><tr><th>Método</th><th>Parámetro</th><th>Descripción</th></tr></thead><tbody><tr><td><span class="badge method-get">GET</span></td><td>query</td><td>Término de búsqueda. Obligatorio.</td></tr></tbody></table>
+
+        <h3>Anime Search <span class="badge access-free">FREE</span></h3><div class="codebox">GET /api/v1/anime/search?apikey=TU_API_KEY&amp;query=one+piece</div>
+        <p><strong>query</strong> es obligatorio: el nombre del anime a buscar. Cada resultado trae <strong>title</strong> y <strong>link</strong> (ese <strong>link</strong> se usa en Anime Episodes, ver sección Anime):</p>
+        <div class="codebox">[
+  { "title": "One Piece", "link": "https://animeheaven.me/anime.php?1ht8d" },
+  { "title": "One Piece Log: Fish-Man Island Saga", "link": "https://animeheaven.me/anime.php?dfppe" }
+]</div>
       </article>
 
       <article class="card doc-section" id="download">
         <h2>Download</h2><p>Servicios de descarga disponibles en Orbit API.</p>
         <table class="endpoint-table"><thead><tr><th>Endpoint</th><th>Acceso</th><th>Uso</th></tr></thead><tbody>
           <tr><td>/api/v1/download/ytaudio</td><td><span class="badge access-free">FREE</span></td><td>Descarga audio de YouTube.</td></tr>
-          <tr><td>/api/v1/download/ytvideo</td><td><span class="badge access-vip">VIP</span></td><td>Descarga video de YouTube.</td></tr>
+          <tr><td>/api/v1/download/ytvideo</td><td><span class="badge access-plus">PLUS</span></td><td>Descarga video de YouTube.</td></tr>
           <tr><td>/api/v1/download/tiktok</td><td><span class="badge access-free">FREE</span></td><td>Procesa descargas de TikTok.</td></tr>
           <tr><td>/api/v1/download/aptoide</td><td><span class="badge access-vip">VIP</span></td><td>Obtiene aplicaciones desde Aptoide.</td></tr>
           <tr><td>/api/v1/download/fdroid</td><td><span class="badge access-vip">VIP</span></td><td>Obtiene aplicaciones desde F-Droid.</td></tr>
@@ -118,14 +128,38 @@ GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper&amp;type=image</div>
       </article>
 
       <article class="card doc-section" id="ia">
-        <h2>IA</h2><p>Endpoint de inteligencia artificial disponible para cuentas con acceso VIP.</p>
+        <h2>IA <span class="badge access-vip">VIP</span></h2><p>Endpoint de inteligencia artificial disponible para cuentas con acceso VIP.</p>
         <div class="codebox">GET /api/v1/ia?apikey=TU_API_KEY&amp;text=Hola</div>
         <p>Admite <strong>text</strong> como parámetro obligatorio y <strong>promptSystem</strong> como parámetro opcional.</p>
       </article>
 
+      <article class="card doc-section" id="anime">
+        <h2>Anime</h2><p>Imagen aleatoria y el flujo de episodios → descarga. <a href="#search">Anime Search</a> vive en la sección Search (es Free).</p>
+
+        <h3>Random <span class="badge access-plus">PLUS</span></h3><div class="codebox">GET /api/v1/anime/random?apikey=TU_API_KEY&amp;type=neko</div>
+        <p>Devuelve una imagen aleatoria según la categoría. <strong>type</strong> es obligatorio (por ejemplo: neko, waifu, husbando, según las categorías habilitadas).</p>
+
+        <h3>Episodes <span class="badge access-plus">PLUS</span></h3><div class="codebox">GET /api/v1/anime/episodes?apikey=TU_API_KEY&amp;link=LINK_DE_ANIME_SEARCH</div>
+        <p><strong>link</strong> es obligatorio: el campo <code>link</code> de un resultado de <a href="#search">Anime Search</a>. Cada episodio trae <strong>name</strong> e <strong>id</strong> (usa ese <strong>id</strong> en el siguiente paso):</p>
+        <div class="codebox">[
+  { "name": "Episode 1160", "id": "da950bd9f8591544c11522f298036677" },
+  { "name": "Episode 1161", "id": "426248effe231f3e6988f7ba292084b5" }
+]</div>
+
+        <h3>Download <span class="badge access-plus">PLUS</span></h3><div class="codebox">GET /api/v1/anime/download?apikey=TU_API_KEY&amp;episode=ID_DE_EPISODES</div>
+        <p><strong>episode</strong> es obligatorio: el campo <code>id</code> de un episodio devuelto por <code>/anime/episodes</code>. <strong>result</strong> es el link directo del video:</p>
+        <div class="codebox">{
+  "status": true,
+  "creator": "Orbit",
+  "access": "plus",
+  "episode": "da950bd9f8591544c11522f298036677",
+  "result": "https://rk.animeheaven.me/video.mp4?da950bd9f8591544c11522f298036677&0c69919926d7c893d87540834360b1"
+}</div>
+      </article>
+
       <article class="card doc-section" id="tools">
         <h2>Tools</h2><p>Herramientas auxiliares de Orbit API.</p>
-        <h3>QR</h3><div class="codebox">GET /api/v1/tools/qr?apikey=TU_API_KEY&amp;text=https://example.com
+        <h3>QR <span class="badge access-free">FREE</span></h3><div class="codebox">GET /api/v1/tools/qr?apikey=TU_API_KEY&amp;text=https://example.com
 
 # Formato opcional:
 &amp;format=image
@@ -133,6 +167,15 @@ GET /api/v1/pinterest?apikey=TU_API_KEY&amp;query=wallpaper&amp;type=image</div>
 &amp;dark=%23000000
 &amp;light=%23ffffff</div>
         <p><strong>text</strong> o <strong>url</strong> son necesarios. El texto admite hasta 2000 caracteres. <strong>format</strong> puede ser image, json o base64.</p>
+
+        <h3>Password <span class="badge access-free">FREE</span></h3><div class="codebox">GET /api/v1/tools/password?apikey=TU_API_KEY&amp;length=16&amp;count=1
+
+# Opciones (true/false, todas activas por defecto):
+&amp;lowercase=true
+&amp;uppercase=true
+&amp;numbers=true
+&amp;symbols=true</div>
+        <p>Genera contraseñas aleatorias del lado del servidor (sin depender de APIs externas). <strong>length</strong> va de 6 a 64 (por defecto 16). <strong>count</strong> va de 1 a 10 (por defecto 1).</p>
       </article>
 
       <article class="card doc-section" id="ip">
