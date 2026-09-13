@@ -111,7 +111,7 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 24680;
 
 init()
   .then(() => {
