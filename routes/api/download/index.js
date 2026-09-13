@@ -5,6 +5,7 @@ const { downloadAudio, downloadVideo } = require("../../../services/savetube");
 const { downloadTiktok } = require("../../../services/tiktok");
 const { searchAptoide, downloadAptoide } = require("../../../services/aptoide");
 const { searchFdroid, getFdroidPackage } = require("../../../services/fdroid");
+const { downloadAppleMusic } = require("../../../services/applemusic");
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ const router = express.Router();
 // Para endpoints FREE (solo requiere API key válida)
 router.use("/ytaudio", apiKeyAuth);
 router.use("/tiktok", apiKeyAuth);
+router.use("/applemusic", apiKeyAuth);
 
 // Para endpoints Plus (descarga de video)
 router.use("/ytvideo", createApiKeyAuth({ minPlan: "plus" }));
@@ -233,6 +235,39 @@ router.get("/fdroid", async (req, res) => {
       status: false,
       creator: "Orbit",
       error: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// APPLE MUSIC (vía api.delirius.online) — FREE
+// ─────────────────────────────────────────────
+
+router.get("/applemusic", async (req, res) => {
+  const url = String(req.query.url || "").trim();
+
+  if (!url) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'url' es requerido (el campo 'url' que devuelve /search/applemusic)"
+    });
+  }
+
+  try {
+    const result = await downloadAppleMusic(url);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      access: "free",
+      result
+    });
+  } catch (error) {
+    return res.status(502).json({
+      status: false,
+      creator: "Orbit",
+      error: "No se pudo obtener la descarga de Apple Music",
+      detail: error.message
     });
   }
 });
