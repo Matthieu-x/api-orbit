@@ -6,6 +6,7 @@ const { downloadTiktok } = require("../../../services/tiktok");
 const { searchAptoide, downloadAptoide } = require("../../../services/aptoide");
 const { searchFdroid, getFdroidPackage } = require("../../../services/fdroid");
 const { downloadAppleMusic } = require("../../../services/applemusic");
+const { downloadSpotify } = require("../../../services/spotify");
 
 const router = express.Router();
 
@@ -18,8 +19,9 @@ router.use("/ytaudio", apiKeyAuth);
 router.use("/tiktok", apiKeyAuth);
 router.use("/applemusic", apiKeyAuth);
 
-// Para endpoints Plus (descarga de video)
+// Para endpoints Plus (descarga de video, Spotify)
 router.use("/ytvideo", createApiKeyAuth({ minPlan: "plus" }));
+router.use("/spotifydl", createApiKeyAuth({ minPlan: "plus" }));
 
 // Para endpoints VIP (acceso completo)
 router.use("/aptoide", createApiKeyAuth({ minPlan: "vip" }));
@@ -267,6 +269,39 @@ router.get("/applemusic", async (req, res) => {
       status: false,
       creator: "Orbit",
       error: "No se pudo obtener la descarga de Apple Music",
+      detail: error.message
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
+// SPOTIFY DOWNLOAD (vía api.delirius.online) — FREE
+// ─────────────────────────────────────────────
+
+router.get("/spotifydl", async (req, res) => {
+  const url = String(req.query.url || "").trim();
+
+  if (!url) {
+    return res.status(400).json({
+      status: false,
+      creator: "Orbit",
+      error: "El parámetro 'url' es requerido (el campo 'url' que devuelve /search/spotify)"
+    });
+  }
+
+  try {
+    const result = await downloadSpotify(url);
+    return res.json({
+      status: true,
+      creator: "Orbit",
+      access: req.endpointMinPlan,
+      result
+    });
+  } catch (error) {
+    return res.status(502).json({
+      status: false,
+      creator: "Orbit",
+      error: "No se pudo obtener la descarga de Spotify",
       detail: error.message
     });
   }
