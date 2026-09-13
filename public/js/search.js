@@ -51,6 +51,23 @@ function stickerSearchUpdate() {
     stickerSearchUrl();
 }
 
+function animeSearchUrl() {
+  const q = document.getElementById("animeSearchQueryInput").value;
+
+  return `${location.origin}/api/v1/anime/search?apikey=${encodeURIComponent(
+    searchUser.api_key
+  )}&query=${encodeURIComponent(q)}`;
+}
+
+function animeSearchUpdate() {
+  document.getElementById("animeSearchEndpointUrl").textContent =
+    animeSearchUrl();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
 (async () => {
   searchUser = await initShell("search");
 
@@ -218,6 +235,66 @@ function stickerSearchUpdate() {
       const data = await r.json();
 
       out.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      out.textContent = "No se pudo contactar el endpoint";
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  const animeSearchInput = document.getElementById("animeSearchQueryInput");
+
+  animeSearchUpdate();
+
+  animeSearchInput.addEventListener("input", animeSearchUpdate);
+
+  document.getElementById("animeSearchCopyBtn").onclick = () => {
+    copyToClipboard(animeSearchUrl(), "Endpoint");
+  };
+
+  document.getElementById("animeSearchSendBtn").onclick = async () => {
+    if (!animeSearchInput.value.trim()) {
+      return showToast("Escribe el nombre de un anime");
+    }
+
+    const out = document.getElementById("animeSearchResult");
+    const btn = document.getElementById("animeSearchSendBtn");
+
+    btn.disabled = true;
+
+    out.innerHTML =
+      '<div class="json-console-loading"><span class="orbit-spinner"></span>Buscando...</div>';
+
+    try {
+      const r = await fetch(animeSearchUrl(), {
+        headers: {
+          "x-orbit-ip": searchUser.orbit_ip || ""
+        }
+      });
+
+      const data = await r.json();
+
+      if (!data.status || !Array.isArray(data.result) || data.result.length === 0) {
+        out.textContent = JSON.stringify(data, null, 2);
+        return;
+      }
+
+      out.innerHTML = data.result
+        .map(
+          (item, i) => `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;${i === 0 ? "" : "border-top:1px solid var(--border)"}">
+            <span style="font-size:13px">${escapeHtml(item.title)}</span>
+            <button type="button" class="btn btn-ghost" data-copy-link="${escapeHtml(item.link)}" style="flex:0 0 auto;height:30px;padding:0 10px;font-size:12px">Copiar link</button>
+          </div>`
+        )
+        .join("");
+
+      out.querySelectorAll("[data-copy-link]").forEach((copyBtnEl) => {
+        copyBtnEl.addEventListener("click", () => {
+          copyToClipboard(copyBtnEl.dataset.copyLink, "Link");
+          showToast("Pégalo en Anime Episodes (página Anime)");
+        });
+      });
     } catch (e) {
       out.textContent = "No se pudo contactar el endpoint";
     } finally {
