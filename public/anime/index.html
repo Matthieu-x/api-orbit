@@ -15,12 +15,13 @@
   <div class="app-shell">
     <div class="wrap" style="padding-top:30px">
       <h1 class="section-title">Anime</h1>
-      <p class="muted" style="margin-bottom:22px">Imágenes anime aleatorias. Requiere cuenta VIP.</p>
+      <p class="muted" style="margin-bottom:22px">Imagen aleatoria (Plus) y el flujo de episodios → descarga: Episodes y Download requieren Plus o superior. <a href="/search">Anime Search</a> vive en la página Search (es Free).</p>
 
       <div class="download-grid">
+
         <div class="card endpoint-download-card vip-endpoint">
           <div>
-            <span class="method">GET</span><span class="pill-vip">VIP</span>
+            <span class="method">GET</span><span class="pill-vip">PLUS</span>
             <h3 style="margin-top:10px">Anime Random</h3>
             <p class="muted">Imagen anime aleatoria (waifu, neko, hug, pat, etc.) vía nekos.best. Solo contenido SFW.</p>
           </div>
@@ -43,8 +44,33 @@
           </div>
           <div class="endpoint-row" id="animeEndpoint"></div>
           <div class="copy-row"><button class="btn btn-ghost" id="animeCopy">Copiar</button><button class="btn btn-primary" id="animeSend">Enviar</button></div>
-          <div class="json-console" id="animeResponse">Requiere una cuenta VIP.</div>
+          <div class="json-console" id="animeResponse">Requiere plan Plus o superior.</div>
         </div>
+
+        <div class="card endpoint-download-card vip-endpoint">
+          <div>
+            <span class="method">GET</span><span class="pill-vip">PLUS</span>
+            <h3 style="margin-top:10px">Anime Episodes</h3>
+            <p class="muted">Pega el <code>link</code> de un resultado de <a href="/search">Anime Search</a>. Toca un episodio para pasarlo al paso de Download.</p>
+          </div>
+          <div class="field" style="margin-top:18px"><label>link</label><input id="animeEpisodesLink" placeholder="https://animeheaven.me/anime.php?..."></div>
+          <div class="endpoint-row" id="animeEpisodesEndpoint"></div>
+          <div class="copy-row"><button class="btn btn-ghost" id="animeEpisodesCopy">Copiar</button><button class="btn btn-primary" id="animeEpisodesSend">Ver episodios</button></div>
+          <div class="json-console" id="animeEpisodesResponse">Requiere plan Plus o superior.</div>
+        </div>
+
+        <div class="card endpoint-download-card vip-endpoint">
+          <div>
+            <span class="method">GET</span><span class="pill-vip">PLUS</span>
+            <h3 style="margin-top:10px">Anime Download</h3>
+            <p class="muted">Paso 3: pega el <code>id</code> de un episodio de Episodes para obtener el link del video.</p>
+          </div>
+          <div class="field" style="margin-top:18px"><label>episode</label><input id="animeDownloadEpisode" placeholder="id del episodio"></div>
+          <div class="endpoint-row" id="animeDownloadEndpoint"></div>
+          <div class="copy-row"><button class="btn btn-ghost" id="animeDownloadCopy">Copiar</button><button class="btn btn-primary" id="animeDownloadSend">Obtener link</button></div>
+          <div class="json-console" id="animeDownloadResponse">Requiere plan Plus o superior.</div>
+        </div>
+
       </div>
     </div>
   </div>
