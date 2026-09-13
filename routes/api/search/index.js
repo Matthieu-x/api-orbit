@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const { searchAppleMusic } = require("../../../services/applemusic");
 
 const router = express.Router();
 
@@ -54,6 +55,18 @@ router.get("/", async (req, res) => {
     res.json({ status: true, creator: "Orbit", query, total: results.length, results, timestamp: new Date().toISOString() });
   } catch (error) {
     res.status(500).json({ status: false, creator: "Orbit", error: error.message });
+  }
+});
+
+router.get("/applemusic", async (req, res) => {
+  const query = String(req.query.query || req.query.q || "").trim();
+  if (!query) return res.status(400).json({ status: false, creator: "Orbit", error: "El parámetro query es requerido" });
+
+  try {
+    const results = await searchAppleMusic(query);
+    res.json({ status: true, creator: "Orbit", access: "free", query, total: results.length, results, timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(500).json({ status: false, creator: "Orbit", error: "No se pudo buscar en Apple Music", detail: error.message });
   }
 });
 
