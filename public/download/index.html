@@ -44,7 +44,7 @@
 
         <div class="card endpoint-download-card vip-endpoint">
           <div>
-            <span class="method">GET</span><span class="pill-vip">VIP</span>
+            <span class="method">GET</span><span class="pill-vip">PLUS</span>
             <h3 style="margin-top:10px">YouTube Video</h3>
             <p class="muted">Descarga video MP4 en 144p–1080p.</p>
           </div>
@@ -52,7 +52,19 @@
           <div class="field"><label>quality</label><select id="videoQuality"><option>144</option><option>240</option><option selected>360</option><option>480</option><option>720</option><option>1080</option></select></div>
           <div class="endpoint-row" id="videoEndpoint"></div>
           <div class="copy-row"><button class="btn btn-ghost" id="videoCopy">Copiar</button><button class="btn btn-primary" id="videoSend">Enviar</button></div>
-          <div class="json-console" id="videoResponse">Requiere una cuenta VIP.</div>
+          <div class="json-console" id="videoResponse">Requiere plan Plus o superior.</div>
+        </div>
+
+        <div class="card endpoint-download-card vip-endpoint">
+          <div>
+            <span class="method">GET</span><span class="pill-vip">PLUS</span>
+            <h3 style="margin-top:10px">Spotify</h3>
+            <p class="muted">Descarga MP3 de Spotify. Pega la <code>url</code> de un resultado de <a href="/search">Spotify Search</a>.</p>
+          </div>
+          <div class="field" style="margin-top:18px"><label>url</label><input id="spotifyDlUrl" placeholder="https://open.spotify.com/track/..."></div>
+          <div class="endpoint-row" id="spotifyDlEndpoint"></div>
+          <div class="copy-row"><button class="btn btn-ghost" id="spotifyDlCopy">Copiar</button><button class="btn btn-primary" id="spotifyDlSend">Enviar</button></div>
+          <div class="json-console" id="spotifyDlResponse">Requiere plan Plus o superior.</div>
         </div>
 
         <div class="card endpoint-download-card">
