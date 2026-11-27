@@ -15,13 +15,32 @@ const apiRoutes = require("./routes/api");
 const app = express();
 const PUBLIC_DIR = path.join(__dirname, "public");
 
-// Necesario para que req.headers['x-forwarded-for'] traiga la IP real
-// del visitante y no la del proxy de Render.
 app.set("trust proxy", true);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+let initPromise = null;
+function ensureInit() {
+  if (!initPromise) {
+    initPromise = init().catch((err) => {
+      initPromise = null;
+      throw err;
+    });
+  }
+  return initPromise;
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await ensureInit();
+    next();
+  } catch (err) {
+    console.error("Error iniciando la base de datos:", err);
+    res.status(500).json({ error: "Error iniciando la base de datos" });
+  }
+});
 
 async function currentUser(req) {
   const session = await getSession(req.cookies.orbit_session);
@@ -111,15 +130,18 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
 });
 
-const PORT = process.env.PORT || 24680;
-
-init()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Orbit API corriendo en el puerto ${PORT}`);
+if (require.main === module) {
+  const PORT = process.env.PORT || 24680;
+  ensureInit()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Orbit API corriendo en el puerto ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Error iniciando la base de datos:", err);
+      process.exit(1);
     });
-  })
-  .catch((err) => {
-    console.error("Error iniciando la base de datos:", err);
-    process.exit(1);
-  });
+}
+
+module.exports = app;
